@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { MyCounterButton } from '@repo/ui';
+	import { CredenzaSDK } from '@credenza3/web-sdk/src/main'
+
+	const credenzaSDK = new CredenzaSDK()
+	console.log(credenzaSDK)
+	console.log(credenzaSDK.hello())
 </script>
 
 <h1>Web</h1>
-<MyCounterButton />
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>

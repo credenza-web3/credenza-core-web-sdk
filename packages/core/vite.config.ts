@@ -1,13 +1,14 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
-import react from '@vitejs/plugin-react'
+import dts from 'vite-plugin-dts'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [dts({ include: ['src'] })],
   build: {
     lib: {
-      entry: resolve(__dirname, 'lib/main.ts'),
-      formats: ['es']
+      fileName: 'main',
+      name: 'CredenzaSDKCore',
+      entry: resolve(__dirname, 'src/main.ts'),
     }
   }
 })
