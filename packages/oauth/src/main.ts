@@ -1,7 +1,7 @@
-import type { CredenzaSDK } from '../../core/src/main'
-import { getOAuthApiUrl } from '../../common/oauth/oauth'
-import {set, get } from '../../common/localstorage/localstorage'
-import { generateRandomString } from '../../common/str/str'
+import type { CredenzaSDK } from '@packages/core/src/main'
+import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
+import { set, get } from '@packages/common/localstorage/localstorage'
+import { generateRandomString } from '@packages/common/str/str'
 
 import { jwtDecode } from "jwt-decode";
 

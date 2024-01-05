@@ -1,5 +1,5 @@
-import type { OAuthExtension } from '../../oauth/src/main'
-import {get, set, remove} from '../../common/localstorage/localstorage'
+import type { OAuthExtension } from '@packages/oauth/src/main'
+import { get, set, remove } from '@packages/common/localstorage/localstorage'
 
 let exts: OAuthExtension[]
 export class CredenzaSDK {
