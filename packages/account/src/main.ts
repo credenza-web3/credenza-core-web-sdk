@@ -18,10 +18,9 @@ export class AccountExtension {
         }
       })
       const json = await response.json()
-      console.log(json)
       return json
     } catch (err) {
-      console.log(err)
+      throw err
     }
   }
 }

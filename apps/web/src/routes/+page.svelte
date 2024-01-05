@@ -13,12 +13,13 @@
 	onMount(async () => {
 		await sdk.initialize()
 		if (!sdk.isLoggedIn()) {
-			sdk.oauth?.login({
+			sdk.oauth.login({
 				scope: 'profile email phone',
 				redirectUrl: window.location.href,
 			})
 		}
-		sdk.account.info()
+		const info = await sdk.account.info()
+		console.log(info)
 	})
 </script>
 

@@ -1,7 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import { get, set, remove } from '@packages/common/localstorage/localstorage'
 import { SDK_ENV } from '@packages/common/constants/core/core'
-import { OAuthExtension } from '@packages/oauth/src/main'
+import type { OAuthExtension } from '@packages/oauth/src/main'
 import type { AccountExtension } from '@packages/account/src/main'
 export class CredenzaSDK {
   public static SDK_ENV = SDK_ENV
@@ -11,7 +11,7 @@ export class CredenzaSDK {
 
   private extensions: (OAuthExtension['name'] | AccountExtension["name"])[] = []
   public oauth: OAuthExtension
-  public account: OAuthExtension
+  public account: AccountExtension
   
   private accessToken: string | null
 
