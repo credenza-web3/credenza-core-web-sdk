@@ -10,5 +10,10 @@ export default defineConfig({
       name: 'CredenzaOAuthExtension',
       entry: resolve(__dirname, 'src/main.ts'),
     }
-  }
+  },
+  resolve: {
+    alias: {
+      '@packages': resolve(__dirname, '../../packages'),
+    },
+  },
 })
