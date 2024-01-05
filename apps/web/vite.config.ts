@@ -1,6 +1,6 @@
-import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vitest/config';
-import path from 'path';
+import { sveltekit } from '@sveltejs/kit/vite'
+import { defineConfig } from 'vitest/config'
+import path from 'path'
 
 export default defineConfig({
 	plugins: [sveltekit()],
@@ -14,7 +14,7 @@ export default defineConfig({
 	},
 	build: {
 		commonjsOptions: {
-			include: [/@repo-ui/, /node_modules/]
+			include: [/node_modules/]
 		}
 	}
-});
+})
