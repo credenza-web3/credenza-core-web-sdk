@@ -19,7 +19,7 @@
 			})
 		}
 		const info = await sdk.account.info()
-		//console.log(info)
+		console.log(info)
 	})
 </script>
 
