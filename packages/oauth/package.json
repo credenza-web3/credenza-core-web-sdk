@@ -1,5 +1,5 @@
 {
-  "name": "@credenza3/web-sdk-oauth",
+  "name": "@credenza3/web-sdk-ext-oauth",
   "private": true,
   "version": "0.0.1",
   "type": "module",

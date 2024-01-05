@@ -1,5 +1,5 @@
 {
-  "name": "@credenza3/web-sdk",
+  "name": "@credenza3/web-sdk-ext-account",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -17,7 +17,5 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "jwt-decode": "^4.0.0"
-  }
+  "dependencies": {}
 }

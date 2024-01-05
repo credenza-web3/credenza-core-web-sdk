@@ -1,29 +1,41 @@
-import type { OAuthExtension } from '@packages/oauth/src/main'
+import { jwtDecode } from "jwt-decode";
 import { get, set, remove } from '@packages/common/localstorage/localstorage'
-
-let exts: OAuthExtension[]
+import { SDK_ENV } from '@packages/common/constants/core/core'
+import { OAuthExtension } from '@packages/oauth/src/main'
+import type { AccountExtension } from '@packages/account/src/main'
 export class CredenzaSDK {
-  public oauth?: OAuthExtension
-  public clientId: string
-  public env: 'local' | 'staging' | 'prod'
+  public static SDK_ENV = SDK_ENV
 
+  public clientId: string
+  public env: (typeof SDK_ENV)[keyof typeof SDK_ENV]
+
+  private extensions: (OAuthExtension['name'] | AccountExtension["name"])[] = []
+  public oauth: OAuthExtension
+  public account: OAuthExtension
+  
   private accessToken: string | null
 
   constructor(opts: {
     clientId: string,
-    env?: 'local' | 'staging' | 'prod',
-    extensions?: OAuthExtension[]
+    env?: (typeof SDK_ENV)[keyof typeof SDK_ENV]
+    extensions?: (OAuthExtension | AccountExtension)[]
   }) {
-    exts = opts.extensions || []
     this.clientId = opts.clientId
-    this.env = opts.env || 'prod'
+    this.env = opts.env || SDK_ENV.PROD
+    for (const ext of opts.extensions || []) {
+      Object.assign(this, {[ext.name]: ext})
+      this.extensions.push(ext.name)
+    }
   }
 
   async initialize() {
     this.accessToken = get('access_token')
-    for (const ext of exts) {
-      this[ext.name] = ext
-      await ext.initialize(this)
+    if (this.accessToken) {
+      const decodedJwt = jwtDecode(this.accessToken)
+      if (!decodedJwt.exp || decodedJwt.aud !== this.clientId || decodedJwt.exp * 1000 < new Date().getTime()) this.logout()
+    }
+    for (const extensionName of this.extensions) {
+      await this[extensionName]?.initialize(this)
     }
   }
 

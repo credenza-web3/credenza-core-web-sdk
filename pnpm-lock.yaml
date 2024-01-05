@@ -29,7 +29,10 @@ importers:
       '@credenza3/web-sdk':
         specifier: workspace:*
         version: link:../../packages/core
-      '@credenza3/web-sdk-oauth':
+      '@credenza3/web-sdk-ext-account':
+        specifier: workspace:*
+        version: link:../../packages/account
+      '@credenza3/web-sdk-ext-oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
     devDependencies:
@@ -82,6 +85,21 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
 
+  packages/account:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.10.6
+        version: 20.10.6
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.2
+      vite:
+        specifier: ^5.0.10
+        version: 5.0.10(@types/node@20.10.6)
+      vite-plugin-dts:
+        specifier: ^3.7.0
+        version: 3.7.0(@types/node@20.10.6)(typescript@5.3.2)(vite@5.0.10)
+
   packages/config-eslint:
     dependencies:
       '@typescript-eslint/eslint-plugin':
@@ -101,6 +119,10 @@ importers:
         version: 2.35.1(eslint@8.54.0)(svelte@4.2.7)
 
   packages/core:
+    dependencies:
+      jwt-decode:
+        specifier: ^4.0.0
+        version: 4.0.0
     devDependencies:
       '@types/node':
         specifier: ^20.10.6
@@ -133,15 +155,6 @@ importers:
       vite-plugin-dts:
         specifier: ^3.7.0
         version: 3.7.0(@types/node@20.10.6)(typescript@5.3.2)(vite@5.0.10)
-
-  packages/ui:
-    devDependencies:
-      '@repo/eslint-config':
-        specifier: workspace:*
-        version: link:../config-eslint
-      svelte:
-        specifier: ^4.2.7
-        version: 4.2.7
 
 packages:
 

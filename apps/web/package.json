@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "@credenza3/web-sdk": "workspace:*",
-    "@credenza3/web-sdk-oauth": "workspace:*"
+    "@credenza3/web-sdk-ext-oauth": "*",
+    "@credenza3/web-sdk-ext-account": "*"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",

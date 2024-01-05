@@ -1,23 +1,24 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { CredenzaSDK } from '@credenza3/web-sdk/src/main'
-	import { OAuthExtension } from '@credenza3/web-sdk-oauth/src/main'
+	import { OAuthExtension } from '@credenza3/web-sdk-ext-oauth/src/main'
+	import { AccountExtension } from '@credenza3/web-sdk-ext-account/src/main'
 
-	const credenzaSDK = new CredenzaSDK({
+	const sdk = new CredenzaSDK({
 		clientId: '123',
 		env: 'local',
-		extensions: [new OAuthExtension()]
+		extensions: [new OAuthExtension(), new AccountExtension()]
 	})
 	
 	onMount(async () => {
-		await credenzaSDK.initialize()
-		if (!credenzaSDK.isLoggedIn()) {
-			credenzaSDK.oauth?.login({
+		await sdk.initialize()
+		if (!sdk.isLoggedIn()) {
+			sdk.oauth?.login({
 				scope: 'profile email phone',
 				redirectUrl: window.location.href,
 			})
 		}
-		console.log(credenzaSDK)
+		sdk.account.info()
 	})
 </script>
 
