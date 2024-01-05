@@ -7,7 +7,7 @@ export default defineConfig({
   build: {
     lib: {
       fileName: 'main',
-      name: 'CredenzaSDK',
+      name: 'CredenzaOAuthExtension',
       entry: resolve(__dirname, 'src/main.ts'),
     }
   }

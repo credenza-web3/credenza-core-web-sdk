@@ -15,7 +15,8 @@
     "test:unit": "vitest"
   },
   "dependencies": {
-    "@credenza3/web-sdk": "workspace:*"
+    "@credenza3/web-sdk": "workspace:*",
+    "@credenza3/web-sdk-oauth": "workspace:*"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
