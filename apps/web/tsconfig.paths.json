@@ -1,8 +1,8 @@
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@packages/*": ["../../packages/*"],
-    }
-  }
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@packages/*": ["../../packages/*"]
+		}
+	}
 }

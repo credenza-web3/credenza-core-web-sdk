@@ -3,7 +3,7 @@ import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
 import { set, get } from '@packages/common/localstorage/localstorage'
 import { generateRandomString } from '@packages/common/str/str'
 
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode'
 
 export class OAuthExtension {
   public name = 'oauth' as const
@@ -14,10 +14,7 @@ export class OAuthExtension {
     this.handleRedirectResult()
   }
 
-  login(opts: {
-    scope: string,
-    redirectUrl: string,
-  }) {
+  login(opts: { scope: string; redirectUrl: string }) {
     const nonce = generateRandomString()
     const state = generateRandomString()
 
@@ -39,17 +36,20 @@ export class OAuthExtension {
     const hash = window.location.hash
     if (!hash) return
 
-    const hashObj = hash.replace('#', '').split('&').reduce((acc: {[key:string]: string}, item:string) => {
-      const [key, val] = item.split('=')
-      acc[key] = val
-      return acc
-    }, {})
+    const hashObj = hash
+      .replace('#', '')
+      .split('&')
+      .reduce((acc: { [key: string]: string }, item: string) => {
+        const [key, val] = item.split('=')
+        acc[key] = val
+        return acc
+      }, {})
 
     const state = get('oauth:state')
     if (hashObj.state !== state) throw new Error('Invalid state')
 
     if (!hashObj.access_token) throw new Error('Invalid access token')
-    const decodedJwt = jwtDecode<{nonce: string}>(hashObj.access_token)
+    const decodedJwt = jwtDecode<{ nonce: string }>(hashObj.access_token)
 
     const nonce = get('oauth:nonce')
     if (nonce !== decodedJwt.nonce) throw new Error('Invalid nonce')

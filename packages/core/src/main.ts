@@ -1,4 +1,4 @@
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode'
 import { get, set, remove } from '@packages/common/localstorage/localstorage'
 import { SDK_ENV } from '@packages/common/constants/core/core'
 import type { OAuthExtension } from '@packages/oauth/src/main'
@@ -9,21 +9,21 @@ export class CredenzaSDK {
   public clientId: string
   public env: (typeof SDK_ENV)[keyof typeof SDK_ENV]
 
-  private extensions: (OAuthExtension['name'] | AccountExtension["name"])[] = []
+  private extensions: (OAuthExtension['name'] | AccountExtension['name'])[] = []
   public oauth: OAuthExtension
   public account: AccountExtension
-  
+
   private accessToken: string | null
 
   constructor(opts: {
-    clientId: string,
+    clientId: string
     env?: (typeof SDK_ENV)[keyof typeof SDK_ENV]
     extensions?: (OAuthExtension | AccountExtension)[]
   }) {
     this.clientId = opts.clientId
     this.env = opts.env || SDK_ENV.PROD
     for (const ext of opts.extensions || []) {
-      Object.assign(this, {[ext.name]: ext})
+      Object.assign(this, { [ext.name]: ext })
       this.extensions.push(ext.name)
     }
   }
@@ -32,7 +32,8 @@ export class CredenzaSDK {
     this.accessToken = get('access_token')
     if (this.accessToken) {
       const decodedJwt = jwtDecode(this.accessToken)
-      if (!decodedJwt.exp || decodedJwt.aud !== this.clientId || decodedJwt.exp * 1000 < new Date().getTime()) this.logout()
+      if (!decodedJwt.exp || decodedJwt.aud !== this.clientId || decodedJwt.exp * 1000 < new Date().getTime())
+        this.logout()
     }
     for (const extensionName of this.extensions) {
       await this[extensionName]?.initialize(this)

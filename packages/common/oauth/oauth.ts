@@ -1,5 +1,5 @@
-import type {CredenzaSDK} from '../../../packages/core/src/main'
-import {SDK_ENV} from '../constants/core/core'
+import type { CredenzaSDK } from '../../../packages/core/src/main'
+import { SDK_ENV } from '../constants/core/core'
 
 export function getOAuthApiUrl(sdk: CredenzaSDK) {
   switch (sdk.env) {
@@ -10,6 +10,6 @@ export function getOAuthApiUrl(sdk: CredenzaSDK) {
     case SDK_ENV.PROD:
       return ''
     default:
-      throw new Error('Invalid sdk env')      
+      throw new Error('Invalid sdk env')
   }
 }
