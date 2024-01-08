@@ -4,17 +4,23 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "prepare": "husky install",
+    "pre-commit-lint": "lint-staged"
   },
   "devDependencies": {
-    "eslint": "^8.54.0",
     "@repo/eslint-config": "workspace:*",
-    "prettier": "^3.1.0",
+    "eslint": "^8.56.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1",
     "prettier-plugin-svelte": "^3.1.2",
     "turbo": "latest"
   },
   "packageManager": "pnpm@8.9.0",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
   }
 }

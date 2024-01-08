@@ -1,0 +1,3 @@
+{
+  "*.{ts,js,svelte}": ["pnpm eslint --fix --max-warnings 0", "prettier --write --plugin prettier-plugin-svelte"]
+}
