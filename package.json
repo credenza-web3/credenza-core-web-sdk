@@ -6,7 +6,9 @@
     "lint": "turbo run lint",
     "format": "prettier --write .",
     "prepare": "husky install",
-    "pre-commit-lint": "lint-staged"
+    "pre-commit-lint": "lint-staged",
+    "ncu": "ncu --deep",
+    "ncu:update": "ncu -u --deep"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
