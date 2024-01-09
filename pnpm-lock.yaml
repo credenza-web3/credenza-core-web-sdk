@@ -30,7 +30,7 @@ importers:
         specifier: latest
         version: 1.11.3
 
-  apps/web:
+  apps/demo:
     dependencies:
       '@credenza3/web-sdk':
         specifier: workspace:*
