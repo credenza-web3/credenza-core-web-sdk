@@ -16,16 +16,17 @@
 	},
 	"dependencies": {
 		"@credenza3/web-sdk": "workspace:*",
-		"@credenza3/web-sdk-ext-oauth": "workspace:*",
 		"@credenza3/web-sdk-ext-account": "workspace:*",
-		"@credenza3/web-sdk-ext-metamask": "workspace:*"
+		"@credenza3/web-sdk-ext-metamask": "workspace:*",
+		"@credenza3/web-sdk-ext-oauth": "workspace:*"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.40.1",
 		"@sveltejs/adapter-auto": "^3.1.0",
+		"@sveltejs/adapter-static": "^3.0.1",
 		"@sveltejs/kit": "^2.1.0",
-		"@typescript-eslint/eslint-plugin": "^6.18.1",
 		"@sveltejs/vite-plugin-svelte": "^3.0.1",
+		"@typescript-eslint/eslint-plugin": "^6.18.1",
 		"@typescript-eslint/parser": "^6.18.1",
 		"eslint": "^8.56.0",
 		"prettier": "^3.1.1",
