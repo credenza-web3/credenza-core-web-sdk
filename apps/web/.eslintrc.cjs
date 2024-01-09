@@ -1,5 +1,5 @@
 module.exports = {
-	extends: ['@repo/packages-config/eslint.cjs'],
+	extends: ['custom/index'],
 	rules: {
     'no-console': 'off',
 	}

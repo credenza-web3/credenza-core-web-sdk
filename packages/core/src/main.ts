@@ -3,22 +3,27 @@ import { get, set, remove } from '@packages/common/localstorage/localstorage'
 import { SDK_ENV } from '@packages/common/constants/core/core'
 import type { OAuthExtension } from '@packages/oauth/src/main'
 import type { AccountExtension } from '@packages/account/src/main'
+import type { MetamaskExtension } from '@packages/metamask/src/main'
+
+type TExtensionName = OAuthExtension['name'] | AccountExtension['name'] | MetamaskExtension['name']
+type TExtension = OAuthExtension | AccountExtension | MetamaskExtension
 export class CredenzaSDK {
   public static SDK_ENV = SDK_ENV
 
   public clientId: string
   public env: (typeof SDK_ENV)[keyof typeof SDK_ENV]
 
-  private extensions: (OAuthExtension['name'] | AccountExtension['name'])[] = []
+  private extensions: (TExtensionName)[] = []
   public oauth: OAuthExtension
   public account: AccountExtension
+  public metamask: MetamaskExtension
 
   private accessToken: string | null
 
   constructor(opts: {
     clientId: string
     env?: (typeof SDK_ENV)[keyof typeof SDK_ENV]
-    extensions?: (OAuthExtension | AccountExtension)[]
+    extensions?: TExtension[]
   }) {
     this.clientId = opts.clientId
     this.env = opts.env || SDK_ENV.PROD

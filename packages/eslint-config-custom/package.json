@@ -1,6 +1,8 @@
 {
-  "name": "@repo/packages-config",
+  "name": "eslint-config-custom",
+  "license": "MIT",
   "version": "0.0.0",
+  "private": true,
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^6.18.0",
     "@typescript-eslint/parser": "^6.18.0",

@@ -1,5 +1,11 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { resolve } = require("node:path")
+ 
+const project = resolve(process.cwd(), "tsconfig.json")
+
 module.exports = {
   root: true,
+  ignorePatterns: ["**/dist/*.js", '**/dist/*.d.ts', '**/.eslintrc.cjs'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
@@ -10,7 +16,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
   parserOptions: {
-    project: 'tsconfig.json',
+    project: project,
     sourceType: 'module',
     ecmaVersion: 2020,
     extraFileExtensions: ['.svelte'],

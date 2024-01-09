@@ -7,17 +7,18 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
+		"lint": "eslint .",
 		"test": "npm run test:integration && npm run test:unit",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "eslint .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest"
 	},
 	"dependencies": {
 		"@credenza3/web-sdk": "workspace:*",
-		"@credenza3/web-sdk-ext-oauth": "*",
-		"@credenza3/web-sdk-ext-account": "*"
+		"@credenza3/web-sdk-ext-oauth": "workspace:*",
+		"@credenza3/web-sdk-ext-account": "workspace:*",
+		"@credenza3/web-sdk-ext-metamask": "workspace:*"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.40.1",
@@ -27,7 +28,6 @@
 		"@sveltejs/vite-plugin-svelte": "^3.0.1",
 		"@typescript-eslint/parser": "^6.18.0",
 		"eslint": "^8.56.0",
-		"@repo/packages-config": "workspace:*",
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.1.2",
 		"svelte": "^4.2.8",

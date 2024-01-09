@@ -10,7 +10,8 @@
     "@types/node": "^20.10.7",
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
-    "vite-plugin-dts": "^3.7.0"
+    "vite-plugin-dts": "^3.7.0",
+    "tsconfig": "workspace:*"
   },
   "main": "dist/main.js",
   "types": "dist/main.d.ts",

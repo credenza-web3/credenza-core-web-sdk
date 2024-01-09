@@ -1,6 +1,9 @@
 {
-  "extends": "./base.tsconfig.paths.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@packages/*": ["../../packages/*"]
+    },
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
@@ -16,5 +19,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "strictPropertyInitialization": false
-  }
+  },
 }
