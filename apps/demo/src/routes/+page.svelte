@@ -1,29 +1,46 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
+	import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$env/static/public'
 	import { CredenzaSDK } from '@credenza3/web-sdk/src/main'
 	import { OAuthExtension } from '@credenza3/web-sdk-ext-oauth/src/main'
 	import { AccountExtension } from '@credenza3/web-sdk-ext-account/src/main'
 	import { MetamaskExtension } from '@credenza3/web-sdk-ext-metamask/src/main'
 
 	const sdk = new CredenzaSDK({
-		clientId: '659c216219f2618516768913',
-		env: 'local',
+		clientId: PUBLIC_CLIENT_ID,
+		env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
 		extensions: [new OAuthExtension(), new AccountExtension(), new MetamaskExtension()]
 	})
 
+	let isLoggedIn = false
+
+	const handleOAuthLogin = () => {
+		sdk.oauth.login({
+			scope: 'profile email phone',
+			redirectUrl: window.location.href
+		})
+	}
+
+	const handleMetamaskLogin = async () => {
+		await sdk.metamask.login()
+	}
+
 	onMount(async () => {
 		await sdk.initialize()
-		// if (!sdk.isLoggedIn()) {
-		// 	sdk.oauth.login({
-		// 		scope: 'profile email phone',
-		// 		redirectUrl: window.location.href
-		// 	})
-		// }
-		//const info = await sdk.account.info()
-		//console.log(sdk.metamask)
-		//await sdk.metamask.login()
-		//console.log(sdk.getAccessToken())
+		if (sdk.isLoggedIn()) isLoggedIn = true
 	})
 </script>
 
-<h1>Web</h1>
+{#if isLoggedIn}
+  <button on:click={handleOAuthLogin}>
+	  Login With OAuth2
+  </button>
+  <button on:click={handleMetamaskLogin}>
+	  Login With Metamask
+  </button>
+{:else}
+  <button on:click={() => sdk.logout()}>
+	  Logout
+  </button>
+{/if}
+
