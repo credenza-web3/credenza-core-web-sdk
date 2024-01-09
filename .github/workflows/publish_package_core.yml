@@ -34,6 +34,7 @@ jobs:
         id: vars
         run: echo "NPM_DEPLOYMENT_TAG=$(node npm-tag.js packages/core)" >> $GITHUB_OUTPUT
       - name: Publish package
+        working-directory: ./packages/core
         run: pnpm publish --access public --tag ${{ steps.vars.outputs.NPM_DEPLOYMENT_TAG}}
         env:
           NPM_AUTH_TOKEN: ${{secrets.CREDENZA_PUBLISH_TOKEN}}
