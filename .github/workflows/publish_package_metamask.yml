@@ -1,0 +1,43 @@
+name: Publish @credenza3/web-sdk-ext-metamask
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/metamask/package.json'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['20.x']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: latest
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@credenza3'
+          always-auth: true
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build package
+        working-directory: ./packages/metamask
+        run: pnpm run build
+      - name: Set tag variable
+        id: vars
+        run: echo "NPM_DEPLOYMENT_TAG=$(node npm-tag.js packages/metamask)" >> $GITHUB_OUTPUT
+      - name: Publish package
+        working-directory: ./packages/metamask
+        run: pnpm publish --access public --tag ${{ steps.vars.outputs.NPM_DEPLOYMENT_TAG}}
+        env:
+          NPM_AUTH_TOKEN: ${{secrets.CREDENZA_PUBLISH_TOKEN}}
+          NODE_AUTH_TOKEN: ${{secrets.CREDENZA_PUBLISH_TOKEN}}
