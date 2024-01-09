@@ -1,0 +1,40 @@
+name: Publish @credenza3/web-sdk
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/core/package.json'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          always-auth: true
+          registry-url: https://registry.npmjs.org
+          scope: '@credenza3'
+      - uses: pnpm/action-setup@v2
+        with:
+          version: latest
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build package
+        run: pnpm run build --filter=@credenza3/web-sdk
+      - name: Set tag variable
+        id: vars
+        run: echo "NPM_DEPLOYMENT_TAG=$(node npm-tag.js packages/core)" >> $GITHUB_OUTPUT
+      - name: Publish package
+        run: pnpm publish --access public --tag ${{ steps.vars.outputs.NPM_DEPLOYMENT_TAG}}
+        env:
+          NPM_AUTH_TOKEN: ${{secrets.CREDENZA_PUBLISH_TOKEN}}
+          NODE_AUTH_TOKEN: ${{secrets.CREDENZA_PUBLISH_TOKEN}}

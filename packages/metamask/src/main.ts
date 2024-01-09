@@ -1,6 +1,7 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
 import type { MetaMaskInpageProvider } from "@metamask/providers"
 import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
+import detectEthereumProvider from '@metamask/detect-provider'
 
 export class MetamaskExtension {
   public name = 'metamask' as const
@@ -8,9 +9,10 @@ export class MetamaskExtension {
   public provider: MetaMaskInpageProvider
 
   async initialize(sdk: CredenzaSDK) {
-    if (typeof window.ethereum === 'undefined' || !window.ethereum.isMetaMask) return
+    const provider = await detectEthereumProvider<MetaMaskInpageProvider>()
+    if (!provider || !provider.isMetaMask) throw new Error('Metamask is not installed')
     this.sdk = sdk
-    this.provider = window.ethereum
+    this.provider = provider
   }
 
   isAvailable() {

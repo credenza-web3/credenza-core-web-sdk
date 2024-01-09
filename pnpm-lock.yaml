@@ -150,6 +150,10 @@ importers:
         version: 2.35.1(eslint@8.56.0)(svelte@4.2.8)
 
   packages/metamask:
+    dependencies:
+      '@metamask/detect-provider':
+        specifier: ^2.0.0
+        version: 2.0.0
     devDependencies:
       '@metamask/providers':
         specifier: ^14.0.2
@@ -554,6 +558,11 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
+
+  /@metamask/detect-provider@2.0.0:
+    resolution: {integrity: sha512-sFpN+TX13E9fdBDh9lvQeZdJn4qYoRb/6QF2oZZK/Pn559IhCFacPMU1rMuqyXoFQF3JSJfii2l98B87QDPeCQ==}
+    engines: {node: '>=14.0.0'}
+    dev: false
 
   /@metamask/json-rpc-engine@7.3.1:
     resolution: {integrity: sha512-OVxccX/IFOjPzCzSFAEceccPIAf7A7IwnvjyWjyHCkLrO+LWV4e7Tpe79JNXiORywNulHxrg+q6QrmrnGEwssQ==}
