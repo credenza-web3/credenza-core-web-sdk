@@ -1,3 +1,0 @@
-{
-  "*.{ts,js,svelte}": ["pnpm run lint --", "prettier --write --plugin prettier-plugin-svelte"]
-}
