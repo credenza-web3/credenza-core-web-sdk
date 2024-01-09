@@ -99,9 +99,6 @@ importers:
       '@types/node':
         specifier: ^20.10.7
         version: 20.10.7
-      tsconfig:
-        specifier: workspace:*
-        version: link:../tsconfig
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
@@ -161,9 +158,6 @@ importers:
       '@types/node':
         specifier: ^20.10.7
         version: 20.10.7
-      tsconfig:
-        specifier: workspace:*
-        version: link:../tsconfig
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
@@ -183,9 +177,6 @@ importers:
       '@types/node':
         specifier: ^20.10.7
         version: 20.10.7
-      tsconfig:
-        specifier: workspace:*
-        version: link:../tsconfig
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
