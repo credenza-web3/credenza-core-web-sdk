@@ -5,7 +5,7 @@ const project = resolve(process.cwd(), "tsconfig.json")
 
 module.exports = {
   root: true,
-  ignorePatterns: ["**/dist/*.js", '**/dist/**/*', '**/.eslintrc.cjs'],
+  ignorePatterns: ['**/dist/**/*', '**/.eslintrc.cjs'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
