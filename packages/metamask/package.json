@@ -1,6 +1,5 @@
 {
   "name": "@credenza3/web-sdk-ext-metamask",
-  "private": true,
   "version": "0.0.1-alpha.0",
   "type": "module",
   "scripts": {
