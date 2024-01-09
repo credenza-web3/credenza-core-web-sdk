@@ -1,11 +1,11 @@
-name: Publish @credenza3/web-sdk
+name: Publish @credenza3/web-sdk-ext-account
 
 # Controls when the workflow will run
 on:
   push:
     branches: [main]
     paths:
-      - 'packages/core/package.json'
+      - 'packages/account/package.json'
   workflow_dispatch:
 
 jobs:
@@ -30,13 +30,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build package
-        working-directory: ./packages/core
+        working-directory: ./packages/account
         run: pnpm run build
       - name: Set tag variable
         id: vars
-        run: echo "NPM_DEPLOYMENT_TAG=$(node npm-tag.js packages/core)" >> $GITHUB_OUTPUT
+        run: echo "NPM_DEPLOYMENT_TAG=$(node npm-tag.js packages/account)" >> $GITHUB_OUTPUT
       - name: Publish package
-        working-directory: ./packages/core
+        working-directory: ./packages/account
         run: pnpm publish --access public --tag ${{ steps.vars.outputs.NPM_DEPLOYMENT_TAG}}
         env:
           NPM_AUTH_TOKEN: ${{secrets.CREDENZA_PUBLISH_TOKEN}}
