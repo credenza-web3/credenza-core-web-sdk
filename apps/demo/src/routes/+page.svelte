@@ -23,6 +23,12 @@
 
 	const handleMetamaskLogin = async () => {
 		await sdk.metamask.login()
+		isLoggedIn = true
+	}
+	
+	const handleLogout = () => {
+		sdk.logout()
+		isLoggedIn = false
 	}
 
 	onMount(async () => {
@@ -31,7 +37,7 @@
 	})
 </script>
 
-{#if isLoggedIn}
+{#if !isLoggedIn}
   <button on:click={handleOAuthLogin}>
 	  Login With OAuth2
   </button>
@@ -39,7 +45,7 @@
 	  Login With Metamask
   </button>
 {:else}
-  <button on:click={() => sdk.logout()}>
+  <button on:click={handleLogout}>
 	  Logout
   </button>
 {/if}
