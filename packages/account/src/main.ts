@@ -10,8 +10,7 @@ export class AccountExtension {
   }
 
   async info() {
-    try {
-      const apiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/me`
+    const apiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/me`
       const response = await fetch(apiUrl, {
         headers: {
           Authorization: `Bearer ${this.sdk.getAccessToken()}`,
@@ -19,8 +18,5 @@ export class AccountExtension {
       })
       const json = await response.json()
       return json
-    } catch (err) {
-      throw err
-    }
   }
 }
