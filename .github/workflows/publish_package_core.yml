@@ -29,7 +29,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build package
-        run: pnpm run build --filter=@credenza3/web-sdk
+        working-directory: ./packages/core
+        run: pnpm run build
       - name: Set tag variable
         id: vars
         run: echo "NPM_DEPLOYMENT_TAG=$(node npm-tag.js packages/core)" >> $GITHUB_OUTPUT
