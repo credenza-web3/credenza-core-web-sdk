@@ -38,6 +38,7 @@
 
 		console.log(await sdk.evm.provider.request({method: 'eth_requestAccounts'}))
 		console.log(await sdk.evm.provider.request({method: 'eth_chainId'}))
+		//console.log(await sdk.evm.provider.request({method: 'personal_sign', params: ['hello']}))
 	})
 </script>
 

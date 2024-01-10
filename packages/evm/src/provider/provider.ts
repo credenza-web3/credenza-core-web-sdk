@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable complexity */
 //const { Wallet, utils} = require('ethers')
-import { Eip1193Provider, JsonRpcProvider } from 'ethers'
+import { Eip1193Provider, JsonRpcProvider, ZeroHash } from 'ethers'
 import type { CredenzaSDK } from '@packages/core/src/main'
 import {listAccounts} from './account/account'
+import { signMessage } from './signature/signature'
 
 export class CredenzaProvider implements Eip1193Provider {
   private sdk: CredenzaSDK
@@ -24,11 +25,21 @@ export class CredenzaProvider implements Eip1193Provider {
 
   async request({method, params}: {method: string; params?: any[]}) {
     switch (method) {
+      case 'eth_requestId':
+          return ZeroHash  
+      case 'net_version':
+        return this.provider.getNetwork().then(network => network.chainId.toString())
+      case 'eth_chainId':
+        return this.provider.getNetwork().then(network => network.chainId)
       case 'eth_requestAccounts':
       case 'eth_accounts':
         return await listAccounts(this.sdk)
-      case 'eth_chainId':
-        return this.provider.getNetwork().then(network => network.chainId)
+      case 'personal_sign':
+      case 'eth_sign': {
+        if (!params?.[0]) throw new Error(`At least 1 param is required`)
+        return await signMessage(this.sdk, { data: params[0], address: params[1] })
+      }
+        
       // case 'eth_sendTransaction':
       //   const [transactionObject] = params
       //   try {
@@ -46,8 +57,6 @@ export class CredenzaProvider implements Eip1193Provider {
       //   } catch (error) {
       //     throw new Error(`Error signing message: ${error.message}`)
       //   }
-      // case 'net_version':
-      //   return this.provider.getNetwork().then(network => network.chainId.toString())
       // case 'eth_signTypedData':
       //   const [typedData, signer] = params
       //   try {
@@ -56,8 +65,6 @@ export class CredenzaProvider implements Eip1193Provider {
       //   } catch (error) {
       //     throw new Error(`Error signing typed data: ${error.message}`)
       //   }
-      // case 'eth_requestId':
-      //   return constants.HashZero
       // // Add support for other JSON-RPC methods as needed
       default:
         throw new Error(`Method ${method} not supported ${params}`,)
