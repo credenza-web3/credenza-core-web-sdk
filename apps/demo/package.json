@@ -18,7 +18,8 @@
 		"@credenza3/web-sdk": "workspace:*",
 		"@credenza3/web-sdk-ext-account": "workspace:*",
 		"@credenza3/web-sdk-ext-metamask": "workspace:*",
-		"@credenza3/web-sdk-ext-oauth": "workspace:*"
+		"@credenza3/web-sdk-ext-oauth": "workspace:*",
+		"@credenza3/web-sdk-ext-evm": "workspace:*"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.40.1",

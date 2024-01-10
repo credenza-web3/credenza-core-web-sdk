@@ -4,9 +4,10 @@ import { SDK_ENV } from '@packages/common/constants/core/core'
 import type { OAuthExtension } from '@packages/oauth/src/main'
 import type { AccountExtension } from '@packages/account/src/main'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
+import type { EvmExtension } from '@packages/evm/src/main'
 
-type TExtensionName = OAuthExtension['name'] | AccountExtension['name'] | MetamaskExtension['name']
-type TExtension = OAuthExtension | AccountExtension | MetamaskExtension
+type TExtensionName = OAuthExtension['name'] | AccountExtension['name'] | MetamaskExtension['name'] | EvmExtension['name']
+type TExtension = OAuthExtension | AccountExtension | MetamaskExtension | EvmExtension
 export class CredenzaSDK {
   public static SDK_ENV = SDK_ENV
 
@@ -17,6 +18,7 @@ export class CredenzaSDK {
   public oauth: OAuthExtension
   public account: AccountExtension
   public metamask: MetamaskExtension
+  public evm: EvmExtension
 
   private accessToken: string | null
 
