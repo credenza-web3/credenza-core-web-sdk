@@ -1,19 +1,18 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable complexity */
-//const { Wallet, utils} = require('ethers')
-import { Eip1193Provider, JsonRpcProvider, ZeroHash } from 'ethers'
+import { Eip1193Provider, JsonRpcProvider, VoidSigner, TransactionLike } from 'ethers'
 import type { CredenzaSDK } from '@packages/core/src/main'
-import {listAccounts} from './account/account'
-import { signMessage } from './signature/signature'
+import { listAccounts } from './helpers/account'
+import { sign } from './helpers/signature'
 
 export class CredenzaProvider implements Eip1193Provider {
   private sdk: CredenzaSDK
+  private listeners: {[key:string]: any}  = {}
+  private addresses: string[] = []
 
-  private provider: JsonRpcProvider
-  //private selectedAddress: string = null
-  private isConnected: boolean = false
-  //private networkVersion: string = null
-  private listeners: any = {}
+  public provider: JsonRpcProvider
+  public isConnected: boolean = false
 
   constructor({url, sdk}: {
     url: string
@@ -21,87 +20,80 @@ export class CredenzaProvider implements Eip1193Provider {
   }) {
     this.sdk = sdk
     this.provider = new JsonRpcProvider(url)
+    void this.connect()
+  }
+
+  async getRpcProvider() {
+    return this.provider
+  }
+
+  async listAccounts() {
+    if (!this.addresses?.length) {
+      this.addresses = await listAccounts(this.sdk)
+    }
+    return this.addresses
+  }
+
+  async populateTransaction(tx: TransactionLike) {
+    const [address] = await this.listAccounts()
+    const voidSigner = new VoidSigner(address, this.provider)
+    const transactionJson = await voidSigner.populateTransaction(tx)
+    return transactionJson
   }
 
   async request({method, params}: {method: string; params?: any[]}) {
     switch (method) {
-      case 'eth_requestId':
-          return ZeroHash  
-      case 'net_version':
-        return this.provider.getNetwork().then(network => network.chainId.toString())
-      case 'eth_chainId':
-        return this.provider.getNetwork().then(network => network.chainId)
       case 'eth_requestAccounts':
-      case 'eth_accounts':
-        return await listAccounts(this.sdk)
-      case 'personal_sign':
-      case 'eth_sign': {
-        if (!params?.[0]) throw new Error(`At least 1 param is required`)
-        return await signMessage(this.sdk, { data: params[0], address: params[1] })
+      case 'eth_accounts': {
+        try {
+          return await this.listAccounts()
+        } catch (err) {
+          throw new Error(`Error listing accounts: ${err.message}`)
+        }
       }
-        
-      // case 'eth_sendTransaction':
-      //   const [transactionObject] = params
-      //   try {
-      //     const signedTx = await this.signTransaction(transactionObject)
-      //     const txResponse = await this.provider.sendSignedTransaction(signedTx)
-      //     return txResponse.hash
-      //   } catch (error) {
-      //     throw new Error(`Error sending transaction: ${error.message}`)
-      //   }
-      // case 'eth_sign':
-      //   const [address, data] = params
-      //   try {
-      //     const signature = await this.signMessage(address, data)
-      //     return signature
-      //   } catch (error) {
-      //     throw new Error(`Error signing message: ${error.message}`)
-      //   }
-      // case 'eth_signTypedData':
-      //   const [typedData, signer] = params
-      //   try {
-      //     const signature = await this.signTypedData(signer, typedData)
-      //     return signature
-      //   } catch (error) {
-      //     throw new Error(`Error signing typed data: ${error.message}`)
-      //   }
-      // // Add support for other JSON-RPC methods as needed
-      default:
-        throw new Error(`Method ${method} not supported ${params}`,)
+      case 'eth_sign':
+      case 'personal_sign': {
+        try {
+          return await sign(this.sdk, { method: 'personal_sign', params })
+        } catch (err) {
+          throw new Error(`Sign message error: ${err.message}`)
+        }
+      }
+      case 'account_signTransaction':
+      case 'eth_signRawTransaction':
+      case 'eth_signTransaction': {
+        try {
+          const tx = await this.populateTransaction(params?.[0])
+          return await sign(this.sdk, { method: 'eth_signTransaction', params: [tx] })
+        } catch (err) {
+          throw new Error(`Sign tx error: ${err.message}`)
+        }
+      }
+      case 'account_sendTransaction':
+      case 'eth_sendRawTransaction':
+      case 'eth_sendTransaction': {
+        try {
+          const tx = await this.populateTransaction(params?.[0])
+          const serializedSignedTx = await sign(this.sdk, { method: 'eth_signTransaction', params: [tx] })
+          const result = await this.provider.broadcastTransaction(serializedSignedTx)
+          return result.hash
+        } catch (err) {
+          throw new Error(`Send tx error: ${err.message}`)
+        }
+      }
+      case 'account_signTypedData':
+      case 'eth_signTypedData': {
+        try {
+          return await sign(this.sdk, { method: 'eth_signTypedData', params })
+        } catch (err) {
+          throw new Error(`Sign typed data failed: ${err.message}`)
+        }
+      }
+      default: {
+        return await this.provider.send(method, params ?? [])
+      }
     }
   }
-
-  // async signTransaction(transactionObject) {
-  //   const privateKey = 'YOUR_PRIVATE_KEY' // Replace with your private key
-  //   const wallet = new Wallet(privateKey, this.provider)
-
-  //   const { to, value, data, nonce, gasLimit, gasPrice, chainId } = transactionObject
-  //   const transaction = {
-  //     to,
-  //     value: utils.parseEther(value.toString()),
-  //     data,
-  //     nonce,
-  //     gasLimit,
-  //     gasPrice: utils.parseUnits(gasPrice.toString(), 'gwei'),
-  //     chainId
-  //   }
-
-  //   return wallet.sign(transaction)
-  // }
-
-  // async signMessage(address, data) {
-  //   const privateKey = 'YOUR_PRIVATE_KEY' // Replace with your private key
-  //   const wallet = new Wallet(privateKey, this.provider)
-
-  //   return wallet.signMessage(utils.arrayify(data))
-  // }
-
-  // async signTypedData(signer, typedData) {
-  //   const privateKey = 'YOUR_PRIVATE_KEY' // Replace with your private key
-  //   const wallet = new Wallet(privateKey, this.provider)
-
-  //   return wallet._signTypedData(signer, typedData)
-  // }
 
   emit(event:string, ...args: any) {
     if (this.listeners[event]) {

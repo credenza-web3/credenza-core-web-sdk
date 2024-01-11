@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$env/static/public'
+	import { BrowserProvider } from 'ethers'
 	import { CredenzaSDK } from '@credenza3/web-sdk/src/main'
 	import { OAuthExtension } from '@credenza3/web-sdk-ext-oauth/src/main'
 	import { AccountExtension } from '@credenza3/web-sdk-ext-account/src/main'
@@ -14,6 +15,13 @@
 	})
 
 	let isLoggedIn = false
+	let provider:BrowserProvider
+
+	const handleLogin = () => {
+		isLoggedIn = true
+		provider = new BrowserProvider(sdk.evm.provider)
+		console.log(provider)
+	}
 
 	const handleOAuthLogin = () => {
 		sdk.oauth.login({
@@ -24,7 +32,7 @@
 
 	const handleMetamaskLogin = async () => {
 		await sdk.metamask.login()
-		isLoggedIn = true
+		handleLogin()
 	}
 	
 	const handleLogout = () => {
@@ -34,11 +42,17 @@
 
 	onMount(async () => {
 		await sdk.initialize()
-		if (sdk.isLoggedIn()) isLoggedIn = true
+		if (sdk.isLoggedIn()) handleLogin()
 
-		console.log(await sdk.evm.provider.request({method: 'eth_requestAccounts'}))
-		console.log(await sdk.evm.provider.request({method: 'eth_chainId'}))
-		//console.log(await sdk.evm.provider.request({method: 'personal_sign', params: ['hello']}))
+		// const provider = new BrowserProvider(sdk.evm.provider)
+		// const signer = await provider.getSigner()
+		// const feeData = await provider.getFeeData()
+		// const tx = {
+		// 	to: "0xc4F69E4fB203F832616f8CCb134ba25417455039",
+    //   value: '1',
+		// 	gasPrice: feeData.gasPrice,
+		// }
+		// const t = await signer.sendTransaction(tx)
 	})
 </script>
 
