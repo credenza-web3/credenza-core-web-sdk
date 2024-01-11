@@ -10,7 +10,7 @@ export class OAuthExtension {
   public name = 'oauth' as const
   private sdk: CredenzaSDK
 
-  async initialize(sdk: CredenzaSDK) {
+  async _initialize(sdk: CredenzaSDK) {
     this.sdk = sdk
     await this.handleRedirectResult()
   }

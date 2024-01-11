@@ -23,7 +23,7 @@ export class EvmExtension {
     await this.provider.connect()
   }
 
-  async initialize(sdk: CredenzaSDK) {
+  async _initialize(sdk: CredenzaSDK) {
     this.sdk = sdk
     const accessToken = this.sdk.getAccessToken()
     const loginType = this.sdk.getLoginType()

@@ -9,7 +9,7 @@ export class MetamaskExtension {
   private sdk: CredenzaSDK
   public provider: MetaMaskInpageProvider
 
-  async initialize(sdk: CredenzaSDK) {
+  async _initialize(sdk: CredenzaSDK) {
     const provider = await detectEthereumProvider<MetaMaskInpageProvider>()
     if (!provider || !provider.isMetaMask) throw new Error('Metamask is not installed')
     this.sdk = sdk

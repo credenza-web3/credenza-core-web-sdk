@@ -44,7 +44,7 @@ export class CredenzaSDK {
   }
 
   private async reInitializeExtensions() {
-    if (this.evm) await this.evm.initialize(this)
+    if (this.evm) await this.evm._initialize(this)
   }
 
   async initialize() {
@@ -56,7 +56,7 @@ export class CredenzaSDK {
         this.logout()
     }
     for (const extensionName of this.extensions) {
-      await this[extensionName]?.initialize(this)
+      await this[extensionName]?._initialize(this)
     }
   }
 
