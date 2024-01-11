@@ -20,5 +20,5 @@
     "noFallthroughCasesInSwitch": true,
     "strictPropertyInitialization": false,
     "useUnknownInCatchVariables": false
-  },
+  }
 }

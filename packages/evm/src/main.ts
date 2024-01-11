@@ -14,6 +14,4 @@ export class EvmExtension {
       sdk: this.sdk,
     })
   }
-
-  
 }

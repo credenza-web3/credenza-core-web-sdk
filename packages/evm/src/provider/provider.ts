@@ -10,10 +10,7 @@ export class CredenzaProvider implements Eip1193Provider {
   public provider: JsonRpcProvider
   public isConnected: boolean = false
 
-  constructor({url, sdk}: {
-    url: string
-    sdk: CredenzaSDK
-  }) {
+  constructor({ url, sdk }: { url: string; sdk: CredenzaSDK }) {
     this.sdk = sdk
     this.provider = new JsonRpcProvider(url)
     void this.connect()
@@ -46,7 +43,7 @@ export class CredenzaProvider implements Eip1193Provider {
   }
 
   // eslint-disable-next-line complexity
-  async request({method, params}: {method: string; params?: unknown[]}) {
+  async request({ method, params }: { method: string; params?: unknown[] }) {
     switch (method) {
       case 'eth_requestAccounts':
       case 'eth_accounts': {

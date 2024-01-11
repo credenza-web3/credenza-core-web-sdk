@@ -1,5 +1,5 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
-import type { MetaMaskInpageProvider } from "@metamask/providers"
+import type { MetaMaskInpageProvider } from '@metamask/providers'
 import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
 import detectEthereumProvider from '@metamask/detect-provider'
 import { set } from '@packages/common/localstorage/localstorage'
@@ -40,15 +40,15 @@ export class MetamaskExtension {
     beginLoginRequestUrl.searchParams.append('address', address)
     const beginLoginResponse = await fetch(beginLoginRequestUrl.toString())
     const { message, nonce } = await beginLoginResponse.json()
-    const signature = await this.provider.request({method: 'personal_sign', params: [message, address]})
+    const signature = await this.provider.request({ method: 'personal_sign', params: [message, address] })
     const endLoginResponse = await fetch(requestApiUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({signature, nonce})
+      body: JSON.stringify({ signature, nonce }),
     })
-    const {access_token} = await endLoginResponse.json()
+    const { access_token } = await endLoginResponse.json()
     set(LS_LOGIN_TYPE_KEY, LS_LOGIN_TYPE.METAMASK)
     this.sdk.setAccessToken(access_token)
   }

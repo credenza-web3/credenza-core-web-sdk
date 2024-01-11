@@ -7,7 +7,11 @@ import type { AccountExtension } from '@packages/account/src/main'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
 import type { EvmExtension } from '@packages/evm/src/main'
 
-type TExtensionName = OAuthExtension['name'] | AccountExtension['name'] | MetamaskExtension['name'] | EvmExtension['name']
+type TExtensionName =
+  | OAuthExtension['name']
+  | AccountExtension['name']
+  | MetamaskExtension['name']
+  | EvmExtension['name']
 type TExtension = OAuthExtension | AccountExtension | MetamaskExtension | EvmExtension
 export class CredenzaSDK {
   public static SDK_ENV = SDK_ENV
@@ -15,7 +19,7 @@ export class CredenzaSDK {
   public clientId: string
   public env: (typeof SDK_ENV)[keyof typeof SDK_ENV]
 
-  private extensions: (TExtensionName)[] = []
+  private extensions: TExtensionName[] = []
   public oauth: OAuthExtension
   public account: AccountExtension
   public metamask: MetamaskExtension
@@ -23,11 +27,7 @@ export class CredenzaSDK {
 
   private accessToken: string | null
 
-  constructor(opts: {
-    clientId: string
-    env?: (typeof SDK_ENV)[keyof typeof SDK_ENV]
-    extensions?: TExtension[]
-  }) {
+  constructor(opts: { clientId: string; env?: (typeof SDK_ENV)[keyof typeof SDK_ENV]; extensions?: TExtension[] }) {
     this.clientId = opts.clientId
     this.env = opts.env || SDK_ENV.PROD
     for (const ext of opts.extensions || []) {

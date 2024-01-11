@@ -1,6 +1,6 @@
 module.exports = {
-	extends: ['custom/index'],
-	rules: {
+  extends: ['custom/index'],
+  rules: {
     'no-console': 'off',
-	}
-};
+  },
+}
