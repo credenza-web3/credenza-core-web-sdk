@@ -49,6 +49,13 @@
 		isLoggedIn = false
 	}
 
+	const handleSwitchChain = async () => {
+		await sdk.evm.switchChain({
+			chainId: '0x13881',
+			rpcUrl: 'https://chiliz-spicy.publicnode.com'
+		})
+	}
+
 	onMount(async () => {
 		await sdk.initialize()
 		if (sdk.isLoggedIn()) await handleLogin()
@@ -75,5 +82,8 @@
   <button on:click={handleLogout}>
 	  Logout
   </button>
+	<button on:click={handleSwitchChain}>
+		switchChain
+	</button>	
 {/if}
 
