@@ -28,7 +28,7 @@ export class EvmExtension {
     const accessToken = this.sdk.getAccessToken()
     const loginType = this.sdk.getLoginType()
     if (!accessToken || !loginType) return
-    
+
     if (loginType === LS_LOGIN_TYPE.METAMASK && sdk.metamask) {
       this.provider = await sdk.metamask.getProvider()
     } else if (loginType === LS_LOGIN_TYPE.OAUTH) {
