@@ -1,7 +1,7 @@
 import { jwtDecode } from 'jwt-decode'
 import { get, set, remove } from '@packages/common/localstorage/localstorage'
 import { SDK_ENV } from '@packages/common/constants/core'
-import { LS_ACCESS_TOKEN_KEY } from '@packages/common/constants/localstorage'
+import { LS_ACCESS_TOKEN_KEY, LS_LOGIN_TYPE_KEY, LS_LOGIN_TYPE } from '@packages/common/constants/localstorage'
 import type { OAuthExtension } from '@packages/oauth/src/main'
 import type { AccountExtension } from '@packages/account/src/main'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
@@ -26,6 +26,7 @@ export class CredenzaSDK {
   public evm: EvmExtension
 
   private accessToken: string | null
+  private loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE]
 
   constructor(opts: { clientId: string; env?: (typeof SDK_ENV)[keyof typeof SDK_ENV]; extensions?: TExtension[] }) {
     this.clientId = opts.clientId
@@ -34,6 +35,10 @@ export class CredenzaSDK {
       Object.assign(this, { [ext.name]: ext })
       this.extensions.push(ext.name)
     }
+  }
+
+  private async reInitializeExtensions() {
+    if (this.evm) await this.evm.initialize(this)
   }
 
   async initialize() {
@@ -48,13 +53,20 @@ export class CredenzaSDK {
     }
   }
 
-  setAccessToken(token: string) {
+  async setAccessToken(token: string, loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE]) {
+    set(LS_LOGIN_TYPE_KEY, loginType)
     set(LS_ACCESS_TOKEN_KEY, token)
     this.accessToken = token
+    this.loginType = loginType
+    await this.reInitializeExtensions()
   }
 
   getAccessToken() {
     return this.accessToken
+  }
+
+  getLoginType() {
+    return this.loginType
   }
 
   isLoggedIn() {

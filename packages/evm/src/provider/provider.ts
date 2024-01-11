@@ -1,4 +1,4 @@
-import { Eip1193Provider, JsonRpcProvider, VoidSigner, TransactionLike } from 'ethers'
+import { Eip1193Provider, JsonRpcProvider, VoidSigner, TransactionLike, toBeHex } from 'ethers'
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { listAccounts } from './helpers/account'
 import { sign } from './helpers/signature'
@@ -9,14 +9,21 @@ export class CredenzaProvider implements Eip1193Provider {
 
   public provider: JsonRpcProvider
   public isConnected: boolean = false
+  public chainId: string
 
-  constructor({ url, sdk }: { url: string; sdk: CredenzaSDK }) {
+  constructor({ chainId, url, sdk }: { chainId:string; url: string; sdk: CredenzaSDK }) {
     this.sdk = sdk
+    this.chainId = chainId
     this.provider = new JsonRpcProvider(url)
     void this.connect()
   }
 
   async connect() {
+    const jsonRpcProvider = await this.getRpcProvider()
+    const network = await jsonRpcProvider.getNetwork()
+    if (toBeHex(network.chainId) !== this.chainId) {
+        throw new Error('Invalid chain Id')
+    }
     if (!this.isConnected) this.isConnected = true
   }
 
@@ -24,11 +31,17 @@ export class CredenzaProvider implements Eip1193Provider {
     if (this.isConnected) this.isConnected = false
   }
 
+  checkConnected() {
+    if (!this.isConnected) throw new Error('Provider is not connected')
+  }
+
   async getRpcProvider() {
+    this.checkConnected()
     return this.provider
   }
 
   async listAccounts() {
+    this.checkConnected()
     if (!this.addresses?.length) {
       this.addresses = await listAccounts(this.sdk)
     }
@@ -36,6 +49,7 @@ export class CredenzaProvider implements Eip1193Provider {
   }
 
   async populateTransaction(tx: unknown | TransactionLike) {
+    this.checkConnected()
     const [address] = await this.listAccounts()
     const voidSigner = new VoidSigner(address, this.provider)
     const transactionJson = await voidSigner.populateTransaction(tx as TransactionLike)
@@ -44,6 +58,7 @@ export class CredenzaProvider implements Eip1193Provider {
 
   // eslint-disable-next-line complexity
   async request({ method, params }: { method: string; params?: unknown[] }) {
+    this.checkConnected()
     switch (method) {
       case 'eth_requestAccounts':
       case 'eth_accounts': {
