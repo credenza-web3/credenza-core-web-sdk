@@ -51,7 +51,7 @@ export class MetamaskExtension {
     await this.sdk.setAccessToken(access_token, LS_LOGIN_TYPE.METAMASK)
   }
 
-  async switchChain(params: {chainId:string}) {
+  async switchChain(params: { chainId: string }) {
     const currentChainId = await this.provider.request({ method: 'eth_chainId' })
     if (currentChainId === params.chainId) return
     await this.provider.request({

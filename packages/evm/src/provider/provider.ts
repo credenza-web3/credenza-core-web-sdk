@@ -11,7 +11,7 @@ export class CredenzaProvider implements Eip1193Provider {
   public isConnected: boolean = false
   public chainId: string
 
-  constructor({ chainId, url, sdk }: { chainId:string; url: string; sdk: CredenzaSDK }) {
+  constructor({ chainId, url, sdk }: { chainId: string; url: string; sdk: CredenzaSDK }) {
     this.sdk = sdk
     this.chainId = chainId
     this.provider = new JsonRpcProvider(url)
@@ -22,7 +22,7 @@ export class CredenzaProvider implements Eip1193Provider {
     const jsonRpcProvider = await this.getRpcProvider()
     const network = await jsonRpcProvider.getNetwork()
     if (toBeHex(network.chainId) !== this.chainId) {
-        throw new Error('Invalid chain Id')
+      throw new Error('Invalid chain Id')
     }
     if (!this.isConnected) this.isConnected = true
   }

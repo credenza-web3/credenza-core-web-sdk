@@ -1,7 +1,7 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
 import type { CredenzaProvider } from './provider/provider'
 import { LS_LOGIN_TYPE } from '@packages/common/constants/localstorage'
-import type {MetaMaskInpageProvider} from '@metamask/providers'
+import type { MetaMaskInpageProvider } from '@metamask/providers'
 import type { TChainConfig } from './types'
 
 export class EvmExtension {
@@ -17,9 +17,9 @@ export class EvmExtension {
     this.chainConfig = params
   }
 
-  private async _buildAndConnectToNewCredenzaProvider(sdk: CredenzaSDK, chainConfig: TChainConfig ) {
+  private async _buildAndConnectToNewCredenzaProvider(sdk: CredenzaSDK, chainConfig: TChainConfig) {
     const { CredenzaProvider } = await import('./provider/provider')
-    this.provider = new CredenzaProvider({...chainConfig, sdk})
+    this.provider = new CredenzaProvider({ ...chainConfig, sdk })
     await this.provider.connect()
   }
 
