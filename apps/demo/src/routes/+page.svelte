@@ -19,7 +19,7 @@
 			new OAuthExtension(), 
 			new AccountExtension(), 
 			new MetamaskExtension(), 
-			]
+		]
 	})
 
 	let isLoggedIn = false
