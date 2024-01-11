@@ -1,7 +1,6 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { CredenzaProvider } from './provider/provider'
 
-
 export class EvmExtension {
   public name = 'evm' as const
   private sdk: CredenzaSDK

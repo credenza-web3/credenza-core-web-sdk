@@ -1,6 +1,7 @@
 import { jwtDecode } from 'jwt-decode'
 import { get, set, remove } from '@packages/common/localstorage/localstorage'
-import { SDK_ENV } from '@packages/common/constants/core/core'
+import { SDK_ENV } from '@packages/common/constants/core'
+import { LS_ACCESS_TOKEN_KEY } from '@packages/common/constants/localstorage'
 import type { OAuthExtension } from '@packages/oauth/src/main'
 import type { AccountExtension } from '@packages/account/src/main'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
@@ -36,7 +37,7 @@ export class CredenzaSDK {
   }
 
   async initialize() {
-    this.accessToken = get('access_token')
+    this.accessToken = get(LS_ACCESS_TOKEN_KEY)
     if (this.accessToken) {
       const decodedJwt = jwtDecode(this.accessToken)
       if (!decodedJwt.exp || decodedJwt.aud !== this.clientId || decodedJwt.exp * 1000 < new Date().getTime())
@@ -48,7 +49,7 @@ export class CredenzaSDK {
   }
 
   setAccessToken(token: string) {
-    set('access_token', token)
+    set(LS_ACCESS_TOKEN_KEY, token)
     this.accessToken = token
   }
 
@@ -61,7 +62,7 @@ export class CredenzaSDK {
   }
 
   logout() {
-    remove('access_token')
+    remove(LS_ACCESS_TOKEN_KEY)
     this.accessToken = null
   }
 }

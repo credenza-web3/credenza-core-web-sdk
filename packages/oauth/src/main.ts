@@ -2,8 +2,9 @@ import type { CredenzaSDK } from '@packages/core/src/main'
 import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
 import { set, get } from '@packages/common/localstorage/localstorage'
 import { generateRandomString } from '@packages/common/str/str'
-
+import { LS_LOGIN_TYPE, LS_LOGIN_TYPE_KEY } from '@packages/common/constants/localstorage'
 import { jwtDecode } from 'jwt-decode'
+import { LS_OAUTH_NONCE_KEY, LS_OAUTH_STATE_KEY } from './constants/localstorage'
 
 export class OAuthExtension {
   public name = 'oauth' as const
@@ -26,8 +27,8 @@ export class OAuthExtension {
     url.searchParams.append('nonce', nonce)
     url.searchParams.append('state', state)
 
-    set('oauth:nonce', nonce)
-    set('oauth:state', state)
+    set(LS_OAUTH_NONCE_KEY, nonce)
+    set(LS_OAUTH_STATE_KEY, state)
 
     window.location.href = url.toString()
   }
@@ -45,15 +46,16 @@ export class OAuthExtension {
         return acc
       }, {})
 
-    const state = get('oauth:state')
+    const state = get(LS_OAUTH_STATE_KEY)
     if (hashObj.state !== state) throw new Error('Invalid state')
 
     if (!hashObj.access_token) throw new Error('Invalid access token')
     const decodedJwt = jwtDecode<{ nonce: string }>(hashObj.access_token)
 
-    const nonce = get('oauth:nonce')
+    const nonce = get(LS_OAUTH_NONCE_KEY)
     if (nonce !== decodedJwt.nonce) throw new Error('Invalid nonce')
 
+    set(LS_LOGIN_TYPE_KEY, LS_LOGIN_TYPE.OAUTH)
     this.sdk.setAccessToken(hashObj.access_token)
   }
 }

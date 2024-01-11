@@ -1,5 +1,5 @@
 import type { CredenzaSDK } from '../../../packages/core/src/main'
-import { SDK_ENV } from '../constants/core/core'
+import { SDK_ENV } from '../constants/core'
 
 export function getOAuthApiUrl(sdk: CredenzaSDK) {
   switch (sdk.env) {
