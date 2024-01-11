@@ -1,4 +1,4 @@
 export type TChainConfig = {
   chainId: string
-  url: string
+  rpcUrl: string
 }

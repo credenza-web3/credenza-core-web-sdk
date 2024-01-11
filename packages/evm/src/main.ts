@@ -12,8 +12,8 @@ export class EvmExtension {
   private chainConfig: TChainConfig
 
   constructor(params: TChainConfig) {
-    if (!params.chainId || !params.url) throw new Error('chainId and rpcUrl are required fields')
-    if (!params.chainId.indexOf('0x')) throw new Error('Chain id must be a hex value 0x prefixed')
+    if (!params.chainId || !params.rpcUrl) throw new Error('chainId and rpcUrl are required fields')
+    if (!params.chainId.includes('0x')) throw new Error('Chain id must be a hex value 0x prefixed')
     this.chainConfig = params
   }
 
@@ -28,13 +28,17 @@ export class EvmExtension {
     const accessToken = this.sdk.getAccessToken()
     const loginType = this.sdk.getLoginType()
     if (!accessToken || !loginType) return
-
+    
     if (loginType === LS_LOGIN_TYPE.METAMASK && sdk.metamask) {
       this.provider = await sdk.metamask.getProvider()
     } else if (loginType === LS_LOGIN_TYPE.OAUTH) {
       await this._buildAndConnectToNewCredenzaProvider(this.sdk, this.chainConfig)
     }
     this.loginProvider = loginType
+  }
+
+  async getProvider() {
+    return this.provider
   }
 
   async switchChain(params: TChainConfig) {

@@ -1,4 +1,4 @@
-import { Eip1193Provider, JsonRpcProvider, VoidSigner, TransactionLike, toBeHex } from 'ethers'
+import { Eip1193Provider, JsonRpcProvider, VoidSigner, TransactionLike, toNumber } from 'ethers'
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { listAccounts } from './helpers/account'
 import { sign } from './helpers/signature'
@@ -11,24 +11,22 @@ export class CredenzaProvider implements Eip1193Provider {
   public isConnected: boolean = false
   public chainId: string
 
-  constructor({ chainId, url, sdk }: { chainId: string; url: string; sdk: CredenzaSDK }) {
+  constructor({ chainId, rpcUrl, sdk }: { chainId: string; rpcUrl: string; sdk: CredenzaSDK }) {
     this.sdk = sdk
     this.chainId = chainId
-    this.provider = new JsonRpcProvider(url)
-    void this.connect()
+    this.provider = new JsonRpcProvider(rpcUrl)
   }
 
   async connect() {
-    const jsonRpcProvider = await this.getRpcProvider()
-    const network = await jsonRpcProvider.getNetwork()
-    if (toBeHex(network.chainId) !== this.chainId) {
+    const network = await this.provider.getNetwork()
+    if (toNumber(network.chainId) !== toNumber(this.chainId)) {
       throw new Error('Invalid chain Id')
     }
-    if (!this.isConnected) this.isConnected = true
+    this.isConnected = true
   }
 
   async disconnect() {
-    if (this.isConnected) this.isConnected = false
+    this.isConnected = false
   }
 
   checkConnected() {

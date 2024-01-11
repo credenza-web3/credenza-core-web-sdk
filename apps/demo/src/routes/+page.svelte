@@ -11,7 +11,15 @@
 	const sdk = new CredenzaSDK({
 		clientId: PUBLIC_CLIENT_ID,
 		env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
-		extensions: [new OAuthExtension(), new AccountExtension(), new MetamaskExtension(), new EvmExtension()]
+		extensions: [
+			new EvmExtension({
+			  chainId: '0x15b32',
+			  rpcUrl: 'https://chiliz-spicy.publicnode.com'
+		  }),
+			new OAuthExtension(), 
+			new AccountExtension(), 
+			new MetamaskExtension(), 
+			]
 	})
 
 	let isLoggedIn = false
@@ -19,8 +27,9 @@
 
 	const handleLogin = async () => {
 		isLoggedIn = true
-		provider = new BrowserProvider(sdk.evm.provider)
-		console.log(provider)
+		const pr = await sdk.evm.getProvider()
+		provider = new BrowserProvider(pr)
+		console.log('ChainID:', (await provider.getNetwork()).chainId)
 	}
 
 	const handleOAuthLogin = () => {

@@ -26,7 +26,7 @@ export class CredenzaSDK {
   public evm: EvmExtension
 
   private accessToken: string | null
-  private loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE]
+  private loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE] | null
 
   constructor(opts: { clientId: string; env?: (typeof SDK_ENV)[keyof typeof SDK_ENV]; extensions?: TExtension[] }) {
     this.clientId = opts.clientId
@@ -35,6 +35,12 @@ export class CredenzaSDK {
       Object.assign(this, { [ext.name]: ext })
       this.extensions.push(ext.name)
     }
+    // make sure evm ext is loaded after all other extensions
+    this.extensions = this.extensions.sort((a, b) => {
+      if (a === 'evm') return 1
+      if (b === 'evm') return -1
+      return 0
+    })
   }
 
   private async reInitializeExtensions() {
@@ -43,6 +49,7 @@ export class CredenzaSDK {
 
   async initialize() {
     this.accessToken = get(LS_ACCESS_TOKEN_KEY)
+    this.loginType = get(LS_LOGIN_TYPE_KEY) as (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE]
     if (this.accessToken) {
       const decodedJwt = jwtDecode(this.accessToken)
       if (!decodedJwt.exp || decodedJwt.aud !== this.clientId || decodedJwt.exp * 1000 < new Date().getTime())
@@ -70,11 +77,12 @@ export class CredenzaSDK {
   }
 
   isLoggedIn() {
-    return !!this.accessToken
+    return !!this.accessToken && !!this.loginType
   }
 
   logout() {
     remove(LS_ACCESS_TOKEN_KEY)
     this.accessToken = null
+    this.loginType = null
   }
 }
