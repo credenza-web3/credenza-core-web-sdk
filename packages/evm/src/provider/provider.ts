@@ -1,6 +1,3 @@
-/* eslint-disable max-lines-per-function */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable complexity */
 import { Eip1193Provider, JsonRpcProvider, VoidSigner, TransactionLike } from 'ethers'
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { listAccounts } from './helpers/account'
@@ -8,7 +5,6 @@ import { sign } from './helpers/signature'
 
 export class CredenzaProvider implements Eip1193Provider {
   private sdk: CredenzaSDK
-  private listeners: {[key:string]: any}  = {}
   private addresses: string[] = []
 
   public provider: JsonRpcProvider
@@ -23,6 +19,14 @@ export class CredenzaProvider implements Eip1193Provider {
     void this.connect()
   }
 
+  async connect() {
+    if (!this.isConnected) this.isConnected = true
+  }
+
+  async disconnect() {
+    if (this.isConnected) this.isConnected = false
+  }
+
   async getRpcProvider() {
     return this.provider
   }
@@ -34,14 +38,15 @@ export class CredenzaProvider implements Eip1193Provider {
     return this.addresses
   }
 
-  async populateTransaction(tx: TransactionLike) {
+  async populateTransaction(tx: unknown | TransactionLike) {
     const [address] = await this.listAccounts()
     const voidSigner = new VoidSigner(address, this.provider)
-    const transactionJson = await voidSigner.populateTransaction(tx)
+    const transactionJson = await voidSigner.populateTransaction(tx as TransactionLike)
     return transactionJson
   }
 
-  async request({method, params}: {method: string; params?: any[]}) {
+  // eslint-disable-next-line complexity
+  async request({method, params}: {method: string; params?: unknown[]}) {
     switch (method) {
       case 'eth_requestAccounts':
       case 'eth_accounts': {
@@ -82,6 +87,7 @@ export class CredenzaProvider implements Eip1193Provider {
         }
       }
       case 'account_signTypedData':
+      case 'eth_signTypedData_v4':
       case 'eth_signTypedData': {
         try {
           return await sign(this.sdk, { method: 'eth_signTypedData', params })
@@ -92,39 +98,6 @@ export class CredenzaProvider implements Eip1193Provider {
       default: {
         return await this.provider.send(method, params ?? [])
       }
-    }
-  }
-
-  emit(event:string, ...args: any) {
-    if (this.listeners[event]) {
-      this.listeners[event].forEach((handler:any) => handler(...args))
-    }
-  }
-
-  on(event:string, handler:any) {
-    if (!this.listeners[event]) {
-      this.listeners[event] = []
-    }
-    this.listeners[event].push(handler)
-  }
-
-  removeListener(event:string, handler:any) {
-    if (this.listeners[event]) {
-      this.listeners[event] = this.listeners[event].filter((fn:any) => fn !== handler)
-    }
-  }
-
-  async connect() {
-    if (!this.isConnected) {
-      this.isConnected = true
-      this.emit('connect', { chainId: await this.provider.getNetwork().then(network => network.chainId) })
-    }
-  }
-
-  async disconnect() {
-    if (this.isConnected) {
-      this.isConnected = false
-      this.emit('disconnect')
     }
   }
 }

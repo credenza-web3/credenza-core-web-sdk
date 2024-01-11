@@ -17,7 +17,7 @@
 	let isLoggedIn = false
 	let provider:BrowserProvider
 
-	const handleLogin = () => {
+	const handleLogin = async () => {
 		isLoggedIn = true
 		provider = new BrowserProvider(sdk.evm.provider)
 		console.log(provider)
@@ -32,7 +32,7 @@
 
 	const handleMetamaskLogin = async () => {
 		await sdk.metamask.login()
-		handleLogin()
+		await handleLogin()
 	}
 	
 	const handleLogout = () => {
@@ -42,9 +42,8 @@
 
 	onMount(async () => {
 		await sdk.initialize()
-		if (sdk.isLoggedIn()) handleLogin()
+		if (sdk.isLoggedIn()) await handleLogin()
 
-		// const provider = new BrowserProvider(sdk.evm.provider)
 		// const signer = await provider.getSigner()
 		// const feeData = await provider.getFeeData()
 		// const tx = {
