@@ -43,14 +43,12 @@ export class CredenzaProvider implements Eip1193Provider {
   private _setChain(chainConfig: TChainConfig) {
     this.provider = new JsonRpcProvider(chainConfig.rpcUrl)
     this.chainConfig = chainConfig
-    this.state = EVM_PROVIDER_STATE.DISCONNECTED
   }
 
   public async switchChain(chainConfig: TChainConfig) {
     const prevProvider = this.provider
     const prevChainConfig = this.chainConfig
-    this.provider = new JsonRpcProvider(chainConfig.rpcUrl)
-    this.chainConfig = chainConfig
+    this._setChain(chainConfig)
     if (this.state === EVM_PROVIDER_STATE.DISCONNECTED) return
     try {
       await this.connect()
