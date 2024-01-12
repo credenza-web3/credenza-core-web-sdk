@@ -2,7 +2,7 @@ export const mumbai = {
   chainId: '0x13881',
   rpcUrl: 'https://polygon-mumbai-bor.publicnode.com',
   displayName: 'Mumbai',
-  blockExplorer: 'https://mumbai.polygonscan.com//',
+  blockExplorer: 'https://mumbai.polygonscan.com/',
   nativeCurrency: {
     name: 'MATIC',
     symbol: 'MATIC',
