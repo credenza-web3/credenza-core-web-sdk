@@ -4,7 +4,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write . --config ./.prettierrc",
+    "format": "prettier --write .",
     "prepare": "husky install",
     "ncu": "ncu --deep",
     "ncu:update": "ncu -u --deep"
