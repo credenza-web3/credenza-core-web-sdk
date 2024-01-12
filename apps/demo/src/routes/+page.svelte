@@ -42,12 +42,12 @@
 
   const handleGetUserInfo = async () => {
     const result = await sdk.account.info()
-    console.log(result)
+    console.log('UserInfo: ', result)
   }
 
   const handleSwitchChain = async () => {
-    console.log(chainConfig)
     await sdk.evm.switchChain(chainConfig)
+    console.log('New chain config: ', chainConfig)
   }
 
   const handleTransferNativeCurrency = async () => {
