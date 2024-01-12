@@ -27,14 +27,14 @@ export async function listAccounts({ apiUrl, accessToken }: TCredenzaRequestFiel
       },
     })
     const json = await response.json()
-    if (!json.blockchain?.evm?.address) return await createAccount({apiUrl, accessToken})
+    if (!json.blockchain?.evm?.address) return await createAccount({ apiUrl, accessToken })
     return [json.blockchain.evm.address]
   } catch (error) {
     throw new Error(`Error requesting accounts: ${error.message}`)
   }
 }
 
-export async function sign({apiUrl, accessToken}: TCredenzaRequestFields, data: TRequestBody) {
+export async function sign({ apiUrl, accessToken }: TCredenzaRequestFields, data: TRequestBody) {
   if (!data.method) throw new Error('Invalid method')
   if (!data.params) throw new Error('Invalid signature parameter')
 

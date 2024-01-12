@@ -3,7 +3,7 @@ import type { CredenzaSDK } from '@packages/core/src/main'
 import { listAccounts, sign } from './lib/http-requests'
 import { OAUTH_API_URL } from '@packages/common/constants/oauth'
 import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
-import type {TChainConfig} from '@packages/common/types/chain-config'
+import type { TChainConfig } from '@packages/common/types/chain-config'
 
 export class CredenzaProvider implements Eip1193Provider {
   private addresses: string[] = []
@@ -14,7 +14,7 @@ export class CredenzaProvider implements Eip1193Provider {
   private accessToken?: string
   private sdk?: CredenzaSDK
 
-  constructor(params: { chainConfig: TChainConfig; accessToken?: string, apiUrl?: string; sdk?: CredenzaSDK}) {
+  constructor(params: { chainConfig: TChainConfig; accessToken?: string; apiUrl?: string; sdk?: CredenzaSDK }) {
     this.chainConfig = params.chainConfig
     if (!params.sdk && !(params.apiUrl && params.accessToken)) {
       throw new Error('Invalid constructor parameters')
@@ -26,10 +26,11 @@ export class CredenzaProvider implements Eip1193Provider {
   }
 
   private _getRequestFields() {
-    if (this.sdk) return {
-      accessToken: `Bearer ${this.sdk.getAccessToken()}`,
-      apiUrl: getOAuthApiUrl(this.sdk)
-    }
+    if (this.sdk)
+      return {
+        accessToken: `Bearer ${this.sdk.getAccessToken()}`,
+        apiUrl: getOAuthApiUrl(this.sdk),
+      }
     return {
       accessToken: `Bearer ${this.accessToken}`,
       apiUrl: this.apiUrl,
@@ -108,7 +109,10 @@ export class CredenzaProvider implements Eip1193Provider {
       case 'eth_sendTransaction': {
         try {
           const tx = await this.populateTransaction(params?.[0])
-          const serializedSignedTx = await sign(this._getRequestFields(), { method: 'eth_signTransaction', params: [tx] })
+          const serializedSignedTx = await sign(this._getRequestFields(), {
+            method: 'eth_signTransaction',
+            params: [tx],
+          })
           const result = await this.provider.broadcastTransaction(serializedSignedTx)
           return result.hash
         } catch (err) {
