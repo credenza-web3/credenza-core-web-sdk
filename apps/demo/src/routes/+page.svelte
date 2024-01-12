@@ -22,7 +22,6 @@
 			new MetamaskExtension(), 
 		]
 	})
-	
 
 	let isLoggedIn = false
 	let provider:BrowserProvider

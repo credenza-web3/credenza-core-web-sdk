@@ -5,7 +5,7 @@ import type { MetaMaskInpageProvider } from '@metamask/providers'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 
-let connectPromise:Promise<void>
+let connectPromise: Promise<void>
 export class EvmExtension {
   public name = 'evm' as const
   private sdk: CredenzaSDK
@@ -41,13 +41,13 @@ export class EvmExtension {
 
   private async _checkConnection() {
     if (connectPromise) await connectPromise
-    if (!this.provider || !this.loginProvider) throw new Error('Provider is not connected') 
+    if (!this.provider || !this.loginProvider) throw new Error('Provider is not connected')
   }
 
   public async _initialize(sdk: CredenzaSDK) {
     this.sdk = sdk
-    this.sdk.on(SDK_EVENT.LOGIN, () => connectPromise = this._connect())
-    this.sdk.on(SDK_EVENT.INIT, () => connectPromise = this._connect())
+    this.sdk.on(SDK_EVENT.LOGIN, () => (connectPromise = this._connect()))
+    this.sdk.on(SDK_EVENT.INIT, () => (connectPromise = this._connect()))
   }
 
   public async getProvider() {
