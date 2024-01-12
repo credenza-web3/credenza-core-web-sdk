@@ -8,7 +8,7 @@
 	import { OAuthExtension } from '@credenza3/web-sdk-ext-oauth/src/main'
 	import { AccountExtension } from '@credenza3/web-sdk-ext-account/src/main'
 	import { MetamaskExtension } from '@credenza3/web-sdk-ext-metamask/src/main'
-	import { EvmExtension } from '@credenza3/web-sdk-ext-evm/src/main'
+	import {EvmExtension} from '@credenza3/web-sdk-ext-evm/src/main'
 
 	let chainConfig = spicy
 
