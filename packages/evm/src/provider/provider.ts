@@ -4,11 +4,12 @@ import { listAccounts, sign } from './lib/http-requests'
 import { OAUTH_API_URL } from '@packages/common/constants/oauth'
 import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
 import type { TChainConfig } from '@packages/common/types/chain-config'
+import { EVM_PROVIDER_STATE } from '../main.constants'
 
 export class CredenzaProvider implements Eip1193Provider {
   private addresses: string[] = []
   private provider: JsonRpcProvider
-  private isConnected: boolean = false
+  private state = EVM_PROVIDER_STATE.DISCONNECTED
   private chainConfig: TChainConfig
   private apiUrl: string
   private accessToken?: string
@@ -35,13 +36,14 @@ export class CredenzaProvider implements Eip1193Provider {
   }
 
   private _checkConnected() {
-    if (!this.isConnected || !this.provider) throw new Error('Credenza provider is not connected')
+    if (this.state !== EVM_PROVIDER_STATE.CONNECTED || !this.provider)
+      throw new Error('Credenza provider is not connected')
   }
 
   private _setChain(chainConfig: TChainConfig) {
     this.provider = new JsonRpcProvider(chainConfig.rpcUrl)
     this.chainConfig = chainConfig
-    this.isConnected = false
+    this.state = EVM_PROVIDER_STATE.DISCONNECTED
   }
 
   public async switchChain(chainConfig: TChainConfig) {
@@ -49,7 +51,7 @@ export class CredenzaProvider implements Eip1193Provider {
     const prevChainConfig = this.chainConfig
     this.provider = new JsonRpcProvider(chainConfig.rpcUrl)
     this.chainConfig = chainConfig
-    if (!this.isConnected) return
+    if (this.state === EVM_PROVIDER_STATE.DISCONNECTED) return
     try {
       await this.connect()
     } catch (err) {
@@ -68,15 +70,19 @@ export class CredenzaProvider implements Eip1193Provider {
   }
 
   public async connect() {
-    const network = await this.provider.getNetwork()
-    if (toNumber(network.chainId) !== toNumber(this.chainConfig.chainId)) {
-      throw new Error('Invalid chain Id')
+    try {
+      this.state = EVM_PROVIDER_STATE.CONNECTING
+      const network = await this.provider.getNetwork()
+      if (toNumber(network.chainId) !== toNumber(this.chainConfig.chainId)) throw new Error('Invalid chain Id')
+      this.state = EVM_PROVIDER_STATE.CONNECTED
+    } catch (err) {
+      this.state = EVM_PROVIDER_STATE.DISCONNECTED
+      throw err
     }
-    this.isConnected = true
   }
 
   public async disconnect() {
-    this.isConnected = false
+    this.state = EVM_PROVIDER_STATE.DISCONNECTED
   }
 
   public async getRpcProvider() {
