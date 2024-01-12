@@ -21,7 +21,7 @@ export class EvmExtension {
 
   private async _buildAndConnectToNewCredenzaProvider(sdk: CredenzaSDK, chainConfig: TChainConfig) {
     const { CredenzaProvider } = await import('./provider/provider')
-    this.provider = new CredenzaProvider({ ...chainConfig, sdk })
+    this.provider = new CredenzaProvider({ chainConfig, sdk })
     await this.provider.connect()
   }
 

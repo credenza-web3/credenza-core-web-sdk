@@ -16,11 +16,9 @@ export class CredenzaProvider implements Eip1193Provider {
 
   constructor(params: { chainConfig: TChainConfig; accessToken?: string; apiUrl?: string; sdk?: CredenzaSDK }) {
     this.chainConfig = params.chainConfig
-    if (!params.sdk && !(params.apiUrl && params.accessToken)) {
-      throw new Error('Invalid constructor parameters')
-    }
+    if (!params.sdk && !params.accessToken) throw new Error('Invalid constructor parameters')
     this.apiUrl = params.apiUrl || OAUTH_API_URL.PROD
-    this.accessToken = params.accessToken || ''
+    this.accessToken = params.accessToken
     this.sdk = params.sdk || undefined
     this.provider = new JsonRpcProvider(this.chainConfig.rpcUrl)
   }
