@@ -48,13 +48,14 @@ export class CredenzaProvider implements Eip1193Provider {
   public async switchChain(chainConfig: TChainConfig) {
     const prevProvider = this.provider
     const prevChainConfig = this.chainConfig
-    this._setChain(chainConfig)
-    if (this.state === EVM_PROVIDER_STATE.DISCONNECTED) return
+    const prevState = this.state
     try {
+      this._setChain(chainConfig)
       await this.connect()
     } catch (err) {
       this.provider = prevProvider
       this.chainConfig = prevChainConfig
+      this.state === prevState
       throw err
     }
   }
