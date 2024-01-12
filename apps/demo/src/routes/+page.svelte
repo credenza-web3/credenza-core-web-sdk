@@ -10,7 +10,7 @@
 	import { MetamaskExtension } from '@credenza3/web-sdk-ext-metamask/src/main'
 	import { EvmExtension } from '@credenza3/web-sdk-ext-evm/src/main'
 
-	let chainConfig = mumbai
+	let chainConfig = spicy
 
 	const sdk = new CredenzaSDK({
 		clientId: PUBLIC_CLIENT_ID,

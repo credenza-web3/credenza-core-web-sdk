@@ -1,25 +1,44 @@
 import { Eip1193Provider, JsonRpcProvider, VoidSigner, TransactionLike, toNumber } from 'ethers'
 import type { CredenzaSDK } from '@packages/core/src/main'
-import { listAccounts } from './helpers/account'
-import { sign } from './helpers/signature'
+import { listAccounts, sign } from './lib/http-requests'
+import { OAUTH_API_URL } from '@packages/common/constants/oauth'
+import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
+import type {TChainConfig} from '@packages/common/types/chain-config'
 
 export class CredenzaProvider implements Eip1193Provider {
-  private sdk: CredenzaSDK
   private addresses: string[] = []
+  private provider: JsonRpcProvider
+  private isConnected: boolean = false
+  private chainConfig: TChainConfig
+  private apiUrl: string
+  private accessToken?: string
+  private sdk?: CredenzaSDK
 
-  public provider: JsonRpcProvider
-  public isConnected: boolean = false
-  public chainId: string
+  constructor(params: { chainConfig: TChainConfig; accessToken?: string, apiUrl?: string; sdk?: CredenzaSDK}) {
+    this.chainConfig = params.chainConfig
+    if (!params.sdk && !(params.apiUrl && params.accessToken)) {
+      throw new Error('Invalid constructor parameters')
+    }
+    this.apiUrl = params.apiUrl || OAUTH_API_URL.PROD
+    this.accessToken = params.accessToken || ''
+    this.sdk = params.sdk || undefined
+    this.provider = new JsonRpcProvider(this.chainConfig.rpcUrl)
+  }
 
-  constructor({ chainId, rpcUrl, sdk }: { chainId: string; rpcUrl: string; sdk: CredenzaSDK }) {
-    this.sdk = sdk
-    this.chainId = chainId
-    this.provider = new JsonRpcProvider(rpcUrl)
+  private _getRequestFields() {
+    if (this.sdk) return {
+      accessToken: `Bearer ${this.sdk.getAccessToken()}`,
+      apiUrl: getOAuthApiUrl(this.sdk)
+    }
+    return {
+      accessToken: `Bearer ${this.accessToken}`,
+      apiUrl: this.apiUrl,
+    }
   }
 
   async connect() {
     const network = await this.provider.getNetwork()
-    if (toNumber(network.chainId) !== toNumber(this.chainId)) {
+    if (toNumber(network.chainId) !== toNumber(this.chainConfig.chainId)) {
       throw new Error('Invalid chain Id')
     }
     this.isConnected = true
@@ -41,7 +60,7 @@ export class CredenzaProvider implements Eip1193Provider {
   async listAccounts() {
     this.checkConnected()
     if (!this.addresses?.length) {
-      this.addresses = await listAccounts(this.sdk)
+      this.addresses = await listAccounts(this._getRequestFields())
     }
     return this.addresses
   }
@@ -69,7 +88,7 @@ export class CredenzaProvider implements Eip1193Provider {
       case 'eth_sign':
       case 'personal_sign': {
         try {
-          return await sign(this.sdk, { method: 'personal_sign', params })
+          return await sign(this._getRequestFields(), { method: 'personal_sign', params })
         } catch (err) {
           throw new Error(`Sign message error: ${err.message}`)
         }
@@ -79,7 +98,7 @@ export class CredenzaProvider implements Eip1193Provider {
       case 'eth_signTransaction': {
         try {
           const tx = await this.populateTransaction(params?.[0])
-          return await sign(this.sdk, { method: 'eth_signTransaction', params: [tx] })
+          return await sign(this._getRequestFields(), { method: 'eth_signTransaction', params: [tx] })
         } catch (err) {
           throw new Error(`Sign tx error: ${err.message}`)
         }
@@ -89,7 +108,7 @@ export class CredenzaProvider implements Eip1193Provider {
       case 'eth_sendTransaction': {
         try {
           const tx = await this.populateTransaction(params?.[0])
-          const serializedSignedTx = await sign(this.sdk, { method: 'eth_signTransaction', params: [tx] })
+          const serializedSignedTx = await sign(this._getRequestFields(), { method: 'eth_signTransaction', params: [tx] })
           const result = await this.provider.broadcastTransaction(serializedSignedTx)
           return result.hash
         } catch (err) {
@@ -100,7 +119,7 @@ export class CredenzaProvider implements Eip1193Provider {
       case 'eth_signTypedData_v4':
       case 'eth_signTypedData': {
         try {
-          return await sign(this.sdk, { method: 'eth_signTypedData', params })
+          return await sign(this._getRequestFields(), { method: 'eth_signTypedData', params })
         } catch (err) {
           throw new Error(`Sign typed data failed: ${err.message}`)
         }
