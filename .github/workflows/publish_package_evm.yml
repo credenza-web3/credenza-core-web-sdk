@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'packages/evmk/package.json'
+      - 'packages/evm/package.json'
   workflow_dispatch:
 
 jobs:
