@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$env/static/public'
-  import { BrowserProvider } from 'ethers'
+  import { BrowserProvider, isAddress } from 'ethers'
   import { mumbai, spicy } from './chain-config'
 
   import { CredenzaSDK } from '@credenza3/web-sdk/src/main'
@@ -11,6 +11,7 @@
   import { EvmExtension } from '@credenza3/web-sdk-ext-evm/src/main'
 
   let chainConfig = spicy
+  let transferTo = '0xc4F69E4fB203F832616f8CCb134ba25417455039'
 
   const sdk = new CredenzaSDK({
     clientId: PUBLIC_CLIENT_ID,
@@ -19,14 +20,8 @@
   })
 
   let isLoggedIn = false
-  let provider: BrowserProvider
 
-  const handleLogin = async () => {
-    isLoggedIn = true
-    const pr = await sdk.evm.getProvider()
-    provider = new BrowserProvider(pr)
-    console.log('ChainID:', (await provider.getNetwork()).chainId)
-  }
+  const handleLogin = async () => (isLoggedIn = true)
 
   const handleOAuthLogin = () => {
     sdk.oauth.login({
@@ -55,18 +50,25 @@
     await sdk.evm.switchChain(chainConfig)
   }
 
+  const handleTransferNativeCurrency = async () => {
+    const evmProvider = await sdk.evm.getProvider()
+    const provider = new BrowserProvider(evmProvider)
+    console.log('ChainID:', (await provider.getNetwork()).chainId)
+    const signer = await provider.getSigner()
+    console.log('Current address: ', await signer.getAddress())
+    if (!isAddress(transferTo.trim())) throw new Error('Invalid transfer address')
+    console.log('To Address: ', transferTo)
+    const tx = {
+      to: transferTo.trim(),
+      value: '1',
+    }
+    const result = await signer.sendTransaction(tx)
+    console.log('Transaction response: ', result)
+  }
+
   onMount(async () => {
     await sdk.initialize()
     if (sdk.isLoggedIn()) await handleLogin()
-
-    // const signer = await provider.getSigner()
-    // const feeData = await provider.getFeeData()
-    // const tx = {
-    // 	to: "0xc4F69E4fB203F832616f8CCb134ba25417455039",
-    //   value: '1',
-    // 	gasPrice: feeData.gasPrice,
-    // }
-    // const t = await signer.sendTransaction(tx)
   })
 </script>
 
@@ -83,4 +85,9 @@
       </option>
     {/each}
   </select>
+  <div>
+    <br />
+    <input type="text" bind:value={transferTo} style="min-width: 350px" />
+    <button on:click={handleTransferNativeCurrency}> Transfer native currency </button>
+  </div>
 {/if}
