@@ -2,6 +2,7 @@ import { jwtDecode } from 'jwt-decode'
 import { get, set, remove } from '@packages/common/localstorage/localstorage'
 import { SDK_ENV } from '@packages/common/constants/core'
 import { LS_ACCESS_TOKEN_KEY, LS_LOGIN_TYPE_KEY, LS_LOGIN_TYPE } from '@packages/common/constants/localstorage'
+import { emit, once, on, SDK_EVENT } from './lib/events/events'
 import type { OAuthExtension } from '@packages/oauth/src/main'
 import type { AccountExtension } from '@packages/account/src/main'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
@@ -15,6 +16,7 @@ type TExtensionName =
 type TExtension = OAuthExtension | AccountExtension | MetamaskExtension | EvmExtension
 export class CredenzaSDK {
   public static SDK_ENV = SDK_ENV
+  public static SDK_EVENT = SDK_EVENT
 
   public clientId: string
   public env: (typeof SDK_ENV)[keyof typeof SDK_ENV]
@@ -35,19 +37,9 @@ export class CredenzaSDK {
       Object.assign(this, { [ext.name]: ext })
       this.extensions.push(ext.name)
     }
-    // make sure evm ext is loaded after all other extensions
-    this.extensions = this.extensions.sort((a, b) => {
-      if (a === 'evm') return 1
-      if (b === 'evm') return -1
-      return 0
-    })
   }
 
-  private async _reInitializeExtensions() {
-    if (this.evm) await this.evm._initialize(this)
-  }
-
-  async initialize() {
+  public async initialize() {
     this.accessToken = get(LS_ACCESS_TOKEN_KEY)
     this.loginType = get(LS_LOGIN_TYPE_KEY) as (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE]
     if (this.accessToken) {
@@ -58,31 +50,36 @@ export class CredenzaSDK {
     for (const extensionName of this.extensions) {
       await this[extensionName]?._initialize(this)
     }
+    emit(SDK_EVENT.INIT)
   }
 
-  async _setAccessToken(token: string, loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE]) {
+  public async _setAccessToken(token: string, loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE]) {
     set(LS_LOGIN_TYPE_KEY, loginType)
     set(LS_ACCESS_TOKEN_KEY, token)
     this.accessToken = token
     this.loginType = loginType
-    await this._reInitializeExtensions()
+    emit(SDK_EVENT.LOGIN)
   }
 
-  getAccessToken() {
+  public getAccessToken() {
     return this.accessToken
   }
 
-  getLoginType() {
+  public getLoginType() {
     return this.loginType
   }
 
-  isLoggedIn() {
+  public isLoggedIn() {
     return !!this.accessToken && !!this.loginType
   }
 
-  logout() {
+  public logout() {
     remove(LS_ACCESS_TOKEN_KEY)
     this.accessToken = null
     this.loginType = null
+    emit(SDK_EVENT.LOGOUT)
   }
+
+  public once = once
+  public on = on
 }

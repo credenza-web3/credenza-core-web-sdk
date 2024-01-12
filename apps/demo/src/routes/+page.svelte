@@ -10,16 +10,19 @@
 	import { MetamaskExtension } from '@credenza3/web-sdk-ext-metamask/src/main'
 	import { EvmExtension } from '@credenza3/web-sdk-ext-evm/src/main'
 
+	let chainConfig = mumbai
+
 	const sdk = new CredenzaSDK({
 		clientId: PUBLIC_CLIENT_ID,
 		env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
 		extensions: [
-			new EvmExtension(mumbai),
+			new EvmExtension(chainConfig),
 			new OAuthExtension(), 
 			new AccountExtension(), 
 			new MetamaskExtension(), 
 		]
 	})
+	
 
 	let isLoggedIn = false
 	let provider:BrowserProvider
@@ -48,8 +51,14 @@
 		isLoggedIn = false
 	}
 
+	const handleGetUserInfo = async () => {
+		const result = await sdk.account.info()
+		console.log(result)
+	}
+
 	const handleSwitchChain = async () => {
-		await sdk.evm.switchChain(spicy)
+		console.log(chainConfig)
+		await sdk.evm.switchChain(chainConfig)
 	}
 
 	onMount(async () => {
@@ -78,8 +87,15 @@
   <button on:click={handleLogout}>
 	  Logout
   </button>
-	<button on:click={handleSwitchChain}>
-		switchChain
-	</button>	
+	<button on:click={handleGetUserInfo}>
+		Log Account Info
+	</button>
+	<select bind:value={chainConfig} on:change={handleSwitchChain}>
+		{#each [mumbai, spicy] as chain}
+      <option selected={chain.chainId === chainConfig.chainId} value={chain}>
+				{chain.displayName} ({chain.chainId})
+			</option>
+    {/each}
+	</select>	
 {/if}
 
