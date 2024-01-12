@@ -9,7 +9,7 @@ export class EvmExtension {
   public name = 'evm' as const
   private state = EVM_PROVIDER_STATE.DISCONNECTED
   private sdk: CredenzaSDK
-  private provider: CredenzaProvider | MetaMaskInpageProvider
+  private provider: CredenzaProvider | MetaMaskInpageProvider | undefined
   private loginProvider: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE]
   private chainConfig: TChainConfig
 
@@ -68,11 +68,16 @@ export class EvmExtension {
     this.sdk = sdk
     this.sdk.on(SDK_EVENT.LOGIN, () => this._connect())
     this.sdk.on(SDK_EVENT.INIT, () => this._connect())
+    this.sdk.on(SDK_EVENT.LOGOUT, () => {
+      this.provider = undefined
+      this.state = EVM_PROVIDER_STATE.DISCONNECTED
+    })
     this.state = EVM_PROVIDER_STATE.CONNECTING
   }
 
   public async getProvider() {
     await this._checkConnection()
+    if (!this.provider) throw new Error('Provider is not connected')
     return this.provider
   }
 
