@@ -1,5 +1,5 @@
 {
-  "name": "@credenza3/web-sdk-ext-metamask",
+  "name": "@credenza3/web-sdk-ext-evm",
   "version": "0.0.1-alpha.1",
   "type": "module",
   "scripts": {
@@ -20,6 +20,6 @@
     "dist"
   ],
   "dependencies": {
-    "@metamask/detect-provider": "^2.0.0"
+    "ethers": "^6.9.2"
   }
 }

@@ -2,16 +2,17 @@ import type { CredenzaSDK } from '@packages/core/src/main'
 import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
 import { set, get } from '@packages/common/localstorage/localstorage'
 import { generateRandomString } from '@packages/common/str/str'
-
+import { LS_LOGIN_TYPE } from '@packages/common/constants/localstorage'
 import { jwtDecode } from 'jwt-decode'
+import { LS_OAUTH_NONCE_KEY, LS_OAUTH_STATE_KEY } from './constants/localstorage'
 
 export class OAuthExtension {
   public name = 'oauth' as const
   private sdk: CredenzaSDK
 
-  async initialize(sdk: CredenzaSDK) {
+  async _initialize(sdk: CredenzaSDK) {
     this.sdk = sdk
-    this.handleRedirectResult()
+    await this._handleRedirectResult()
   }
 
   login(opts: { scope: string; redirectUrl: string }) {
@@ -26,13 +27,13 @@ export class OAuthExtension {
     url.searchParams.append('nonce', nonce)
     url.searchParams.append('state', state)
 
-    set('oauth:nonce', nonce)
-    set('oauth:state', state)
+    set(LS_OAUTH_NONCE_KEY, nonce)
+    set(LS_OAUTH_STATE_KEY, state)
 
     window.location.href = url.toString()
   }
 
-  handleRedirectResult() {
+  async _handleRedirectResult() {
     const hash = window.location.hash
     if (!hash) return
 
@@ -45,15 +46,14 @@ export class OAuthExtension {
         return acc
       }, {})
 
-    const state = get('oauth:state')
+    const state = get(LS_OAUTH_STATE_KEY)
     if (hashObj.state !== state) throw new Error('Invalid state')
 
     if (!hashObj.access_token) throw new Error('Invalid access token')
     const decodedJwt = jwtDecode<{ nonce: string }>(hashObj.access_token)
 
-    const nonce = get('oauth:nonce')
+    const nonce = get(LS_OAUTH_NONCE_KEY)
     if (nonce !== decodedJwt.nonce) throw new Error('Invalid nonce')
-
-    this.sdk.setAccessToken(hashObj.access_token)
+    await this.sdk._setAccessToken(hashObj.access_token, LS_LOGIN_TYPE.OAUTH)
   }
 }
