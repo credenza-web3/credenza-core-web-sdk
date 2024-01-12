@@ -3,30 +3,31 @@ import type { MetaMaskInpageProvider } from '@metamask/providers'
 import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
 import detectEthereumProvider from '@metamask/detect-provider'
 import { LS_LOGIN_TYPE } from '@packages/common/constants/localstorage'
+import type { TChainConfig } from '@packages/common/types/chain-config'
 
 export class MetamaskExtension {
   public name = 'metamask' as const
   private sdk: CredenzaSDK
-  public provider: MetaMaskInpageProvider
+  private metamaskProvider: MetaMaskInpageProvider
 
   async _initialize(sdk: CredenzaSDK) {
     const provider = await detectEthereumProvider<MetaMaskInpageProvider>()
     if (!provider || !provider.isMetaMask) throw new Error('Metamask is not installed')
     this.sdk = sdk
-    this.provider = provider
+    this.metamaskProvider = provider
   }
 
   isAvailable() {
-    return !!this.provider
+    return !!this.metamaskProvider
   }
 
   async getProvider() {
-    return this.provider
+    return this.metamaskProvider
   }
 
   async getAddress() {
     if (!this.isAvailable()) throw new Error('Metamask is not installed')
-    const result = await this.provider.request<string[]>({ method: 'eth_requestAccounts', params: [] })
+    const result = await this.metamaskProvider.request<string[]>({ method: 'eth_requestAccounts', params: [] })
     if (result?.[0]) return result[0].toLowerCase()
     throw new Error('Cannot get metamask address')
   }
@@ -39,7 +40,7 @@ export class MetamaskExtension {
     beginLoginRequestUrl.searchParams.append('address', address)
     const beginLoginResponse = await fetch(beginLoginRequestUrl.toString())
     const { message, nonce } = await beginLoginResponse.json()
-    const signature = await this.provider.request({ method: 'personal_sign', params: [message, address] })
+    const signature = await this.metamaskProvider.request({ method: 'personal_sign', params: [message, address] })
     const endLoginResponse = await fetch(requestApiUrl, {
       method: 'POST',
       headers: {
@@ -51,10 +52,38 @@ export class MetamaskExtension {
     await this.sdk.setAccessToken(access_token, LS_LOGIN_TYPE.METAMASK)
   }
 
-  async switchChain(params: { chainId: string }) {
-    const currentChainId = await this.provider.request({ method: 'eth_chainId' })
+  async addChain(params: TChainConfig) {
+    await this.metamaskProvider?.request({
+      method: 'wallet_addEthereumChain',
+      params: [
+        {
+          chainId: params.chainId,
+          chainName: params.displayName,
+          rpcUrls: [params.rpcUrl],
+          blockExplorerUrls: [params.blockExplorer],
+          nativeCurrency: {
+            name: params.nativeCurrency.name,
+            symbol: params.nativeCurrency.symbol,
+            decimals: params.nativeCurrency.decimals || 18,
+          },
+        },
+      ],
+    })
+  }
+
+  async switchChain(params: TChainConfig) {
+    const currentChainId = await this.metamaskProvider.request({ method: 'eth_chainId' })
     if (currentChainId === params.chainId) return
-    await this.provider.request({
+    try {
+      return await this.metamaskProvider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: params.chainId }],
+      })
+    } catch (err) {
+      if (err.code === 4902) await this.addChain(params)
+      else throw err
+    }
+    return await this.metamaskProvider.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: params.chainId }],
     })

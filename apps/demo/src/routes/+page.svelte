@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte'
 	import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$env/static/public'
 	import { BrowserProvider } from 'ethers'
+  import {mumbai, spicy} from './chain-config'
+
 	import { CredenzaSDK } from '@credenza3/web-sdk/src/main'
 	import { OAuthExtension } from '@credenza3/web-sdk-ext-oauth/src/main'
 	import { AccountExtension } from '@credenza3/web-sdk-ext-account/src/main'
@@ -12,10 +14,7 @@
 		clientId: PUBLIC_CLIENT_ID,
 		env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
 		extensions: [
-			new EvmExtension({
-			  chainId: '0x15b32',
-			  rpcUrl: 'https://chiliz-spicy.publicnode.com'
-		  }),
+			new EvmExtension(mumbai),
 			new OAuthExtension(), 
 			new AccountExtension(), 
 			new MetamaskExtension(), 
@@ -50,10 +49,7 @@
 	}
 
 	const handleSwitchChain = async () => {
-		await sdk.evm.switchChain({
-			chainId: '0x13881',
-			rpcUrl: 'https://chiliz-spicy.publicnode.com'
-		})
+		await sdk.evm.switchChain(spicy)
 	}
 
 	onMount(async () => {

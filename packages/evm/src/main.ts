@@ -2,7 +2,7 @@ import type { CredenzaSDK } from '@packages/core/src/main'
 import type { CredenzaProvider } from './provider/provider'
 import { LS_LOGIN_TYPE } from '@packages/common/constants/localstorage'
 import type { MetaMaskInpageProvider } from '@metamask/providers'
-import type { TChainConfig } from './types'
+import type { TChainConfig } from '@packages/common/types/chain-config'
 
 export class EvmExtension {
   public name = 'evm' as const
