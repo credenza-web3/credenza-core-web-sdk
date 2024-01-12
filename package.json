@@ -10,6 +10,7 @@
     "ncu:update": "ncu -u --deep"
   },
   "devDependencies": {
+    "@metamask/providers": "^14.0.2",
     "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
     "husky": "^8.0.3",

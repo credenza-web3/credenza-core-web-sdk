@@ -8,7 +8,6 @@
   "author": "Credenza",
   "license": "MIT",
   "devDependencies": {
-    "@metamask/providers": "^14.0.2",
     "@types/node": "^20.10.7",
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
