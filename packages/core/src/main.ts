@@ -82,4 +82,5 @@ export class CredenzaSDK {
 
   public once = once
   public on = on
+  public _emit = emit
 }

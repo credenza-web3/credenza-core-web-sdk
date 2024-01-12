@@ -36,7 +36,7 @@ export class CredenzaProvider implements Eip1193Provider {
   }
 
   private _checkConnected() {
-    if (!this.isConnected) throw new Error('Provider is not connected')
+    if (!this.isConnected) throw new Error('Credenza provider is not connected')
   }
 
   async connect() {
