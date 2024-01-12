@@ -30,8 +30,8 @@ export class EvmExtension {
     if (!accessToken || !loginType) return
 
     if (loginType === LS_LOGIN_TYPE.METAMASK && sdk.metamask) {
-      await this.sdk.metamask.switchChain(this.chainConfig)
-      this.provider = await sdk.metamask.getProvider()
+      await this.sdk.metamask._switchChain(this.chainConfig)
+      this.provider = await sdk.metamask._getProvider()
     } else if (loginType === LS_LOGIN_TYPE.OAUTH) {
       await this._buildAndConnectToNewCredenzaProvider(this.sdk, this.chainConfig)
     }
@@ -44,7 +44,7 @@ export class EvmExtension {
 
   async switchChain(params: TChainConfig) {
     if (this.loginProvider === LS_LOGIN_TYPE.METAMASK && this.sdk.metamask) {
-      await this.sdk.metamask.switchChain(params)
+      await this.sdk.metamask._switchChain(params)
     } else if (this.loginProvider === LS_LOGIN_TYPE.OAUTH) {
       await this._buildAndConnectToNewCredenzaProvider(this.sdk, params)
     }

@@ -43,7 +43,7 @@ export class CredenzaSDK {
     })
   }
 
-  private async reInitializeExtensions() {
+  private async _reInitializeExtensions() {
     if (this.evm) await this.evm._initialize(this)
   }
 
@@ -60,12 +60,12 @@ export class CredenzaSDK {
     }
   }
 
-  async setAccessToken(token: string, loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE]) {
+  async _setAccessToken(token: string, loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE]) {
     set(LS_LOGIN_TYPE_KEY, loginType)
     set(LS_ACCESS_TOKEN_KEY, token)
     this.accessToken = token
     this.loginType = loginType
-    await this.reInitializeExtensions()
+    await this._reInitializeExtensions()
   }
 
   getAccessToken() {

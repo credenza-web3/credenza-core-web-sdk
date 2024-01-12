@@ -12,7 +12,7 @@ export class OAuthExtension {
 
   async _initialize(sdk: CredenzaSDK) {
     this.sdk = sdk
-    await this.handleRedirectResult()
+    await this._handleRedirectResult()
   }
 
   login(opts: { scope: string; redirectUrl: string }) {
@@ -33,7 +33,7 @@ export class OAuthExtension {
     window.location.href = url.toString()
   }
 
-  async handleRedirectResult() {
+  async _handleRedirectResult() {
     const hash = window.location.hash
     if (!hash) return
 
@@ -54,6 +54,6 @@ export class OAuthExtension {
 
     const nonce = get(LS_OAUTH_NONCE_KEY)
     if (nonce !== decodedJwt.nonce) throw new Error('Invalid nonce')
-    await this.sdk.setAccessToken(hashObj.access_token, LS_LOGIN_TYPE.OAUTH)
+    await this.sdk._setAccessToken(hashObj.access_token, LS_LOGIN_TYPE.OAUTH)
   }
 }

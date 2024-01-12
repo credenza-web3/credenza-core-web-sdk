@@ -38,10 +38,10 @@ export class MetamaskExtension {
       body: JSON.stringify({ signature, nonce }),
     })
     const { access_token } = await endLoginResponse.json()
-    await this.sdk.setAccessToken(access_token, LS_LOGIN_TYPE.METAMASK)
+    await this.sdk._setAccessToken(access_token, LS_LOGIN_TYPE.METAMASK)
   }
 
-  async addChain(params: TChainConfig) {
+  async _addChain(params: TChainConfig) {
     await this.metamaskProvider?.request({
       method: 'wallet_addEthereumChain',
       params: [
@@ -60,7 +60,7 @@ export class MetamaskExtension {
     })
   }
 
-  async switchChain(params: TChainConfig) {
+  async _switchChain(params: TChainConfig) {
     const currentChainId = await this.metamaskProvider.request({ method: 'eth_chainId' })
     if (currentChainId === params.chainId) return
     try {
@@ -69,7 +69,7 @@ export class MetamaskExtension {
         params: [{ chainId: params.chainId }],
       })
     } catch (err) {
-      if (err.code === 4902) await this.addChain(params)
+      if (err.code === 4902) await this._addChain(params)
       else throw err
     }
     return await this.metamaskProvider.request({
@@ -78,7 +78,7 @@ export class MetamaskExtension {
     })
   }
 
-  async getProvider() {
+  async _getProvider() {
     if (!this.sdk.evm)
       throw new Error(
         'Evm extension is required to operate with blockchain. You should never use this function in your code. Use sdk.evm.getProvider instead.',
