@@ -86,7 +86,7 @@ export class EvmExtension {
     if (this.loginProvider === LS_LOGIN_TYPE.METAMASK && this.sdk.metamask) {
       await this.sdk.metamask._switchChain(params)
     } else if (this.loginProvider === LS_LOGIN_TYPE.OAUTH) {
-      await this._buildAndConnectToNewCredenzaProvider(this.sdk, params)
+      await (this.provider as CredenzaProvider).switchChain(params)
     }
     this.chainConfig = params
   }
