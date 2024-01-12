@@ -79,7 +79,10 @@ export class MetamaskExtension {
   }
 
   async getProvider() {
-    if (!this.sdk.evm) throw new Error('Evm extension is required to operate with blockchain. You should never use this function in your code. Use sdk.evm.getProvider instead.')
+    if (!this.sdk.evm)
+      throw new Error(
+        'Evm extension is required to operate with blockchain. You should never use this function in your code. Use sdk.evm.getProvider instead.',
+      )
     return this.metamaskProvider
   }
 
