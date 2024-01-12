@@ -17,19 +17,8 @@ export class MetamaskExtension {
     this.metamaskProvider = provider
   }
 
-  isAvailable() {
+  private isAvailable() {
     return !!this.metamaskProvider
-  }
-
-  async getProvider() {
-    return this.metamaskProvider
-  }
-
-  async getAddress() {
-    if (!this.isAvailable()) throw new Error('Metamask is not installed')
-    const result = await this.metamaskProvider.request<string[]>({ method: 'eth_requestAccounts', params: [] })
-    if (result?.[0]) return result[0].toLowerCase()
-    throw new Error('Cannot get metamask address')
   }
 
   async login() {
@@ -87,5 +76,17 @@ export class MetamaskExtension {
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: params.chainId }],
     })
+  }
+
+  async getProvider() {
+    if (!this.sdk.evm) throw new Error('Evm extension is required to operate with blockchain. You should never use this function in your code. Use sdk.evm.getProvider instead.')
+    return this.metamaskProvider
+  }
+
+  async getAddress() {
+    if (!this.isAvailable()) throw new Error('Metamask is not installed')
+    const result = await this.metamaskProvider.request<string[]>({ method: 'eth_requestAccounts', params: [] })
+    if (result?.[0]) return result[0].toLowerCase()
+    throw new Error('Cannot get metamask address')
   }
 }
