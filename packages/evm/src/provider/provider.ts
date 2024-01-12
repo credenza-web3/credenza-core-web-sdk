@@ -37,6 +37,10 @@ export class CredenzaProvider implements Eip1193Provider {
     }
   }
 
+  private _checkConnected() {
+    if (!this.isConnected) throw new Error('Provider is not connected')
+  }
+
   async connect() {
     const network = await this.provider.getNetwork()
     if (toNumber(network.chainId) !== toNumber(this.chainConfig.chainId)) {
@@ -49,17 +53,13 @@ export class CredenzaProvider implements Eip1193Provider {
     this.isConnected = false
   }
 
-  checkConnected() {
-    if (!this.isConnected) throw new Error('Provider is not connected')
-  }
-
   async getRpcProvider() {
-    this.checkConnected()
+    this._checkConnected()
     return this.provider
   }
 
   async listAccounts() {
-    this.checkConnected()
+    this._checkConnected()
     if (!this.addresses?.length) {
       this.addresses = await listAccounts(this._getRequestFields())
     }
@@ -67,7 +67,7 @@ export class CredenzaProvider implements Eip1193Provider {
   }
 
   async populateTransaction(tx: unknown | TransactionLike) {
-    this.checkConnected()
+    this._checkConnected()
     const [address] = await this.listAccounts()
     const voidSigner = new VoidSigner(address, this.provider)
     const transactionJson = await voidSigner.populateTransaction(tx as TransactionLike)
@@ -76,7 +76,7 @@ export class CredenzaProvider implements Eip1193Provider {
 
   // eslint-disable-next-line complexity
   async request({ method, params }: { method: string; params?: unknown[] }) {
-    this.checkConnected()
+    this._checkConnected()
     switch (method) {
       case 'eth_requestAccounts':
       case 'eth_accounts': {
