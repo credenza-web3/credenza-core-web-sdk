@@ -24,6 +24,6 @@ Login with Credenza OAuth2
 ```
 await sdk.oauth.login({
   scope: 'profile email phone blockchain.evm.write blockchain.evm',
-  redirectUrl: window.location.href,
+  redirectUrl: window.location.href, // must be configured in client settings
 })
 ```
