@@ -4,7 +4,7 @@ import { LS_LOGIN_TYPE } from '@packages/common/constants/localstorage'
 import type { MetaMaskInpageProvider } from '@metamask/providers'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
-import {EVM_PROVIDER_STATE, EVM_PROVIDER_CONNECTION_ERROR} from './main.constants'
+import { EVM_PROVIDER_STATE, EVM_PROVIDER_CONNECTION_ERROR } from './main.constants'
 export class EvmExtension {
   public name = 'evm' as const
   private state = EVM_PROVIDER_STATE.DISCONNECTED
@@ -31,7 +31,7 @@ export class EvmExtension {
       const accessToken = this.sdk.getAccessToken()
       const loginType = this.sdk.getLoginType()
       if (!accessToken || !loginType) return
-  
+
       if (loginType === LS_LOGIN_TYPE.METAMASK && this.sdk.metamask) {
         await this.sdk.metamask._switchChain(this.chainConfig)
         this.provider = await this.sdk.metamask._getProvider()
@@ -42,7 +42,7 @@ export class EvmExtension {
       this.state = EVM_PROVIDER_STATE.CONNECTED
       this.sdk._emit(SDK_EVENT.EVM_PROVIDER_CONNECTED)
     } catch (err) {
-      this.sdk._emit(SDK_EVENT.ERROR, {type: EVM_PROVIDER_CONNECTION_ERROR, err})
+      this.sdk._emit(SDK_EVENT.ERROR, { type: EVM_PROVIDER_CONNECTION_ERROR, err })
     }
   }
 
@@ -50,7 +50,7 @@ export class EvmExtension {
     if (this.state === EVM_PROVIDER_STATE.CONNECTED) return true
     if (this.state === EVM_PROVIDER_STATE.CONNECTING) {
       return new Promise((resolve) => {
-        const unsubscribeError = this.sdk.on(SDK_EVENT.ERROR, (data: {type: string}) => {
+        const unsubscribeError = this.sdk.on(SDK_EVENT.ERROR, (data: { type: string }) => {
           if (data.type !== EVM_PROVIDER_CONNECTION_ERROR) return
           unsubscribeError()
           resolve(null)
