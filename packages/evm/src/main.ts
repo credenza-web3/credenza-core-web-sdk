@@ -1,10 +1,12 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
-import type { CredenzaProvider } from './provider/provider'
+import { CredenzaProvider } from './provider/provider'
 import { LS_LOGIN_TYPE } from '@packages/common/constants/localstorage'
 import type { MetaMaskInpageProvider } from '@metamask/providers'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 import { EVM_PROVIDER_STATE, EVM_PROVIDER_CONNECTION_ERROR } from './main.constants'
+
+export { CredenzaProvider }
 export class EvmExtension {
   public name = 'evm' as const
   private state = EVM_PROVIDER_STATE.DISCONNECTED
@@ -20,7 +22,6 @@ export class EvmExtension {
   }
 
   private async _buildAndConnectToNewCredenzaProvider(sdk: CredenzaSDK, chainConfig: TChainConfig) {
-    const { CredenzaProvider } = await import('./provider/provider')
     const credenzaProvider = new CredenzaProvider({ chainConfig, sdk })
     await credenzaProvider.connect()
     this.provider = credenzaProvider
