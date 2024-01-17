@@ -15,6 +15,11 @@
   let emailToChange = ''
   let phoneToChange = '+'
   let verificationCode = ''
+  let oldPassword = ''
+  let newPassword = ''
+  let confirmPassword = ''
+  let name = ''
+  let image = ''
 
   const sdk = new CredenzaSDK({
     clientId: PUBLIC_CLIENT_ID,
@@ -46,6 +51,8 @@
   const handleGetUserInfo = async () => {
     const result = await sdk.account.info()
     console.log('UserInfo: ', result)
+    name = result.name || ''
+    image = result.image || ''
   }
 
   const handleSwitchChain = async () => {
@@ -70,21 +77,32 @@
   }
 
   const handleChangeEmail = async () => {
-    const result = await sdk.account.changeEmail(emailToChange.trim())
+    const result = await sdk.account.changeEmail(emailToChange)
     console.log('Change email request sent: ', result)
     emailToChange = ''
   }
 
   const handleChangePhone = async () => {
-    const result = await sdk.account.changePhone(phoneToChange.trim())
+    const result = await sdk.account.changePhone(phoneToChange)
     console.log('Change phone request sent: ', result)
     phoneToChange = '+'
   }
 
   const handleVerifyCode = async () => {
-    const result = await sdk.account.verifyCode(Number(verificationCode.trim()))
+    const result = await sdk.account.verifyCode(verificationCode)
     console.log('Code verified: ', result)
     verificationCode = ''
+  }
+
+  const handleUpdateProfile = async () => {
+    const result = await sdk.account.updateProfile({ name, image })
+    console.log('Profile updated:', result)
+  }
+
+  const handleChangePassword = async () => {
+    const result = await sdk.account.changePassword({ oldPassword, newPassword, confirmPassword })
+    console.log('Password changed:', result)
+    oldPassword = newPassword = confirmPassword = ''
   }
 
   onMount(async () => {
@@ -108,20 +126,33 @@
   </select>
   <div>
     <br />
-    <input type="text" bind:value={transferTo} style="min-width: 350px" />
+    <input type="text" bind:value={transferTo} style="min-width: 350px" placeholder="evm address" />
     <button on:click={handleTransferNativeCurrency}> Transfer native currency </button>
   </div>
   <br />
   <div>
-    <input type="email" bind:value={emailToChange} style="min-width: 350px" />
+    <input type="email" bind:value={emailToChange} style="min-width: 350px" placeholder="Email address" />
     <button on:click={handleChangeEmail}> Request Change Email </button>
   </div>
   <div>
-    <input type="text" bind:value={phoneToChange} style="min-width: 350px" />
+    <input type="text" bind:value={phoneToChange} style="min-width: 350px" placeholder="Phone number" />
     <button on:click={handleChangePhone}> Request Change Phone </button>
   </div>
   <div>
-    <input type="text" bind:value={verificationCode} style="min-width: 350px" />
+    <input type="text" bind:value={verificationCode} style="min-width: 350px" placeholder="Code" />
     <button on:click={handleVerifyCode}> Verify code </button>
+  </div>
+  <br />
+  <div>
+    <input type="password" bind:value={oldPassword} placeholder="old password" />
+    <input type="password" bind:value={newPassword} placeholder="new password" />
+    <input type="password" bind:value={confirmPassword} placeholder="confirm password" />
+    <button on:click={handleChangePassword}> Change password </button>
+  </div>
+  <br />
+  <div>
+    <input type="text" bind:value={name} placeholder="name" />
+    <input type="text" bind:value={image} placeholder="image url" />
+    <button on:click={handleUpdateProfile}> Update profile </button>
   </div>
 {/if}

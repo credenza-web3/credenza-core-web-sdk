@@ -9,15 +9,19 @@ export class AccountExtension {
     this.sdk = sdk
   }
 
-  private async _updateAccountContact(params: { email: string } | { phone: string } | { code: number }) {
+  private async _updateAccountContact(params: { email: string } | { phone: string } | { code: string }) {
     const apiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/me/change-contact`
     const response = await fetch(apiUrl, {
-      method: 'post',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.sdk.getAccessToken()}`,
       },
-      body: JSON.stringify(params),
+      body: JSON.stringify({
+        ...('email' in params ? { email: params.email.trim() } : {}),
+        ...('phone' in params ? { phone: params.phone.trim() } : {}),
+        ...('code' in params ? { email: params.code.trim() } : {}),
+      }),
     })
     if (!response.ok) throw new Error(`Request failed: ${response.statusText}`)
     const json = await response.json()
@@ -32,7 +36,7 @@ export class AccountExtension {
     return await this._updateAccountContact({ phone })
   }
 
-  async verifyCode(code: number) {
+  async verifyCode(code: string) {
     return await this._updateAccountContact({ code })
   }
 
@@ -53,14 +57,14 @@ export class AccountExtension {
 
     const apiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/me`
     const response = await fetch(apiUrl, {
-      method: 'patch',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.sdk.getAccessToken()}`,
       },
       body: JSON.stringify({
-        ...(params.name ? { name: params.name } : {}),
-        ...(params.image ? { image: params.image } : {}),
+        ...(params.name ? { name: params.name.trim() } : {}),
+        ...(params.image ? { image: params.image.trim() } : {}),
       }),
     })
     if (!response.ok) throw new Error(`Cannot update user: ${response.statusText}`)
@@ -74,15 +78,15 @@ export class AccountExtension {
 
     const apiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/me/password`
     const response = await fetch(apiUrl, {
-      method: 'patch',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.sdk.getAccessToken()}`,
       },
       body: JSON.stringify({
-        old_password: params.oldPassword,
-        new_password: params.newPassword,
-        confirm_password: params.confirmPassword,
+        old_password: params.oldPassword.trim(),
+        new_password: params.newPassword.trim(),
+        confirm_password: params.confirmPassword.trim(),
       }),
     })
     if (!response.ok) throw new Error(`Cannot change password: ${response.statusText}`)
