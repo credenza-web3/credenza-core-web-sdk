@@ -76,6 +76,14 @@
     console.log('Transaction response: ', result)
   }
 
+  const handleGetEvmAddress = async () => {
+    const evmProvider = await sdk.evm.getProvider()
+    const provider = new BrowserProvider(evmProvider)
+    const signer = await provider.getSigner()
+    const result = await signer.getAddress()
+    console.log('Evm address: ', result)
+  }
+
   const handleChangeEmail = async () => {
     const result = await sdk.account.changeEmail(emailToChange)
     console.log('Change email request sent: ', result)
@@ -117,6 +125,7 @@
 {:else}
   <button on:click={handleLogout}> Logout </button>
   <button on:click={handleGetUserInfo}> Log Account Info </button>
+  <button on:click={handleGetEvmAddress}> Log Evm Address </button>
   <select bind:value={chainConfig} on:change={handleSwitchChain}>
     {#each [mumbai, spicy] as chain}
       <option selected={chain.chainId === chainConfig.chainId} value={chain}>
