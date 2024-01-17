@@ -9,6 +9,33 @@ export class AccountExtension {
     this.sdk = sdk
   }
 
+  private async _updateAccountContact(params: { email: string } | { phone: string } | { code: number }) {
+    const apiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/me/change-contact`
+    const response = await fetch(apiUrl, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.sdk.getAccessToken()}`,
+      },
+      body: JSON.stringify(params),
+    })
+    if (!response.ok) throw new Error(`Request failed: ${response.statusText}`)
+    const json = await response.json()
+    return json
+  }
+
+  async changeEmail(email: string) {
+    return await this._updateAccountContact({ email })
+  }
+
+  async changePhone(phone: string) {
+    return await this._updateAccountContact({ phone })
+  }
+
+  async verifyCode(code: number) {
+    return await this._updateAccountContact({ code })
+  }
+
   async info() {
     const apiUrl = `${getOAuthApiUrl(this.sdk)}/oauth2/userinfo`
     const response = await fetch(apiUrl, {
@@ -28,6 +55,7 @@ export class AccountExtension {
     const response = await fetch(apiUrl, {
       method: 'patch',
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${this.sdk.getAccessToken()}`,
       },
       body: JSON.stringify({
@@ -48,6 +76,7 @@ export class AccountExtension {
     const response = await fetch(apiUrl, {
       method: 'patch',
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${this.sdk.getAccessToken()}`,
       },
       body: JSON.stringify({

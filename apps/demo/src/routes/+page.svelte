@@ -12,6 +12,9 @@
 
   let chainConfig = spicy
   let transferTo = '0xc4F69E4fB203F832616f8CCb134ba25417455039'
+  let emailToChange = ''
+  let phoneToChange = '+'
+  let verificationCode = ''
 
   const sdk = new CredenzaSDK({
     clientId: PUBLIC_CLIENT_ID,
@@ -66,6 +69,24 @@
     console.log('Transaction response: ', result)
   }
 
+  const handleChangeEmail = async () => {
+    const result = await sdk.account.changeEmail(emailToChange.trim())
+    console.log('Change email request sent: ', result)
+    emailToChange = ''
+  }
+
+  const handleChangePhone = async () => {
+    const result = await sdk.account.changePhone(phoneToChange.trim())
+    console.log('Change phone request sent: ', result)
+    phoneToChange = '+'
+  }
+
+  const handleVerifyCode = async () => {
+    const result = await sdk.account.verifyCode(Number(verificationCode.trim()))
+    console.log('Code verified: ', result)
+    verificationCode = ''
+  }
+
   onMount(async () => {
     await sdk.initialize()
     if (sdk.isLoggedIn()) await handleLogin()
@@ -89,5 +110,18 @@
     <br />
     <input type="text" bind:value={transferTo} style="min-width: 350px" />
     <button on:click={handleTransferNativeCurrency}> Transfer native currency </button>
+  </div>
+  <br />
+  <div>
+    <input type="email" bind:value={emailToChange} style="min-width: 350px" />
+    <button on:click={handleChangeEmail}> Request Change Email </button>
+  </div>
+  <div>
+    <input type="text" bind:value={phoneToChange} style="min-width: 350px" />
+    <button on:click={handleChangePhone}> Request Change Phone </button>
+  </div>
+  <div>
+    <input type="text" bind:value={verificationCode} style="min-width: 350px" />
+    <button on:click={handleVerifyCode}> Verify code </button>
   </div>
 {/if}
