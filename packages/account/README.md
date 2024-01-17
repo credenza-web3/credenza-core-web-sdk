@@ -38,8 +38,8 @@ Change Password (Only available for logged in with credentials users)
 
 ```
 await sdk.account.changePassword({
-  oldPassword: string;
-  newPassword: string;
+  oldPassword: string
+  newPassword: string
   confirmPassword: string
 })
 ```
@@ -47,7 +47,7 @@ await sdk.account.changePassword({
 Change Email (Disabled for logged in with social networks users)
 
 ```
-await sdk.account.changeEmail(email:string)
+await sdk.account.changeEmail(email: string)
 // Verify by passing the code received in the Email
 await sdk.account.verifyCode(code: string)
 ```
@@ -55,7 +55,7 @@ await sdk.account.verifyCode(code: string)
 Change Phone number (Disabled for logged in with social networks users)
 
 ```
-await sdk.account.changePhone(phone:string)
+await sdk.account.changePhone(phone: string)
 // Verify by passing the code received in the SMS
 await sdk.account.verifyCode(code: string)
 ```
