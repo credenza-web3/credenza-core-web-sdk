@@ -20,24 +20,24 @@
     "@credenza3/web-sdk-ext-evm": "workspace:*",
     "@credenza3/web-sdk-ext-metamask": "workspace:*",
     "@credenza3/web-sdk-ext-oauth": "workspace:*",
-    "ethers": "^6.9.2"
+    "ethers": "^6.10.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.40.1",
+    "@playwright/test": "^1.41.0",
     "@sveltejs/adapter-auto": "^3.1.0",
     "@sveltejs/adapter-static": "^3.0.1",
-    "@sveltejs/kit": "^2.1.0",
+    "@sveltejs/kit": "^2.3.3",
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
-    "@typescript-eslint/eslint-plugin": "^6.18.1",
-    "@typescript-eslint/parser": "^6.18.1",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
     "eslint": "^8.56.0",
-    "prettier": "^3.1.1",
+    "prettier": "^3.2.3",
     "prettier-plugin-svelte": "^3.1.2",
     "svelte": "^4.2.8",
-    "svelte-check": "^3.6.2",
+    "svelte-check": "^3.6.3",
     "tslib": "^2.6.2",
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
-    "vitest": "^1.1.3"
+    "vitest": "^1.2.0"
   }
 }

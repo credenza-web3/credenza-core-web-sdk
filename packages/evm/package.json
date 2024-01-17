@@ -8,10 +8,10 @@
   "author": "Credenza",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.10.7",
+    "@types/node": "^20.11.5",
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
-    "vite-plugin-dts": "^3.7.0"
+    "vite-plugin-dts": "^3.7.1"
   },
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -19,6 +19,6 @@
     "dist"
   ],
   "dependencies": {
-    "ethers": "^6.9.2"
+    "ethers": "^6.10.0"
   }
 }
