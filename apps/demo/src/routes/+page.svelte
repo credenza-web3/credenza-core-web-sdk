@@ -25,7 +25,7 @@
 
   const handleOAuthLogin = () => {
     sdk.oauth.login({
-      scope: 'profile email phone blockchain.evm.write blockchain.evm',
+      scope: 'profile profile.write email phone blockchain.evm.write blockchain.evm',
       redirectUrl: window.location.href,
     })
   }

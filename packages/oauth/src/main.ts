@@ -56,6 +56,10 @@ export class OAuthExtension {
     if (nonce !== decodedJwt.nonce) throw new Error('Invalid nonce')
     await this.sdk._setAccessToken(hashObj.access_token, LS_LOGIN_TYPE.OAUTH)
 
-    window.location.hash = ''
+    if (history && window.location.hash) {
+      history.replaceState(null, document.title, window.location.pathname + window.location.search)
+    } else {
+      window.location.hash = ''
+    }
   }
 }
