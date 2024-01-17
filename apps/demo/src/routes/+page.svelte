@@ -60,7 +60,7 @@
     console.log('New chain config: ', chainConfig)
   }
 
-  const handleTransferNativeCurrency = async () => {
+  const handleTransferNativeCurrencyEvm = async () => {
     const evmProvider = await sdk.evm.getProvider()
     const provider = new BrowserProvider(evmProvider)
     console.log('ChainID:', (await provider.getNetwork()).chainId)
@@ -135,8 +135,8 @@
   </select>
   <div>
     <br />
-    <input type="text" bind:value={transferTo} style="min-width: 350px" placeholder="evm address" />
-    <button on:click={handleTransferNativeCurrency}> Transfer native currency </button>
+    <input type="text" bind:value={transferTo} style="min-width: 350px" placeholder="0x..." />
+    <button on:click={handleTransferNativeCurrencyEvm}> Transfer native currency EVM </button>
   </div>
   <br />
   <div>
