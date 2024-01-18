@@ -117,6 +117,7 @@ export class WalletConnectExtension {
   }
 
   async login() {
+    await this.modal?.disconnect()
     await this._connect()
 
     const requestApiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/evm/auth`
@@ -136,6 +137,9 @@ export class WalletConnectExtension {
       },
       body: JSON.stringify({ signature, nonce }),
     })
+
+    await this._switchChain(this.sdk.evm.getChainConfig())
+
     const { access_token } = await endLoginResponse.json()
     await this.sdk._setAccessToken(access_token, LS_LOGIN_TYPE.WALLET_CONNECT)
   }

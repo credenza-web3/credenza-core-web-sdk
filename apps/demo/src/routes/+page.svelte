@@ -108,6 +108,7 @@
   const handleGetEvmAddress = async () => {
     const evmProvider = await sdk.evm.getProvider()
     const provider = new BrowserProvider(evmProvider)
+    console.log('ChainID:', (await provider.getNetwork()).chainId)
     const signer = await provider.getSigner()
     const result = await signer.getAddress()
     console.log('Evm address: ', result)
@@ -153,9 +154,6 @@
   <button on:click={handleMetamaskLogin}> Login With Metamask </button>
   <button on:click={handleWalletConnectLogin}> Login With WalletConnect </button>
 {:else}
-  <button on:click={handleLogout}> Logout </button>
-  <button on:click={handleGetUserInfo}> Log Account Info </button>
-  <button on:click={handleGetEvmAddress}> Log Evm Address </button>
   <select bind:value={chainConfig} on:change={handleSwitchChain}>
     {#each [mumbai, spicy] as chain}
       <option selected={chain.chainId === chainConfig.chainId} value={chain}>
@@ -163,6 +161,9 @@
       </option>
     {/each}
   </select>
+  <button on:click={handleLogout}> Logout </button>
+  <button on:click={handleGetUserInfo}> Log Account Info </button>
+  <button on:click={handleGetEvmAddress}> Log Blockchain Info </button>
   <div>
     <br />
     <input type="text" bind:value={transferTo} style="min-width: 350px" placeholder="0x..." />
