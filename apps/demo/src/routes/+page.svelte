@@ -8,6 +8,7 @@
   import { OAuthExtension } from '@credenza3/web-sdk-ext-oauth/src/main'
   import { AccountExtension } from '@credenza3/web-sdk-ext-account/src/main'
   import { MetamaskExtension } from '@credenza3/web-sdk-ext-metamask/src/main'
+  import { WalletConnectExtension } from '@credenza3/web-sdk-ext-walletconnect/src/main'
   import { EvmExtension } from '@credenza3/web-sdk-ext-evm/src/main'
 
   let chainConfig = spicy
@@ -24,7 +25,25 @@
   const sdk = new CredenzaSDK({
     clientId: PUBLIC_CLIENT_ID,
     env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
-    extensions: [new EvmExtension(chainConfig), new OAuthExtension(), new AccountExtension(), new MetamaskExtension()],
+    extensions: [
+      new EvmExtension({
+        chainConfig,
+        extensions: [
+          new MetamaskExtension(),
+          new WalletConnectExtension({
+            projectId: 'e98bfa148f5b128914133e707b993b1d',
+            metadata: {
+              name: 'Test',
+              description: 'Test description ',
+              url: 'http://localhost:5173',
+              icons: [],
+            },
+          }),
+        ],
+      }),
+      new OAuthExtension(),
+      new AccountExtension(),
+    ],
   })
 
   let isLoggedIn = false
@@ -39,7 +58,12 @@
   }
 
   const handleMetamaskLogin = async () => {
-    await sdk.metamask.login()
+    await sdk.evm.metamask.login()
+    await handleLogin()
+  }
+
+  const handleWalletConnectLogin = async () => {
+    await sdk.evm.walletconnect.login()
     await handleLogin()
   }
 
@@ -58,10 +82,15 @@
   const handleSwitchChain = async () => {
     await sdk.evm.switchChain(chainConfig)
     console.log('New chain config: ', chainConfig)
+    const evmProvider = await sdk.evm.getProvider()
+    if (!evmProvider) throw new Error('cannot get provider')
+    const provider = new BrowserProvider(evmProvider)
+    console.log('ChainID:', (await provider.getNetwork()).chainId)
   }
 
   const handleTransferNativeCurrencyEvm = async () => {
     const evmProvider = await sdk.evm.getProvider()
+    if (!evmProvider) throw new Error('cannot get provider')
     const provider = new BrowserProvider(evmProvider)
     console.log('ChainID:', (await provider.getNetwork()).chainId)
     const signer = await provider.getSigner()
@@ -122,6 +151,7 @@
 {#if !isLoggedIn}
   <button on:click={handleOAuthLogin}> Login With OAuth2 </button>
   <button on:click={handleMetamaskLogin}> Login With Metamask </button>
+  <button on:click={handleWalletConnectLogin}> Login With WalletConnect </button>
 {:else}
   <button on:click={handleLogout}> Logout </button>
   <button on:click={handleGetUserInfo}> Log Account Info </button>
