@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$env/static/public'
-  import { BrowserProvider, isAddress } from 'ethers'
   import { mumbai, spicy } from './chain-config'
 
   import { CredenzaSDK } from '@credenza3/web-sdk/src/main'
@@ -9,7 +8,9 @@
   import { AccountExtension } from '@credenza3/web-sdk-ext-account/src/main'
   import { MetamaskExtension } from '@credenza3/web-sdk-ext-metamask/src/main'
   import { WalletConnectExtension } from '@credenza3/web-sdk-ext-walletconnect/src/main'
-  import { EvmExtension } from '@credenza3/web-sdk-ext-evm/src/main'
+  import { EvmExtension, ethers } from '@credenza3/web-sdk-ext-evm/src/main'
+
+  const { BrowserProvider, isAddress } = ethers
 
   let chainConfig = spicy
   let transferTo = '0xc4F69E4fB203F832616f8CCb134ba25417455039'

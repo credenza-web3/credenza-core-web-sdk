@@ -7,6 +7,7 @@ import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 import type { Eip1193Provider } from 'ethers'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
 import type { WalletConnectExtension } from '@packages/walletconnect/src/main'
+export * as ethers from 'ethers'
 
 type TExtensionName = MetamaskExtension['name'] | WalletConnectExtension['name']
 type TExtension = MetamaskExtension | WalletConnectExtension
@@ -18,7 +19,6 @@ export class EvmExtension {
   private provider: CredenzaProvider | MetaMaskInpageProvider | Eip1193Provider | undefined
   private loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE] | null
   private chainConfig: TChainConfig
-
   private extensions: TExtensionName[] = []
 
   public metamask: MetamaskExtension
