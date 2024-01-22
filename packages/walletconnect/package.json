@@ -1,5 +1,5 @@
 {
-  "name": "@credenza3/web-sdk-ext-oauth",
+  "name": "@credenza3/web-sdk-ext-walletconnect",
   "version": "0.0.1-rc.1",
   "type": "module",
   "scripts": {
@@ -19,6 +19,7 @@
     "dist"
   ],
   "dependencies": {
-    "jwt-decode": "^4.0.0"
+    "@web3modal/ethers": "^3.5.6",
+    "ethers": "^6.10.0"
   }
 }

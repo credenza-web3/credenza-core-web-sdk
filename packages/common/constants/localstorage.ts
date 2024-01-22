@@ -4,4 +4,5 @@ export const LS_LOGIN_TYPE_KEY = 'login_type'
 export const LS_LOGIN_TYPE = {
   OAUTH: 'oauth',
   METAMASK: 'metamask',
+  WALLET_CONNECT: 'walletconnect',
 } as const

@@ -21,26 +21,6 @@ export class MetamaskExtension {
     return !!this.metamaskProvider
   }
 
-  async login() {
-    const requestApiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/evm/auth`
-    const address = await this.getAddress()
-    const beginLoginRequestUrl = new URL(requestApiUrl)
-    beginLoginRequestUrl.searchParams.append('client_id', this.sdk.clientId)
-    beginLoginRequestUrl.searchParams.append('address', address)
-    const beginLoginResponse = await fetch(beginLoginRequestUrl.toString())
-    const { message, nonce } = await beginLoginResponse.json()
-    const signature = await this.metamaskProvider.request({ method: 'personal_sign', params: [message, address] })
-    const endLoginResponse = await fetch(requestApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ signature, nonce }),
-    })
-    const { access_token } = await endLoginResponse.json()
-    await this.sdk._setAccessToken(access_token, LS_LOGIN_TYPE.METAMASK)
-  }
-
   async _addChain(params: TChainConfig) {
     await this.metamaskProvider?.request({
       method: 'wallet_addEthereumChain',
@@ -84,6 +64,28 @@ export class MetamaskExtension {
         'Evm extension is required to operate with blockchain. You should never use this function in your code. Use sdk.evm.getProvider instead.',
       )
     return this.metamaskProvider
+  }
+
+  async login() {
+    await this._switchChain(this.sdk.evm.getChainConfig())
+
+    const requestApiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/evm/auth`
+    const address = await this.getAddress()
+    const beginLoginRequestUrl = new URL(requestApiUrl)
+    beginLoginRequestUrl.searchParams.append('client_id', this.sdk.clientId)
+    beginLoginRequestUrl.searchParams.append('address', address)
+    const beginLoginResponse = await fetch(beginLoginRequestUrl.toString())
+    const { message, nonce } = await beginLoginResponse.json()
+    const signature = await this.metamaskProvider.request({ method: 'personal_sign', params: [message, address] })
+    const endLoginResponse = await fetch(requestApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ signature, nonce }),
+    })
+    const { access_token } = await endLoginResponse.json()
+    await this.sdk._setAccessToken(access_token, LS_LOGIN_TYPE.METAMASK)
   }
 
   async getAddress() {
