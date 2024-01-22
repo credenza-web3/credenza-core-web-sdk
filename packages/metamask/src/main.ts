@@ -65,11 +65,11 @@ export class MetamaskExtension {
       )
     return new Proxy(this.metamaskProvider, {
       get: (target, property: never) => {
-        if (property !== 'request' || typeof target[property] !== 'function') return target[property]
+        if (property !== 'request') return target[property]
         return async (...args: unknown[]) => {
           await this._switchChain(this.sdk.evm.getChainConfig())
           const fn = target[property] as (...args: unknown[]) => unknown
-          return fn(...args)
+          return fn.apply(this.metamaskProvider, args)
         }
       },
     })
