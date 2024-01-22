@@ -19,7 +19,9 @@
     "dist"
   ],
   "dependencies": {
-    "@web3modal/ethers": "^3.5.7",
+    "@web3modal/ethers": "^3.5.7"
+  },
+  "peerDependencies": {
     "ethers": "^6.10.0"
   }
 }
