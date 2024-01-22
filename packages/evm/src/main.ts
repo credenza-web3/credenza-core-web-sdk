@@ -7,12 +7,12 @@ import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 import type { Eip1193Provider } from 'ethers'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
 import type { WalletConnectExtension } from '@packages/walletconnect/src/main'
-export * as ethers from 'ethers'
+import * as ethers from 'ethers'
 
 type TExtensionName = MetamaskExtension['name'] | WalletConnectExtension['name']
 type TExtension = MetamaskExtension | WalletConnectExtension
 
-export { CredenzaProvider }
+export { ethers, CredenzaProvider }
 export class EvmExtension {
   public name = 'evm' as const
   private sdk: CredenzaSDK
@@ -72,6 +72,11 @@ export class EvmExtension {
     await this._checkIsUserLoggedIn()
     if (!this.provider) this.provider = await this._buildProvider()
     return this.provider
+  }
+
+  public async getEthersProvider() {
+    const provider = await this.getProvider()
+    return new ethers.BrowserProvider(provider)
   }
 
   public async switchChain(params: TChainConfig) {

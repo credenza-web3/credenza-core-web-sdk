@@ -10,7 +10,7 @@
   import { WalletConnectExtension } from '@credenza3/web-sdk-ext-walletconnect/src/main'
   import { EvmExtension, ethers } from '@credenza3/web-sdk-ext-evm/src/main'
 
-  const { BrowserProvider, isAddress } = ethers
+  const { isAddress } = ethers
 
   let chainConfig = spicy
   let transferTo = '0xc4F69E4fB203F832616f8CCb134ba25417455039'
@@ -83,16 +83,12 @@
   const handleSwitchChain = async () => {
     await sdk.evm.switchChain(chainConfig)
     console.log('New chain config: ', chainConfig)
-    const evmProvider = await sdk.evm.getProvider()
-    if (!evmProvider) throw new Error('cannot get provider')
-    const provider = new BrowserProvider(evmProvider)
+    const provider = await sdk.evm.getEthersProvider()
     console.log('ChainID:', (await provider.getNetwork()).chainId)
   }
 
   const handleTransferNativeCurrencyEvm = async () => {
-    const evmProvider = await sdk.evm.getProvider()
-    if (!evmProvider) throw new Error('cannot get provider')
-    const provider = new BrowserProvider(evmProvider)
+    const provider = await sdk.evm.getEthersProvider()
     console.log('ChainID:', (await provider.getNetwork()).chainId)
     const signer = await provider.getSigner()
     console.log('Current address: ', await signer.getAddress())
@@ -107,8 +103,7 @@
   }
 
   const handleGetEvmAddress = async () => {
-    const evmProvider = await sdk.evm.getProvider()
-    const provider = new BrowserProvider(evmProvider)
+    const provider = await sdk.evm.getEthersProvider()
     console.log('ChainID:', (await provider.getNetwork()).chainId)
     const signer = await provider.getSigner()
     const result = await signer.getAddress()
