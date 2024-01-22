@@ -63,7 +63,16 @@ export class MetamaskExtension {
       throw new Error(
         'Evm extension is required to operate with blockchain. You should never use this function in your code. Use sdk.evm.getProvider instead.',
       )
-    return this.metamaskProvider
+    return new Proxy(this.metamaskProvider, {
+      get: (target, property: never) => {
+        if (property !== 'request' || typeof target[property] !== 'function') return target[property]
+        return async (...args: unknown[]) => {
+          await this._switchChain(this.sdk.evm.getChainConfig())
+          const fn = target[property] as (...args: unknown[]) => unknown
+          return fn(...args)
+        }
+      },
+    })
   }
 
   async login() {
