@@ -66,7 +66,16 @@ export class WalletConnectExtension {
   async _getProvider() {
     const provider = this.modal.getWalletProvider()
     if (!provider) throw new Error('Cannot get WalletConnect provider')
-    return provider
+    return new Proxy(provider, {
+      get: (target, property: never) => {
+        if (property !== 'request') return target[property]
+        return async (...args: unknown[]) => {
+          await this._switchChain(this.sdk.evm.getChainConfig())
+          const fn = target[property] as (...args: unknown[]) => unknown
+          return fn.apply(provider, args)
+        }
+      },
+    })
   }
 
   async _getAddress() {
