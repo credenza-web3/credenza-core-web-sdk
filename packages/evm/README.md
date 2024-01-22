@@ -30,8 +30,15 @@ Create the SDK instance
 
 ```
 const sdk = new CredenzaSDK({
-  extensions: [new EvmExtension(chainConfig)],
-  ...other sdk params
+  extensions: [
+    new EvmExtension({
+      chainConfig,
+      extensions: [
+        new MetamaskExtension(),
+        new WalletConnectExtension(),
+      ],
+    })
+  ],
 })
 ```
 

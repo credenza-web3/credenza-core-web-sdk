@@ -1,11 +1,11 @@
-# CREDENZA WEB SDK MetamaskExtension
+# CREDENZA WEB SDK WalletConnectExtension
 
 ## Installation
 
 ```
-npm i @credenza3/web-sdk-ext-metamask
+npm i @credenza3/web-sdk-ext-walletconnect
 
-import { MetamaskExtension } from '@credenza3/web-sdk-ext-metamask'
+import { WalletConnectExtension } from '@credenza3/web-sdk-ext-walletconnect'
 ```
 
 ## Usage
@@ -14,13 +14,27 @@ Create the SDK instance
 
 ```
 const sdk = new CredenzaSDK({
-  extensions: [new MetamaskExtension()],
-  ...other sdk params
+  extensions: [
+    new EvmExtension({
+      chainConfig,
+      extensions: [
+        new WalletConnectExtension({
+          projectId: string,
+          metadata: {
+            name: string,
+            description: string,
+            url: string,
+            icons: string[],
+          },
+        }),
+      ],
+    })
+  ],
 })
 ```
 
-Login with metamask
+Login with WalletConnect
 
 ```
-await sdk.metamask.login()
+await sdk.evm.walletconnect.login()
 ```

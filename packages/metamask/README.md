@@ -14,13 +14,17 @@ Create the SDK instance
 
 ```
 const sdk = new CredenzaSDK({
-  extensions: [new MetamaskExtension()],
-  ...other sdk params
+  extensions: [
+    new EvmExtension({
+      chainConfig,
+      extensions: [new MetamaskExtension()],
+    })
+  ],
 })
 ```
 
 Login with metamask
 
 ```
-await sdk.metamask.login()
+await sdk.evm.metamask.login()
 ```
