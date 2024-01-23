@@ -1,6 +1,6 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
-import { LS_LOGIN_TYPE } from '@packages/common/constants/localstorage'
+import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
@@ -150,6 +150,6 @@ export class WalletConnectExtension {
     await this._switchChain(this.sdk.evm.getChainConfig())
 
     const { access_token } = await endLoginResponse.json()
-    await this.sdk._setAccessToken(access_token, LS_LOGIN_TYPE.WALLET_CONNECT)
+    await this.sdk._setAccessToken(access_token, LS_LOGIN_PROVIDER.WALLET_CONNECT)
   }
 }

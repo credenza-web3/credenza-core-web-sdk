@@ -20,7 +20,7 @@ export class AccountExtension {
       body: JSON.stringify({
         ...('email' in params ? { email: params.email.trim() } : {}),
         ...('phone' in params ? { phone: params.phone.trim() } : {}),
-        ...('code' in params ? { email: params.code.trim() } : {}),
+        ...('code' in params ? { code: params.code.trim() } : {}),
       }),
     })
     if (!response.ok) throw new Error(`Request failed: ${response.statusText}`)

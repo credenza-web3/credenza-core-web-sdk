@@ -2,7 +2,7 @@ import type { CredenzaSDK } from '@packages/core/src/main'
 import type { MetaMaskInpageProvider } from '@metamask/providers'
 import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
 import detectEthereumProvider from '@metamask/detect-provider'
-import { LS_LOGIN_TYPE } from '@packages/common/constants/localstorage'
+import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 
 export class MetamaskExtension {
@@ -94,7 +94,7 @@ export class MetamaskExtension {
       body: JSON.stringify({ signature, nonce }),
     })
     const { access_token } = await endLoginResponse.json()
-    await this.sdk._setAccessToken(access_token, LS_LOGIN_TYPE.METAMASK)
+    await this.sdk._setAccessToken(access_token, LS_LOGIN_PROVIDER.METAMASK)
   }
 
   async getAddress() {

@@ -1,6 +1,6 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { CredenzaProvider } from './provider/provider'
-import { LS_LOGIN_TYPE } from '@packages/common/constants/localstorage'
+import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import type { MetaMaskInpageProvider } from '@metamask/providers'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
@@ -17,7 +17,7 @@ export class EvmExtension {
   public name = 'evm' as const
   private sdk: CredenzaSDK
   private provider: CredenzaProvider | MetaMaskInpageProvider | Eip1193Provider | undefined
-  private loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE] | null
+  private loginType: (typeof LS_LOGIN_PROVIDER)[keyof typeof LS_LOGIN_PROVIDER] | null
   private chainConfig: TChainConfig
   private extensions: TExtensionName[] = []
 
@@ -51,13 +51,13 @@ export class EvmExtension {
 
   private async _buildProvider() {
     switch (this.loginType) {
-      case LS_LOGIN_TYPE.METAMASK: {
+      case LS_LOGIN_PROVIDER.METAMASK: {
         return await this.metamask._getProvider()
       }
-      case LS_LOGIN_TYPE.WALLET_CONNECT: {
+      case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
         return await this.walletconnect._getProvider()
       }
-      case LS_LOGIN_TYPE.OAUTH: {
+      case LS_LOGIN_PROVIDER.OAUTH: {
         const credenzaProvider = new CredenzaProvider({ chainConfig: this.chainConfig, sdk: this.sdk })
         await credenzaProvider.connect()
         return credenzaProvider
@@ -82,15 +82,15 @@ export class EvmExtension {
   public async switchChain(params: TChainConfig) {
     const provider = await this.getProvider()
     switch (this.loginType) {
-      case LS_LOGIN_TYPE.METAMASK: {
+      case LS_LOGIN_PROVIDER.METAMASK: {
         await this.metamask._switchChain(params)
         break
       }
-      case LS_LOGIN_TYPE.WALLET_CONNECT: {
+      case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
         await this.walletconnect._switchChain(params)
         break
       }
-      case LS_LOGIN_TYPE.OAUTH: {
+      case LS_LOGIN_PROVIDER.OAUTH: {
         await (<CredenzaProvider>provider).switchChain(params)
         break
       }
