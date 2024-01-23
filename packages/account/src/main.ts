@@ -20,7 +20,7 @@ export class AccountExtension {
       body: JSON.stringify({
         ...('email' in params ? { email: params.email.trim() } : {}),
         ...('phone' in params ? { phone: params.phone.trim() } : {}),
-        ...('code' in params ? { email: params.code.trim() } : {}),
+        ...('code' in params ? { code: params.code.trim() } : {}),
       }),
     })
     if (!response.ok) throw new Error(`Request failed: ${response.statusText}`)
@@ -38,6 +38,18 @@ export class AccountExtension {
 
   async verifyCode(code: string) {
     return await this._updateAccountContact({ code })
+  }
+
+  async pendingVerificationContacts() {
+    const apiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/me/change-contact`
+    const response = await fetch(apiUrl, {
+      headers: {
+        Authorization: `Bearer ${this.sdk.getAccessToken()}`,
+      },
+    })
+    if (!response.ok) throw new Error(`Request failed: ${response.statusText}`)
+    const json = await response.json()
+    return json
   }
 
   async info() {

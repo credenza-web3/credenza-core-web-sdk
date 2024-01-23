@@ -1,7 +1,7 @@
 import { jwtDecode } from 'jwt-decode'
 import { get, set, remove } from '@packages/common/localstorage/localstorage'
 import { SDK_ENV } from '@packages/common/constants/core'
-import { LS_ACCESS_TOKEN_KEY, LS_LOGIN_TYPE_KEY, LS_LOGIN_TYPE } from '@packages/common/constants/localstorage'
+import { LS_ACCESS_TOKEN_KEY, LS_LOGIN_PROVIDER_KEY, LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import { emit, once, on, SDK_EVENT } from './lib/events/events'
 import type { OAuthExtension } from '@packages/oauth/src/main'
 import type { AccountExtension } from '@packages/account/src/main'
@@ -28,7 +28,7 @@ export class CredenzaSDK {
   public sui: SuiExtension
 
   private accessToken: string | null
-  private loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE] | null
+  private loginType: (typeof LS_LOGIN_PROVIDER)[keyof typeof LS_LOGIN_PROVIDER] | null
 
   constructor(opts: { clientId: string; env?: (typeof SDK_ENV)[keyof typeof SDK_ENV]; extensions?: TExtension[] }) {
     this.clientId = opts.clientId
@@ -41,7 +41,7 @@ export class CredenzaSDK {
 
   public async initialize() {
     this.accessToken = get(LS_ACCESS_TOKEN_KEY)
-    this.loginType = get(LS_LOGIN_TYPE_KEY) as (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE]
+    this.loginType = get(LS_LOGIN_PROVIDER_KEY) as (typeof LS_LOGIN_PROVIDER)[keyof typeof LS_LOGIN_PROVIDER]
     if (this.accessToken) {
       const decodedJwt = jwtDecode(this.accessToken)
       if (!decodedJwt.exp || decodedJwt.aud !== this.clientId || decodedJwt.exp * 1000 < new Date().getTime())
@@ -53,8 +53,8 @@ export class CredenzaSDK {
     emit(SDK_EVENT.INIT)
   }
 
-  public async _setAccessToken(token: string, loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE]) {
-    set(LS_LOGIN_TYPE_KEY, loginType)
+  public async _setAccessToken(token: string, loginType: (typeof LS_LOGIN_PROVIDER)[keyof typeof LS_LOGIN_PROVIDER]) {
+    set(LS_LOGIN_PROVIDER_KEY, loginType)
     set(LS_ACCESS_TOKEN_KEY, token)
     this.accessToken = token
     this.loginType = loginType

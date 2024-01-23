@@ -1,6 +1,6 @@
 {
   "name": "@credenza3/web-sdk-ext-account",
-  "version": "0.0.1-rc.5",
+  "version": "0.0.1-rc.6",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"
