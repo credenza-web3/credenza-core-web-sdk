@@ -37,7 +37,13 @@ export class WalletConnectExtension {
 
   private _initModal() {
     this.modal = createWeb3Modal({
-      ethersConfig: defaultConfig({ metadata: this.metadata }),
+      ethersConfig: defaultConfig({
+        enableEIP6963: true,
+        enableInjected: false,
+        enableCoinbase: false,
+        enableEmail: false,
+        metadata: this.metadata,
+      }),
       chains: [this._getWalletConnectChainConfig()],
       projectId: this.projectId,
     })
@@ -54,10 +60,17 @@ export class WalletConnectExtension {
     await this.modal.open()
     return new Promise((resolve, reject) => {
       const unsubscribe = this.modal.subscribeEvents((evt) => {
-        if (evt.data.event === 'MODAL_CLOSE') {
+        if (evt.data.event === 'CONNECT_SUCCESS') {
+          unsubscribe()
+          const interval = setInterval(() => {
+            if (!this.modal.getIsConnected()) return
+            clearInterval(interval)
+            return resolve(true)
+          }, 500)
+        } else if (evt.data.event === 'MODAL_CLOSE') {
           unsubscribe()
           if (this.modal.getIsConnected()) return resolve(true)
-          reject(new Error('WalletConnect: failed to connect wallet'))
+          return reject(new Error('WalletConnect: failed to connect wallet'))
         }
       })
     })
