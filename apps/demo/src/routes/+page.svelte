@@ -141,6 +141,7 @@
 
   onMount(async () => {
     await sdk.initialize()
+    Object.assign(window, { credenzaSDK: sdk })
     if (sdk.isLoggedIn()) await handleLogin()
   })
 </script>
