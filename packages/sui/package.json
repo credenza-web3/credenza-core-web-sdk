@@ -1,0 +1,24 @@
+{
+  "name": "@credenza3/web-sdk-ext-sui",
+  "version": "0.0.1-rc.5",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && vite build"
+  },
+  "author": "Credenza",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12",
+    "vite-plugin-dts": "^3.7.1"
+  },
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@mysten/zklogin": "^0.4.1"
+  }
+}

@@ -9,6 +9,7 @@
   import { MetamaskExtension } from '@credenza3/web-sdk-ext-metamask/src/main'
   import { WalletConnectExtension } from '@credenza3/web-sdk-ext-walletconnect/src/main'
   import { EvmExtension, ethers } from '@credenza3/web-sdk-ext-evm/src/main'
+  import { SuiExtension } from '@credenza3/web-sdk-ext-sui/src/main'
 
   const { isAddress } = ethers
 
@@ -27,6 +28,7 @@
     clientId: PUBLIC_CLIENT_ID,
     env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
     extensions: [
+      new SuiExtension(),
       new EvmExtension({
         chainConfig,
         extensions: [
@@ -53,7 +55,7 @@
 
   const handleOAuthLogin = () => {
     sdk.oauth.login({
-      scope: 'profile profile.write email phone blockchain.evm.write blockchain.evm',
+      scope: 'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui',
       redirectUrl: window.location.href,
     })
   }
@@ -141,6 +143,7 @@
 
   onMount(async () => {
     await sdk.initialize()
+    Object.assign(window, { sdk })
     if (sdk.isLoggedIn()) await handleLogin()
   })
 </script>

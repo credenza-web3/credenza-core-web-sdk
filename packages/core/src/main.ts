@@ -8,9 +8,10 @@ import type { AccountExtension } from '@packages/account/src/main'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
 import type { EvmExtension } from '@packages/evm/src/main'
 import type { WalletConnectExtension } from '@packages/walletconnect/src/main'
+import type { SuiExtension } from '@packages/sui/src/main'
 
-type TExtensionName = OAuthExtension['name'] | AccountExtension['name'] | EvmExtension['name']
-type TExtension = OAuthExtension | AccountExtension | EvmExtension
+type TExtensionName = OAuthExtension['name'] | AccountExtension['name'] | EvmExtension['name'] | SuiExtension['name']
+type TExtension = OAuthExtension | AccountExtension | EvmExtension | SuiExtension
 export class CredenzaSDK {
   public static SDK_ENV = SDK_ENV
   public static SDK_EVENT = SDK_EVENT
@@ -24,6 +25,7 @@ export class CredenzaSDK {
   public metamask: MetamaskExtension
   public evm: EvmExtension
   public walletconnect: WalletConnectExtension
+  public sui: SuiExtension
 
   private accessToken: string | null
   private loginType: (typeof LS_LOGIN_TYPE)[keyof typeof LS_LOGIN_TYPE] | null
