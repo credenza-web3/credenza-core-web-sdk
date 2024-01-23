@@ -14,6 +14,7 @@
 
   let chainConfig = spicy
   let transferTo = '0xc4F69E4fB203F832616f8CCb134ba25417455039'
+  let messageToSign = ''
   let emailToChange = ''
   let phoneToChange = '+'
   let verificationCode = ''
@@ -102,6 +103,13 @@
     console.log('Transaction response: ', result)
   }
 
+  const handleSignMessage = async () => {
+    const provider = await sdk.evm.getEthersProvider()
+    const signer = await provider.getSigner()
+    const sig = await signer.signMessage(messageToSign.trim())
+    console.log('Signature: ', sig)
+  }
+
   const handleGetEvmAddress = async () => {
     const provider = await sdk.evm.getEthersProvider()
     console.log('ChainID:', (await provider.getNetwork()).chainId)
@@ -165,6 +173,11 @@
     <br />
     <input type="text" bind:value={transferTo} style="min-width: 350px" placeholder="0x..." />
     <button on:click={handleTransferNativeCurrencyEvm}> Transfer native currency EVM </button>
+  </div>
+  <div>
+    <br />
+    <input type="text" bind:value={messageToSign} style="min-width: 350px" placeholder="" />
+    <button on:click={handleSignMessage}> Sign Message </button>
   </div>
   <br />
   <div>
