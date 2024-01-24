@@ -1,5 +1,9 @@
 # CREDENZA WEB SDK Core
 
+## Registering client
+
+Visit https://developers.credenza3.com/ sign in and create your Client
+
 ## Installation
 
 ```
