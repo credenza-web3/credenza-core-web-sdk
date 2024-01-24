@@ -52,7 +52,7 @@ export class WalletConnectExtension {
   private async _ensureProvider(skipAuthCheck: boolean = false) {
     if (!skipAuthCheck) {
       if (!this.sdk.getAccessToken()) throw new Error('user is not logged in')
-      if (this.sdk.getLoginType() !== LS_LOGIN_PROVIDER.WALLET_CONNECT)
+      if (this.sdk.getLoginProvider() !== LS_LOGIN_PROVIDER.WALLET_CONNECT)
         throw new Error('User is not logged in with wallet connect.')
     }
 

@@ -17,7 +17,7 @@ export class EvmExtension {
   public name = 'evm' as const
   private sdk: CredenzaSDK
   private provider: CredenzaProvider | MetaMaskInpageProvider | Eip1193Provider | undefined
-  private loginType: (typeof LS_LOGIN_PROVIDER)[keyof typeof LS_LOGIN_PROVIDER] | null
+  private loginProvider: (typeof LS_LOGIN_PROVIDER)[keyof typeof LS_LOGIN_PROVIDER] | null
   private chainConfig: TChainConfig
   private extensions: TExtensionName[] = []
 
@@ -44,13 +44,11 @@ export class EvmExtension {
   }
 
   private async _checkIsUserLoggedIn() {
-    const accessToken = this.sdk.getAccessToken()
-    this.loginType = this.sdk.getLoginType()
-    if (!accessToken || !this.loginType) throw new Error('User is not logged in')
+    if (!this.sdk.isLoggedIn()) throw new Error('User is not logged in')
   }
 
   private async _buildProvider() {
-    switch (this.loginType) {
+    switch (this.loginProvider) {
       case LS_LOGIN_PROVIDER.METAMASK: {
         return await this.metamask._getProvider()
       }
@@ -76,12 +74,13 @@ export class EvmExtension {
 
   public async getEthersProvider() {
     const provider = await this.getProvider()
+    if (!provider) throw new Error('Cannot get provider')
     return new ethers.BrowserProvider(provider)
   }
 
   public async switchChain(params: TChainConfig) {
     const provider = await this.getProvider()
-    switch (this.loginType) {
+    switch (this.loginProvider) {
       case LS_LOGIN_PROVIDER.METAMASK: {
         await this.metamask._switchChain(params)
         break

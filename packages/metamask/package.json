@@ -1,6 +1,6 @@
 {
   "name": "@credenza3/web-sdk-ext-metamask",
-  "version": "0.0.1-rc.8",
+  "version": "0.0.1-rc.9",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"
