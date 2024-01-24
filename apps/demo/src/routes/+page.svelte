@@ -108,6 +108,7 @@
     const signer = await provider.getSigner()
     const sig = await signer.signMessage(messageToSign.trim())
     console.log('Signature: ', sig)
+    messageToSign = ''
   }
 
   const handleGetEvmAddress = async () => {

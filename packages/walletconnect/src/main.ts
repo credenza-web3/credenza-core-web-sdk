@@ -4,6 +4,7 @@ import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
+import type { Eip1193Provider } from 'ethers'
 
 type TMetadata = {
   name: string
@@ -18,6 +19,7 @@ export class WalletConnectExtension {
   private metadata: TMetadata
   private projectId: string
   private modal: ReturnType<typeof createWeb3Modal>
+  private walletConnectProvider: Eip1193Provider
 
   constructor(params: { projectId: string; metadata: TMetadata }) {
     this.projectId = params.projectId
@@ -47,6 +49,14 @@ export class WalletConnectExtension {
       chains: [this._getWalletConnectChainConfig()],
       projectId: this.projectId,
     })
+    this.modal.subscribeProvider((proxy) => {
+      if (!proxy.provider) return
+      this.walletConnectProvider = proxy.provider
+    })
+  }
+
+  private _ensureProvider() {
+    if (!this.walletConnectProvider) throw new Error('Cannot get WalletConnect provider')
   }
 
   async _initialize(sdk: CredenzaSDK) {
@@ -58,34 +68,17 @@ export class WalletConnectExtension {
   async _connect() {
     if (this.modal.getIsConnected()) return true
     await this.modal.open()
-    return new Promise((resolve, reject) => {
-      const unsubscribe = this.modal.subscribeEvents((evt) => {
-        if (evt.data.event === 'CONNECT_SUCCESS') {
-          unsubscribe()
-          const interval = setInterval(() => {
-            if (!this.modal.getIsConnected()) return
-            clearInterval(interval)
-            return resolve(true)
-          }, 500)
-        } else if (evt.data.event === 'MODAL_CLOSE') {
-          unsubscribe()
-          if (this.modal.getIsConnected()) return resolve(true)
-          return reject(new Error('WalletConnect: failed to connect wallet'))
-        }
-      })
-    })
   }
 
   async _getProvider() {
-    const provider = this.modal.getWalletProvider()
-    if (!provider) throw new Error('Cannot get WalletConnect provider')
-    return new Proxy(provider, {
+    this._ensureProvider()
+    return new Proxy(this.walletConnectProvider, {
       get: (target, property: never) => {
         if (property !== 'request') return target[property]
         return async (...args: unknown[]) => {
           await this._switchChain(this.sdk.evm.getChainConfig())
           const fn = target[property] as (...args: unknown[]) => unknown
-          return fn.apply(provider, args)
+          return fn.apply(this.walletConnectProvider, args)
         }
       },
     })
@@ -98,9 +91,8 @@ export class WalletConnectExtension {
   }
 
   async _addChain(params: TChainConfig) {
-    const provider = this.modal.getWalletProvider()
-    if (!provider) throw new Error('Invalid provider')
-    await provider.request({
+    this._ensureProvider()
+    await this.walletConnectProvider.request({
       method: 'wallet_addEthereumChain',
       params: [
         {
@@ -119,20 +111,18 @@ export class WalletConnectExtension {
   }
 
   async _switchChain(params: TChainConfig) {
-    const provider = this.modal.getWalletProvider()
-    if (!provider) throw new Error('Invalid provider')
-
-    const currentChainId = await provider.request({ method: 'eth_chainId' })
+    this._ensureProvider()
+    const currentChainId = await this.walletConnectProvider.request({ method: 'eth_chainId' })
     if (currentChainId === params.chainId) return
     try {
-      return await provider.request({
+      return await this.walletConnectProvider.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: params.chainId }],
       })
     } catch (err) {
       await this._addChain(params)
     }
-    return await provider.request({
+    return await this.walletConnectProvider.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: params.chainId }],
     })
@@ -142,16 +132,26 @@ export class WalletConnectExtension {
     await this.modal?.disconnect()
     await this._connect()
 
+    if (!this.walletConnectProvider) {
+      await new Promise((resolve) => {
+        const unsubscribe = this.modal.subscribeProvider((proxy) => {
+          if (!proxy.isConnected) return
+          unsubscribe()
+          return resolve(true)
+        })
+      })
+    }
+    this._ensureProvider()
+
     const requestApiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/evm/auth`
     const address = await this._getAddress()
-    const provider = await this._getProvider()
 
     const beginLoginRequestUrl = new URL(requestApiUrl)
     beginLoginRequestUrl.searchParams.append('client_id', this.sdk.clientId)
     beginLoginRequestUrl.searchParams.append('address', address)
     const beginLoginResponse = await fetch(beginLoginRequestUrl.toString())
     const { message, nonce } = await beginLoginResponse.json()
-    const signature = await provider.request({ method: 'personal_sign', params: [message, address] })
+    const signature = await this.walletConnectProvider.request({ method: 'personal_sign', params: [message, address] })
     const endLoginResponse = await fetch(requestApiUrl, {
       method: 'POST',
       headers: {
