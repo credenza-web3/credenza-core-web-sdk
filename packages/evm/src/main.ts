@@ -17,7 +17,6 @@ export class EvmExtension {
   public name = 'evm' as const
   private sdk: CredenzaSDK
   private provider: CredenzaProvider | MetaMaskInpageProvider | Eip1193Provider | undefined
-  private loginProvider: (typeof LS_LOGIN_PROVIDER)[keyof typeof LS_LOGIN_PROVIDER] | null
   private chainConfig: TChainConfig
   private extensions: TExtensionName[] = []
 
@@ -48,7 +47,7 @@ export class EvmExtension {
   }
 
   private async _buildProvider() {
-    switch (this.loginProvider) {
+    switch (this.sdk.getLoginProvider()) {
       case LS_LOGIN_PROVIDER.METAMASK: {
         return await this.metamask._getProvider()
       }
@@ -80,7 +79,7 @@ export class EvmExtension {
 
   public async switchChain(params: TChainConfig) {
     const provider = await this.getProvider()
-    switch (this.loginProvider) {
+    switch (this.sdk.getLoginProvider()) {
       case LS_LOGIN_PROVIDER.METAMASK: {
         await this.metamask._switchChain(params)
         break
