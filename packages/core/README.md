@@ -40,3 +40,11 @@ const sdk = new CredenzaSDK({
   ], // select necessary extensions
 })
 ```
+
+## Events
+
+```
+const event = CredenzaSDK.SDK_EVENT[<EVENT_NAME>]
+const unsubscribe = sdk.on(event, (data) => {})
+sdk.once(event, (data) => {})
+```
