@@ -6,12 +6,7 @@ import { createWeb3Modal, defaultConfig } from '@web3modal/ethers'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 import type { Eip1193Provider } from 'ethers'
 
-type TMetadata = {
-  name: string
-  description: string
-  url: string
-  icons: string[]
-}
+type TMetadata = Parameters<typeof defaultConfig>[0]['metadata']
 
 export class WalletConnectExtension {
   public name = 'walletconnect' as const
