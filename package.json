@@ -5,7 +5,7 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write .",
-    "prepare": "husky install",
+    "prepare": "husky",
     "ncu": "ncu --deep",
     "ncu:update": "ncu -u --deep"
   },
@@ -14,7 +14,7 @@
     "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
     "ethers": "^6.10.0",
-    "husky": "^8.0.3",
+    "husky": "^9.0.7",
     "prettier": "^3.2.4",
     "prettier-plugin-svelte": "^3.1.2",
     "tsconfig": "workspace:*",

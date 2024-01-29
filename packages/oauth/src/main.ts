@@ -7,6 +7,13 @@ import { jwtDecode } from 'jwt-decode'
 import { LS_OAUTH_NONCE_KEY, LS_OAUTH_STATE_KEY } from './constants/localstorage'
 
 export class OAuthExtension {
+  static LOGIN_TYPE = {
+    CREDENTIALS: 'credentials',
+    PASSWORDLESS: 'passwordless',
+    GOOGLE: 'google',
+    TICKETMASTER: 'ticketmaster',
+  }
+
   public name = 'oauth' as const
   private sdk: CredenzaSDK
 
@@ -15,7 +22,11 @@ export class OAuthExtension {
     await this._handleRedirectResult()
   }
 
-  login(opts: { scope: string; redirectUrl: string }) {
+  login(opts: {
+    scope: string
+    redirectUrl: string
+    type?: (typeof OAuthExtension.LOGIN_TYPE)[keyof typeof OAuthExtension.LOGIN_TYPE]
+  }) {
     const nonce = generateRandomString()
     const state = generateRandomString()
 
@@ -26,6 +37,10 @@ export class OAuthExtension {
     url.searchParams.append('redirect_uri', opts.redirectUrl)
     url.searchParams.append('nonce', nonce)
     url.searchParams.append('state', state)
+    if (opts.type) {
+      if (opts.type !== 'credentials') url.pathname += `/${opts.type}`
+      url.searchParams.append('allowed_login_types', opts.type)
+    }
 
     set(LS_OAUTH_NONCE_KEY, nonce)
     set(LS_OAUTH_STATE_KEY, state)

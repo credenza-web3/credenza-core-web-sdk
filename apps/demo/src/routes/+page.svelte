@@ -56,6 +56,7 @@
     sdk.oauth.login({
       scope: 'profile profile.write email phone blockchain.evm.write blockchain.evm',
       redirectUrl: window.location.href,
+      //type: OAuthExtension.LOGIN_TYPE.TICKETMASTER,
     })
   }
 
@@ -104,10 +105,12 @@
   }
 
   const handleSignMessage = async () => {
+    messageToSign = new Date().toISOString()
     const provider = await sdk.evm.getEthersProvider()
     const signer = await provider.getSigner()
     const sig = await signer.signMessage(messageToSign.trim())
     console.log('Signature: ', sig)
+    console.log(await signer.getAddress(), ethers.verifyMessage(messageToSign, sig))
     messageToSign = ''
   }
 
