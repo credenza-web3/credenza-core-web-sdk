@@ -7,7 +7,7 @@
     "format": "prettier --write .",
     "prepare": "husky",
     "ncu": "ncu --deep",
-    "ncu:update": "ncu -u --deep"
+    "ncu:u": "ncu -u --deep"
   },
   "devDependencies": {
     "@metamask/providers": "^14.0.2",
