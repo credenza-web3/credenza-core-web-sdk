@@ -17,6 +17,8 @@ type TExtension = MetamaskExtension | WalletConnectExtension
 
 export { ethers, CredenzaProvider }
 export class EvmExtension {
+  public static EVM_EVENT = EVM_EVENT
+
   public name = 'evm' as const
   private sdk: CredenzaSDK
   private provider: CredenzaProvider | MetaMaskInpageProvider | Eip1193Provider | undefined

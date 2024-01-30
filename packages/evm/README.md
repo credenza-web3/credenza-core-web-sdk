@@ -78,3 +78,11 @@ Get ethers provider
 // wraps evmProvider with new ethers.BrowserProvider()
 const provider = await sdk.evm.getEthersProvider()
 ```
+
+## Events
+
+```
+const event = EvmExtension.EVM_EVENT.<EVENT_NAME>
+const unsubscribe = sdk.evm.on(event, (data) => {})
+sdk.once(event, (data) => {})
+```
