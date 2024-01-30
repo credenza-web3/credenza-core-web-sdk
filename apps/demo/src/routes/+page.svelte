@@ -56,7 +56,7 @@
     sdk.oauth.login({
       scope: 'profile profile.write email phone blockchain.evm.write blockchain.evm',
       redirectUrl: window.location.href,
-      //type: OAuthExtension.LOGIN_TYPE.TICKETMASTER,
+      //type: OAuthExtension.LOGIN_TYPE.GOOGLE,
     })
   }
 
