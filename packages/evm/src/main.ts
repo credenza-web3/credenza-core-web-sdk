@@ -50,21 +50,26 @@ export class EvmExtension {
   }
 
   private async _buildProvider() {
-    switch (this.sdk.getLoginProvider()) {
-      case LS_LOGIN_PROVIDER.METAMASK: {
-        return await this.metamask._getProvider()
+    try {
+      switch (this.sdk.getLoginProvider()) {
+        case LS_LOGIN_PROVIDER.METAMASK: {
+          return await this.metamask._getProvider()
+        }
+        case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
+          return await this.walletconnect._getProvider()
+        }
+        case LS_LOGIN_PROVIDER.OAUTH: {
+          const credenzaProvider = new CredenzaProvider({ chainConfig: this.chainConfig, sdk: this.sdk })
+          await credenzaProvider.connect()
+          return credenzaProvider
+        }
+        default: {
+          throw new Error('Cannot build evm provider')
+        }
       }
-      case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
-        return await this.walletconnect._getProvider()
-      }
-      case LS_LOGIN_PROVIDER.OAUTH: {
-        const credenzaProvider = new CredenzaProvider({ chainConfig: this.chainConfig, sdk: this.sdk })
-        await credenzaProvider.connect()
-        return credenzaProvider
-      }
-      default: {
-        throw new Error('Cannot build evm provider')
-      }
+    } catch (err) {
+      this._emit('EVM_ERROR', err)
+      throw err
     }
   }
 
@@ -81,23 +86,28 @@ export class EvmExtension {
   }
 
   public async switchChain(chainConfig: TChainConfig) {
-    const provider = await this.getProvider()
-    switch (this.sdk.getLoginProvider()) {
-      case LS_LOGIN_PROVIDER.METAMASK: {
-        await this.metamask._switchChain(chainConfig)
-        break
+    try {
+      const provider = await this.getProvider()
+      switch (this.sdk.getLoginProvider()) {
+        case LS_LOGIN_PROVIDER.METAMASK: {
+          await this.metamask._switchChain(chainConfig)
+          break
+        }
+        case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
+          await this.walletconnect._switchChain(chainConfig)
+          break
+        }
+        case LS_LOGIN_PROVIDER.OAUTH: {
+          await (<CredenzaProvider>provider).switchChain(chainConfig)
+          break
+        }
       }
-      case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
-        await this.walletconnect._switchChain(chainConfig)
-        break
-      }
-      case LS_LOGIN_PROVIDER.OAUTH: {
-        await (<CredenzaProvider>provider).switchChain(chainConfig)
-        break
-      }
+      this.chainConfig = chainConfig
+      this._emit(EVM_EVENT.EVM_SWITCH_CHAIN, { chainConfig })
+    } catch (err) {
+      this._emit(EVM_EVENT.EVM_ERROR, err)
+      throw err
     }
-    this.chainConfig = chainConfig
-    this._emit(EVM_EVENT.EVM_SWITCH_CHAIN, { chainConfig })
   }
 
   public getChainConfig() {
