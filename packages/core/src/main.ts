@@ -2,7 +2,9 @@ import { jwtDecode } from 'jwt-decode'
 import { get, set, remove } from '@packages/common/localstorage/localstorage'
 import { SDK_ENV } from '@packages/common/constants/core'
 import { LS_ACCESS_TOKEN_KEY, LS_LOGIN_PROVIDER_KEY, LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
-import { emit, once, on, SDK_EVENT } from './lib/events/events'
+import { SDK_EVENT } from './lib/events/events.constants'
+import { TSdkEvent } from './lib/events/events.types'
+import { emit, once, on } from '@packages/common/events/events'
 import type { OAuthExtension } from '@packages/oauth/src/main'
 import type { AccountExtension } from '@packages/account/src/main'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
@@ -81,7 +83,7 @@ export class CredenzaSDK {
     emit(SDK_EVENT.LOGOUT)
   }
 
-  public once = once
-  public on = on
-  public _emit = emit
+  public once = once<TSdkEvent>
+  public on = on<TSdkEvent>
+  public _emit = emit<TSdkEvent>
 }

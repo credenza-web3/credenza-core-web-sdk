@@ -3,6 +3,9 @@ import { CredenzaProvider } from './provider/provider'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import type { MetaMaskInpageProvider } from '@metamask/providers'
 import type { TChainConfig } from '@packages/common/types/chain-config'
+import type { TSdkEvmEvent } from './lib/events/events.types'
+import { emit, once, on } from '@packages/common/events/events'
+import { EVM_EVENT } from './lib/events/events.constants'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 import type { Eip1193Provider } from 'ethers'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
@@ -94,10 +97,14 @@ export class EvmExtension {
       }
     }
     this.chainConfig = chainConfig
-    this.sdk._emit(SDK_EVENT.EVM_SWITCH_CHAIN, { chainConfig })
+    this._emit(EVM_EVENT.EVM_SWITCH_CHAIN, { chainConfig })
   }
 
   public getChainConfig() {
     return this.chainConfig
   }
+
+  public once = once<TSdkEvmEvent>
+  public on = on<TSdkEvmEvent>
+  public _emit = emit<TSdkEvmEvent>
 }

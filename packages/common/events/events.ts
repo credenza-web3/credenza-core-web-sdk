@@ -1,10 +1,9 @@
-import type { TSdkEvent, TSdkMapArgs, TSdkEventCallbackFn } from './events.types'
-export { SDK_EVENT } from './events.constants'
+import type { TSdkMapArgs, TSdkEventCallbackFn } from './events.types'
 
-const passportEventsMap = new Map<TSdkEvent, TSdkMapArgs[]>()
+const passportEventsMap = new Map<string, TSdkMapArgs[]>()
 let id: number = 0
 
-function off(eventName: TSdkEvent, id: number) {
+function off<T extends string>(eventName: T, id: number) {
   const list = passportEventsMap.get(eventName)
   if (!list?.length) return
 
@@ -17,7 +16,7 @@ function off(eventName: TSdkEvent, id: number) {
   }
 }
 
-export function once(eventName: TSdkEvent, callback: TSdkEventCallbackFn) {
+export function once<T extends string>(eventName: T, callback: TSdkEventCallbackFn) {
   const list = passportEventsMap.get(eventName) ?? []
   id = id + 1
   list.push({ callback, id, once: true })
@@ -25,7 +24,7 @@ export function once(eventName: TSdkEvent, callback: TSdkEventCallbackFn) {
   return () => off(eventName, id)
 }
 
-export function on(eventName: TSdkEvent, callback: TSdkEventCallbackFn) {
+export function on<T extends string>(eventName: T, callback: TSdkEventCallbackFn) {
   const list = passportEventsMap.get(eventName) ?? []
   id = id + 1
   list.push({ callback, id })
@@ -33,7 +32,7 @@ export function on(eventName: TSdkEvent, callback: TSdkEventCallbackFn) {
   return () => off(eventName, id)
 }
 
-export function emit(eventName: TSdkEvent, data?: unknown) {
+export function emit<T extends string>(eventName: T, data?: unknown) {
   const list = passportEventsMap.get(eventName)
   if (!list?.length) return
 

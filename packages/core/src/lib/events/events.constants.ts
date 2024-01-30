@@ -3,6 +3,4 @@ export const SDK_EVENT = {
   INIT: 'INIT',
   LOGIN: 'LOGIN',
   LOGOUT: 'LOGOUT',
-  // evm
-  EVM_SWITCH_CHAIN: 'EVM_SWITCH_CHAIN',
 } as const
