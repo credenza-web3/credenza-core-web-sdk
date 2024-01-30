@@ -105,7 +105,6 @@
   }
 
   const handleSignMessage = async () => {
-    messageToSign = new Date().toISOString()
     const provider = await sdk.evm.getEthersProvider()
     const signer = await provider.getSigner()
     const sig = await signer.signMessage(messageToSign.trim())
