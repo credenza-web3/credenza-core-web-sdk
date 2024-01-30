@@ -77,23 +77,24 @@ export class EvmExtension {
     return new ethers.BrowserProvider(provider)
   }
 
-  public async switchChain(params: TChainConfig) {
+  public async switchChain(chainConfig: TChainConfig) {
     const provider = await this.getProvider()
     switch (this.sdk.getLoginProvider()) {
       case LS_LOGIN_PROVIDER.METAMASK: {
-        await this.metamask._switchChain(params)
+        await this.metamask._switchChain(chainConfig)
         break
       }
       case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
-        await this.walletconnect._switchChain(params)
+        await this.walletconnect._switchChain(chainConfig)
         break
       }
       case LS_LOGIN_PROVIDER.OAUTH: {
-        await (<CredenzaProvider>provider).switchChain(params)
+        await (<CredenzaProvider>provider).switchChain(chainConfig)
         break
       }
     }
-    this.chainConfig = params
+    this.chainConfig = chainConfig
+    this.sdk._emit(SDK_EVENT.EVM_SWITCH_CHAIN, { chainConfig })
   }
 
   public getChainConfig() {
