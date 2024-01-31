@@ -11,17 +11,21 @@ export class MetamaskExtension {
   private metamaskProvider: MetaMaskInpageProvider
 
   async _initialize(sdk: CredenzaSDK) {
-    const provider = await detectEthereumProvider<MetaMaskInpageProvider>()
-    if (!provider || !provider.isMetaMask) throw new Error('Metamask is not installed')
-    this.sdk = sdk
-    this.metamaskProvider = provider
+    try {
+      this.sdk = sdk
+      const provider = await detectEthereumProvider<MetaMaskInpageProvider>()
+      if (!provider || !provider.isMetaMask) return
+      this.metamaskProvider = provider
+    } catch (err) {}
   }
 
-  private isAvailable() {
-    return !!this.metamaskProvider
+  private _isAvailable() {
+    if (!this.metamaskProvider) throw new Error('Metamask is not installed')
+    return true
   }
 
-  async _addChain(params: TChainConfig) {
+  public async _addChain(params: TChainConfig) {
+    this._isAvailable()
     await this.metamaskProvider?.request({
       method: 'wallet_addEthereumChain',
       params: [
@@ -40,7 +44,8 @@ export class MetamaskExtension {
     })
   }
 
-  async _switchChain(params: TChainConfig) {
+  public async _switchChain(params: TChainConfig) {
+    this._isAvailable()
     const currentChainId = await this.metamaskProvider.request({ method: 'eth_chainId' })
     if (currentChainId === params.chainId) return
     try {
@@ -58,11 +63,8 @@ export class MetamaskExtension {
     })
   }
 
-  async _getProvider() {
-    if (!this.sdk.evm)
-      throw new Error(
-        'Evm extension is required to operate with blockchain. You should never use this function in your code. Use sdk.evm.getProvider instead.',
-      )
+  public async _getProvider() {
+    this._isAvailable()
     return new Proxy(this.metamaskProvider, {
       get: (target, property: never) => {
         if (property !== 'request') return target[property]
@@ -75,7 +77,8 @@ export class MetamaskExtension {
     })
   }
 
-  async login() {
+  public async login() {
+    this._isAvailable()
     await this._switchChain(this.sdk.evm.getChainConfig())
 
     const requestApiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/evm/auth`
@@ -97,8 +100,8 @@ export class MetamaskExtension {
     await this.sdk._setAccessToken(access_token, LS_LOGIN_PROVIDER.METAMASK)
   }
 
-  async getAddress() {
-    if (!this.isAvailable()) throw new Error('Metamask is not installed')
+  public async getAddress() {
+    this._isAvailable()
     const result = await this.metamaskProvider.request<string[]>({ method: 'eth_requestAccounts', params: [] })
     if (result?.[0]) return result[0].toLowerCase()
     throw new Error('Cannot get metamask address')
