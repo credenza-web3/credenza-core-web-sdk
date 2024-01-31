@@ -14,16 +14,17 @@ export class WalletConnectExtension {
   private sdk: CredenzaSDK
   private metadata: TMetadata
   private projectId: string
+  private chains: TChainConfig[]
   private modal: ReturnType<typeof createWeb3Modal>
   private walletConnectProvider: ReturnType<typeof this.modal.getWalletProvider>
 
-  constructor(params: { projectId: string; metadata: TMetadata }) {
+  constructor(params: { projectId: string; metadata: TMetadata; chains?: TChainConfig[] }) {
     this.projectId = params.projectId
     this.metadata = params.metadata
+    this.chains = params.chains ?? []
   }
 
-  private _getWalletConnectChainConfig() {
-    const chainConfig = this.sdk.evm.getChainConfig()
+  private _getWalletConnectChainConfig(chainConfig: TChainConfig) {
     return {
       chainId: parseInt(chainConfig.chainId, 16),
       name: chainConfig.displayName,
@@ -31,6 +32,14 @@ export class WalletConnectExtension {
       explorerUrl: chainConfig.blockExplorer,
       rpcUrl: chainConfig.rpcUrl,
     }
+  }
+
+  private _getChains() {
+    const defaultChainConfig = this.sdk.evm.getChainConfig()
+    const chains = [...this.chains]
+    const isDefaultChainAddedToList = !!chains.find((chainConfig) => chainConfig.chainId === defaultChainConfig.chainId)
+    if (!isDefaultChainAddedToList) chains.unshift(defaultChainConfig)
+    return chains.map(this._getWalletConnectChainConfig)
   }
 
   private _initModal() {
@@ -42,7 +51,7 @@ export class WalletConnectExtension {
         enableEmail: false,
         metadata: this.metadata,
       }),
-      chains: [this._getWalletConnectChainConfig()],
+      chains: this._getChains(),
       projectId: this.projectId,
     })
     this.modal.subscribeProvider((proxy) => {
@@ -71,6 +80,19 @@ export class WalletConnectExtension {
     return ensureProviderPromise
   }
 
+  private async _modalClosedBeforeConnection() {
+    return new Promise((resolve, reject) => {
+      const unsubscribe = this.modal.subscribeEvents((proxy) => {
+        if (proxy.data.event !== 'MODAL_CLOSE') return
+        unsubscribe()
+        setTimeout(() => {
+          if (this.walletConnectProvider) return resolve(true)
+          return reject(new Error('Wallet connect modal was closed.'))
+        })
+      })
+    })
+  }
+
   async _initialize(sdk: CredenzaSDK) {
     this.sdk = sdk
     this.sdk.on(SDK_EVENT.LOGOUT, () => void this.modal?.disconnect())
@@ -80,6 +102,7 @@ export class WalletConnectExtension {
   async _connect() {
     if (this.modal.getIsConnected()) return true
     await this.modal.open()
+    await Promise.race([this._ensureProvider(true), this._modalClosedBeforeConnection()])
   }
 
   async _getProvider() {
@@ -138,7 +161,6 @@ export class WalletConnectExtension {
   async login() {
     await this.modal?.disconnect()
     await this._connect()
-    await this._ensureProvider(true)
 
     const requestApiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/evm/auth`
     const address = this.modal.getAddress()

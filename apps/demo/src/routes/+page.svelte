@@ -34,6 +34,7 @@
           new MetamaskExtension(),
           new WalletConnectExtension({
             projectId: 'e98bfa148f5b128914133e707b993b1d',
+            chains: [mumbai, spicy],
             metadata: {
               name: 'Test',
               description: 'Test description ',
