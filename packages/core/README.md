@@ -44,7 +44,7 @@ const sdk = new CredenzaSDK({
 ## Events
 
 ```
-const event = CredenzaSDK.SDK_EVENT[<EVENT_NAME>]
+const event = CredenzaSDK.SDK_EVENT.<EVENT_NAME>
 const unsubscribe = sdk.on(event, (data) => {})
 sdk.once(event, (data) => {})
 ```

@@ -3,5 +3,4 @@ export const SDK_EVENT = {
   INIT: 'INIT',
   LOGIN: 'LOGIN',
   LOGOUT: 'LOGOUT',
-  EVM_PROVIDER_CONNECTED: 'EVM_PROVIDER_CONNECTED',
 } as const

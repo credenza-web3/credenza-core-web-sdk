@@ -3,6 +3,9 @@ import { CredenzaProvider } from './provider/provider'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import type { MetaMaskInpageProvider } from '@metamask/providers'
 import type { TChainConfig } from '@packages/common/types/chain-config'
+import type { TSdkEvmEvent } from './lib/events/events.types'
+import { emit, once, on } from '@packages/common/events/events'
+import { EVM_EVENT } from './lib/events/events.constants'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 import type { Eip1193Provider } from 'ethers'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
@@ -14,6 +17,8 @@ type TExtension = MetamaskExtension | WalletConnectExtension
 
 export { ethers, CredenzaProvider }
 export class EvmExtension {
+  public static EVM_EVENT = EVM_EVENT
+
   public name = 'evm' as const
   private sdk: CredenzaSDK
   private provider: CredenzaProvider | MetaMaskInpageProvider | Eip1193Provider | undefined
@@ -47,21 +52,26 @@ export class EvmExtension {
   }
 
   private async _buildProvider() {
-    switch (this.sdk.getLoginProvider()) {
-      case LS_LOGIN_PROVIDER.METAMASK: {
-        return await this.metamask._getProvider()
+    try {
+      switch (this.sdk.getLoginProvider()) {
+        case LS_LOGIN_PROVIDER.METAMASK: {
+          return await this.metamask._getProvider()
+        }
+        case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
+          return await this.walletconnect._getProvider()
+        }
+        case LS_LOGIN_PROVIDER.OAUTH: {
+          const credenzaProvider = new CredenzaProvider({ chainConfig: this.chainConfig, sdk: this.sdk })
+          await credenzaProvider.connect()
+          return credenzaProvider
+        }
+        default: {
+          throw new Error('Cannot build evm provider')
+        }
       }
-      case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
-        return await this.walletconnect._getProvider()
-      }
-      case LS_LOGIN_PROVIDER.OAUTH: {
-        const credenzaProvider = new CredenzaProvider({ chainConfig: this.chainConfig, sdk: this.sdk })
-        await credenzaProvider.connect()
-        return credenzaProvider
-      }
-      default: {
-        throw new Error('Cannot build evm provider')
-      }
+    } catch (err) {
+      this._emit('EVM_ERROR', err)
+      throw err
     }
   }
 
@@ -77,26 +87,36 @@ export class EvmExtension {
     return new ethers.BrowserProvider(provider)
   }
 
-  public async switchChain(params: TChainConfig) {
-    const provider = await this.getProvider()
-    switch (this.sdk.getLoginProvider()) {
-      case LS_LOGIN_PROVIDER.METAMASK: {
-        await this.metamask._switchChain(params)
-        break
+  public async switchChain(chainConfig: TChainConfig) {
+    try {
+      const provider = await this.getProvider()
+      switch (this.sdk.getLoginProvider()) {
+        case LS_LOGIN_PROVIDER.METAMASK: {
+          await this.metamask._switchChain(chainConfig)
+          break
+        }
+        case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
+          await this.walletconnect._switchChain(chainConfig)
+          break
+        }
+        case LS_LOGIN_PROVIDER.OAUTH: {
+          await (<CredenzaProvider>provider).switchChain(chainConfig)
+          break
+        }
       }
-      case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
-        await this.walletconnect._switchChain(params)
-        break
-      }
-      case LS_LOGIN_PROVIDER.OAUTH: {
-        await (<CredenzaProvider>provider).switchChain(params)
-        break
-      }
+      this.chainConfig = chainConfig
+      this._emit(EVM_EVENT.EVM_SWITCH_CHAIN, { chainConfig })
+    } catch (err) {
+      this._emit(EVM_EVENT.EVM_ERROR, err)
+      throw err
     }
-    this.chainConfig = params
   }
 
   public getChainConfig() {
     return this.chainConfig
   }
+
+  public once = once<TSdkEvmEvent>
+  public on = on<TSdkEvmEvent>
+  public _emit = emit<TSdkEvmEvent>
 }

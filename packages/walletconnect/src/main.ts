@@ -4,6 +4,7 @@ import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
+import { toNumber } from 'ethers'
 
 let ensureProviderPromise: Promise<true> | undefined
 type TMetadata = Parameters<typeof defaultConfig>[0]['metadata']
@@ -119,7 +120,7 @@ export class WalletConnectExtension {
   async _switchChain(params: TChainConfig) {
     await this._ensureProvider()
     const currentChainId = await this.walletConnectProvider?.request({ method: 'eth_chainId' })
-    if (currentChainId === params.chainId) return
+    if (toNumber(currentChainId) === toNumber(params.chainId)) return
     try {
       return await this.walletConnectProvider?.request({
         method: 'wallet_switchEthereumChain',
