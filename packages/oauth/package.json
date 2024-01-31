@@ -1,6 +1,6 @@
 {
   "name": "@credenza3/web-sdk-ext-oauth",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"
