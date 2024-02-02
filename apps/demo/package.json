@@ -20,8 +20,9 @@
     "@credenza3/web-sdk-ext-evm": "workspace:*",
     "@credenza3/web-sdk-ext-metamask": "workspace:*",
     "@credenza3/web-sdk-ext-oauth": "workspace:*",
+    "@credenza3/web-sdk-ext-sui": "workspace:*",
     "@credenza3/web-sdk-ext-walletconnect": "workspace:*",
-    "@credenza3/web-sdk-ext-sui": "workspace:*"
+    "@mysten/sui.js": "^0.49.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.41.1",

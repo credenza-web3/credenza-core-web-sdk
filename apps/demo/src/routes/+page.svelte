@@ -11,6 +11,8 @@
   import { EvmExtension, ethers } from '@credenza3/web-sdk-ext-evm/src/main'
   import { SuiExtension } from '@credenza3/web-sdk-ext-sui/src/main'
 
+  import Sui from '../components/Sui.svelte'
+
   const { isAddress } = ethers
 
   let chainConfig = spicy
@@ -212,4 +214,6 @@
     <input type="text" bind:value={image} placeholder="image url" />
     <button on:click={handleUpdateProfile}> Update profile </button>
   </div>
+
+  <Sui {sdk} />
 {/if}

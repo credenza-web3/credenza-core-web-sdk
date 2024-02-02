@@ -59,6 +59,9 @@ importers:
       '@credenza3/web-sdk-ext-walletconnect':
         specifier: workspace:*
         version: link:../../packages/walletconnect
+      '@mysten/sui.js':
+        specifier: ^0.49.1
+        version: 0.49.1
     devDependencies:
       '@playwright/test':
         specifier: ^1.41.1
@@ -226,16 +229,16 @@ importers:
     devDependencies:
       '@types/node':
         specifier: ^20.11.5
-        version: 20.11.5
+        version: 20.11.13
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
       vite:
         specifier: ^5.0.12
-        version: 5.0.12(@types/node@20.11.5)
+        version: 5.0.12(@types/node@20.11.13)
       vite-plugin-dts:
         specifier: ^3.7.1
-        version: 3.7.1(@types/node@20.11.5)(typescript@5.3.3)(vite@5.0.12)
+        version: 3.7.2(@types/node@20.11.13)(typescript@5.3.3)(vite@5.0.12)
 
   packages/tsconfig: {}
 
@@ -1416,6 +1419,10 @@ packages:
       '@stablelib/keyagreement': 1.0.1
       '@stablelib/random': 1.0.2
       '@stablelib/wipe': 1.0.1
+    dev: false
+
+  /@suchipi/femver@1.0.0:
+    resolution: {integrity: sha512-bprE8+K5V+DPX7q2e2K57ImqNBdfGHDIWaGI5xHxZoxbKOuQZn4wzPiUxOAHnsUr3w3xHrWXwN7gnG/iIuEMIg==}
     dev: false
 
   /@sveltejs/adapter-auto@3.1.1(@sveltejs/kit@2.5.0):
