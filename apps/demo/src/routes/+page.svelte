@@ -36,6 +36,7 @@
           new MetamaskExtension(),
           new WalletConnectExtension({
             projectId: 'e98bfa148f5b128914133e707b993b1d',
+            chains: [mumbai, spicy],
             metadata: {
               name: 'Test',
               description: 'Test description ',
@@ -58,6 +59,7 @@
     sdk.oauth.login({
       scope: 'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui',
       redirectUrl: window.location.href,
+      //type: OAuthExtension.LOGIN_TYPE.GOOGLE,
     })
   }
 
@@ -110,6 +112,8 @@
     const signer = await provider.getSigner()
     const sig = await signer.signMessage(messageToSign.trim())
     console.log('Signature: ', sig)
+    console.log(await signer.getAddress(), ethers.verifyMessage(messageToSign, sig))
+    messageToSign = ''
   }
 
   const handleGetEvmAddress = async () => {
@@ -152,7 +156,8 @@
   onMount(async () => {
     await sdk.initialize()
     Object.assign(window, { credenzaSDK: sdk })
-    if (sdk.isLoggedIn()) await handleLogin()
+    if (!sdk.isLoggedIn()) return
+    await handleLogin()
   })
 </script>
 

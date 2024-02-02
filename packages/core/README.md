@@ -1,5 +1,9 @@
 # CREDENZA WEB SDK Core
 
+## Registering client
+
+Visit https://developers.credenza3.com/ sign in and create your Client
+
 ## Installation
 
 ```
@@ -10,11 +14,13 @@ npm install @credenza3/web-sdk
 
 [OAuthExtension](https://www.npmjs.com/package/@credenza3/web-sdk-ext-oauth)
 
-[MetamaskExtension](https://www.npmjs.com/package/@credenza3/web-sdk-ext-metamask)
-
 [AccountExtension](https://www.npmjs.com/package/@credenza3/web-sdk-ext-account)
 
 [EvmExtension](https://www.npmjs.com/package/@credenza3/web-sdk-ext-evm)
+
+-- [WalletConnectExtension](https://www.npmjs.com/package/@credenza3/web-sdk-ext-walletconnect)
+
+-- [MetamaskExtension](https://www.npmjs.com/package/@credenza3/web-sdk-ext-metamask)
 
 ## Usage
 
@@ -25,10 +31,20 @@ const sdk = new CredenzaSDK({
   clientId: <CLIENT_ID>,
   env?: CredenzaSDK.SDK_ENV.STAGING
   extensions: [
-    new EvmExtension(chainConfig),
+    new EvmExtension({chainConfig, extensions: [
+      new MetamaskExtension()
+      new WalletConnectExtension()
+    ]}),
     new OAuthExtension(),
     new AccountExtension(),
-    new MetamaskExtension()
   ], // select necessary extensions
 })
+```
+
+## Events
+
+```
+const event = CredenzaSDK.SDK_EVENT.<EVENT_NAME>
+const unsubscribe = sdk.on(event, (data) => {})
+sdk.once(event, (data) => {})
 ```
