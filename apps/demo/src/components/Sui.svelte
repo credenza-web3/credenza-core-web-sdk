@@ -2,19 +2,22 @@
   import type { CredenzaSDK } from '@credenza3/web-sdk/src/main'
   import { getFullnodeUrl, SuiClient } from '@mysten/sui.js/client'
   import { getFaucetHost, requestSuiFromFaucetV0 } from '@mysten/sui.js/faucet'
-  //import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519'
+  import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519'
   import { MIST_PER_SUI } from '@mysten/sui.js/utils'
 
   const suiClient = new SuiClient({ url: getFullnodeUrl('devnet') })
-  //const ephemeralKeyPair = new Ed25519Keypair()
+  //
 
   export let sdk: CredenzaSDK
   console.log(sdk)
 
-  // const handleSuiTx = async () => {
-  //   const txb = new TransactionBlock();
-  //   txb.setSender(zkLoginUserAddress);
-  // }
+  const handleSuiTx = async () => {
+    const ephemeralKeyPair = new Ed25519Keypair()
+    const prove = await sdk.sui.getZKProof(ephemeralKeyPair)
+    console.log(prove)
+    // const txb = new TransactionBlock();
+    // txb.setSender(zkLoginUserAddress);
+  }
 
   const handleSuiBalance = async () => {
     const balance = await suiClient.getBalance({
@@ -39,5 +42,5 @@
   <br />
   <button on:click={handleSuiBalance}> Sui balance </button>
   <button on:click={handleSuiFaucet}> Sui Faucet </button>
-  <!-- <button on:click={handleSuiTx}> Sui tx </button> -->
+  <button on:click={handleSuiTx}> Sui tx </button>
 </div>

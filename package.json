@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@metamask/providers": "^14.0.2",
+    "@mysten/sui.js": "^0.49.1",
     "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
     "ethers": "^6.10.0",
@@ -23,6 +24,5 @@
   "packageManager": "pnpm@8.9.0",
   "engines": {
     "node": ">=20.10"
-  },
-  "dependencies": {}
+  }
 }
