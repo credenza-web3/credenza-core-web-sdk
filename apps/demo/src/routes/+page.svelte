@@ -22,7 +22,7 @@
   let newPassword = ''
   let confirmPassword = ''
   let name = ''
-  let image = ''
+  let picture = ''
 
   const sdk = new CredenzaSDK({
     clientId: PUBLIC_CLIENT_ID,
@@ -80,7 +80,7 @@
     const result = await sdk.account.info()
     console.log('UserInfo: ', result)
     name = result.name || ''
-    image = result.image || ''
+    picture = result.picture || ''
   }
 
   const handleSwitchChain = async () => {
@@ -141,7 +141,7 @@
   }
 
   const handleUpdateProfile = async () => {
-    const result = await sdk.account.updateProfile({ name, picture: image })
+    const result = await sdk.account.updateProfile({ name, picture })
     console.log('Profile updated:', result)
   }
 
@@ -207,7 +207,7 @@
   <br />
   <div>
     <input type="text" bind:value={name} placeholder="name" />
-    <input type="text" bind:value={image} placeholder="image url" />
+    <input type="text" bind:value={picture} placeholder="image url" />
     <button on:click={handleUpdateProfile}> Update profile </button>
   </div>
 {/if}
