@@ -64,8 +64,8 @@ export class AccountExtension {
     return json
   }
 
-  async updateProfile(params: { name: string; image: string }) {
-    if (!params.name && !params.image) throw new Error('Nothing to update')
+  async updateProfile(params: { name: string; picture: string }) {
+    if (!params.name && !params.picture) throw new Error('Nothing to update')
 
     const apiUrl = `${getOAuthApiUrl(this.sdk)}/accounts/me`
     const response = await fetch(apiUrl, {
@@ -76,7 +76,7 @@ export class AccountExtension {
       },
       body: JSON.stringify({
         ...(params.name ? { name: params.name.trim() } : {}),
-        ...(params.image ? { image: params.image.trim() } : {}),
+        ...(params.picture ? { image: params.picture.trim() } : {}),
       }),
     })
     if (!response.ok) throw new Error(`Cannot update user: ${response.statusText}`)
