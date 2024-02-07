@@ -31,6 +31,8 @@ export class OAuthExtension {
     url.searchParams.append('redirect_uri', opts.redirectUrl)
     url.searchParams.append('nonce', nonce)
     url.searchParams.append('state', state)
+    url.searchParams.append('credenza_session_length_seconds', String(opts.session_length_seconds ?? 60 * 60))
+
     if (opts.type) {
       if (opts.type !== OAUTH_LOGIN_TYPE.CREDENTIALS) url.pathname += `/${opts.type}`
       url.searchParams.append('allowed_login_types', opts.type)
