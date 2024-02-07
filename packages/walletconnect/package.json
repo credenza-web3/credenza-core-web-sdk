@@ -1,6 +1,6 @@
 {
   "name": "@credenza3/web-sdk-ext-walletconnect",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"
@@ -8,7 +8,7 @@
   "author": "Credenza",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.11.13",
+    "@types/node": "^20.11.16",
     "typescript": "^5.3.3",
     "vite": "^5.0.12",
     "vite-plugin-dts": "^3.7.2"
@@ -19,7 +19,7 @@
     "dist"
   ],
   "dependencies": {
-    "@web3modal/ethers": "^3.5.7"
+    "@web3modal/ethers": "^4.0.0"
   },
   "peerDependencies": {
     "ethers": "^6.10.0"

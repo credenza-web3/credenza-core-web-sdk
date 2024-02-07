@@ -14,8 +14,8 @@
     "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
     "ethers": "^6.10.0",
-    "husky": "^9.0.7",
-    "prettier": "^3.2.4",
+    "husky": "^9.0.10",
+    "prettier": "^3.2.5",
     "prettier-plugin-svelte": "^3.1.2",
     "tsconfig": "workspace:*",
     "turbo": "latest"

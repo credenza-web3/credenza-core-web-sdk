@@ -30,7 +30,7 @@ Update Profile data
 ```
 await sdk.account.updateProfile({
   name?: string
-  image?: string // url
+  picture?: string // url
 })
 ```
 
