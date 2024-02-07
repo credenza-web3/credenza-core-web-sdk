@@ -57,7 +57,8 @@
     sdk.oauth.login({
       scope: 'profile profile.write email phone blockchain.evm.write blockchain.evm',
       redirectUrl: window.location.href,
-      //type: OAuthExtension.LOGIN_TYPE.GOOGLE,
+      type: OAuthExtension.LOGIN_TYPE.PASSWORDLESS,
+      passwordless_type: OAuthExtension.PASSWORDLESS_LOGIN_TYPE.PHONE,
     })
   }
 
