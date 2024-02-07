@@ -38,3 +38,15 @@ await sdk.oauth.login({
   passwordless_type?: OAuthExtension.PASSWORDLESS_LOGIN_TYPE<SELECTED_TYPE>
 })
 ```
+
+Destroy OAuth flow session (Requires user to be logged in)
+
+```
+await sdk.oauth.revokeSession()
+```
+
+Destroy OAuth flow browser session and redirect user.
+
+```
+await sdk.oauth.revokeBrowserSessionWithRedirect(<REDIRECT_URI>)
+```
