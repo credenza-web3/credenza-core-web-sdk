@@ -141,7 +141,7 @@
   }
 
   const handleUpdateProfile = async () => {
-    const result = await sdk.account.updateProfile({ name, image })
+    const result = await sdk.account.updateProfile({ name, picture: image })
     console.log('Profile updated:', result)
   }
 
