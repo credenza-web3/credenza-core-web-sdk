@@ -25,6 +25,12 @@ Login with Credenza OAuth2
 await sdk.oauth.login({
   scope: 'profile email phone blockchain.evm.write blockchain.evm',
   redirectUrl: window.location.href, // must be configured in client settings
-  type?: OAuthExtension.LOGIN_TYPE.<SELECTED_TYPE> //explicitly define login type
+
+  // explicitly define login type
+  type?: OAuthExtension.LOGIN_TYPE.<SELECTED_TYPE>
+
+  // explicitly define passwordless login type
+  // only available if `type` set to OAuthExtension.LOGIN_TYPE.PASSWORDLESS`
+  passwordless_type?: OAuthExtension.PASSWORDLESS_LOGIN_TYPE<SELECTED_TYPE>
 })
 ```
