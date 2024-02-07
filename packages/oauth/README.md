@@ -26,6 +26,10 @@ await sdk.oauth.login({
   scope: 'profile email phone blockchain.evm.write blockchain.evm',
   redirectUrl: window.location.href, // must be configured in client settings
 
+  // defines Authentication flow session duration
+  // defaults to 1h
+  session_length_seconds?: number
+
   // explicitly define login type
   type?: OAuthExtension.LOGIN_TYPE.<SELECTED_TYPE>
 
