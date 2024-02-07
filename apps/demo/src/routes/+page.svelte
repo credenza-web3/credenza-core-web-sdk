@@ -72,9 +72,21 @@
     await handleLogin()
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     sdk.logout()
     isLoggedIn = false
+    console.log('User logged out')
+  }
+
+  const handleRevokeSession = async (opts?: { revokeAllSessions?: boolean; revokeBrowserSession?: boolean }) => {
+    const loginProvider = sdk.getLoginProvider()
+    if (opts?.revokeBrowserSession && loginProvider === 'oauth') {
+      sdk.oauth.revokeBrowserSessionWithRedirect(window.location.href)
+    }
+    if (opts?.revokeAllSessions && loginProvider === 'oauth') {
+      await sdk.oauth.revokeSession()
+      console.log('Session revoked')
+    }
   }
 
   const handleGetUserInfo = async () => {
@@ -165,6 +177,14 @@
   <button on:click={handleMetamaskLogin}> Login With Metamask </button>
   <button on:click={handleWalletConnectLogin}> Login With WalletConnect </button>
 {:else}
+  <div>
+    <button on:click={handleLogout}> Logout </button>
+    <button on:click={() => handleRevokeSession({ revokeAllSessions: true })}> Revoke session </button>
+    <button on:click={() => handleRevokeSession({ revokeBrowserSession: true })}>
+      Revoke browser session with redirect
+    </button>
+  </div>
+  <br />
   <select bind:value={chainConfig} on:change={handleSwitchChain}>
     {#each [mumbai, spicy] as chain}
       <option selected={chain.chainId === chainConfig.chainId} value={chain}>
@@ -172,7 +192,6 @@
       </option>
     {/each}
   </select>
-  <button on:click={handleLogout}> Logout </button>
   <button on:click={handleGetUserInfo}> Log Account Info </button>
   <button on:click={handleGetEvmAddress}> Log Blockchain Info </button>
   <div>

@@ -7,6 +7,7 @@ import { jwtDecode } from 'jwt-decode'
 import { LS_OAUTH_NONCE_KEY, LS_OAUTH_STATE_KEY } from './constants/localstorage'
 import { OAUTH_LOGIN_TYPE, OAUTH_PASSWORDLESS_LOGIN_TYPE } from './constants/login-types'
 import type { TOAuthLoginOpts } from './main.types'
+import { revokeOAuth2Session } from './lib/http-requests'
 
 export class OAuthExtension {
   static LOGIN_TYPE = OAUTH_LOGIN_TYPE
@@ -18,6 +19,17 @@ export class OAuthExtension {
   async _initialize(sdk: CredenzaSDK) {
     this.sdk = sdk
     await this._handleRedirectResult()
+  }
+
+  async revokeSession() {
+    if (!this.sdk.isLoggedIn()) throw new Error('Revoke failed: User is not logged in')
+    return await revokeOAuth2Session(this.sdk)
+  }
+
+  revokeBrowserSessionWithRedirect(redirectUri: string) {
+    const url = new URL(getOAuthApiUrl(this.sdk) + '/oauth2/logout')
+    url.searchParams.append('redirect_uri', redirectUri)
+    return (window.location.href = url.toString())
   }
 
   login(opts: TOAuthLoginOpts) {
