@@ -2,7 +2,7 @@ import { Eip1193Provider, JsonRpcProvider, VoidSigner, TransactionLike, toNumber
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { listAccounts, sign } from './lib/http-requests'
 import { OAUTH_API_URL } from '@packages/common/constants/oauth'
-import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
+import { getEvmApiUrl } from '@packages/common/evm/evm'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 import { EVM_PROVIDER_STATE } from '../main.constants'
 
@@ -27,7 +27,7 @@ export class CredenzaProvider implements Eip1193Provider {
     if (this.sdk)
       return {
         accessToken: `Bearer ${this.sdk.getAccessToken()}`,
-        apiUrl: getOAuthApiUrl(this.sdk),
+        apiUrl: getEvmApiUrl(this.sdk),
       }
     return {
       accessToken: `Bearer ${this.accessToken}`,
