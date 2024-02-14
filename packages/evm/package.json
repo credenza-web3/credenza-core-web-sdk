@@ -1,6 +1,6 @@
 {
   "name": "@credenza3/web-sdk-ext-evm",
-  "version": "0.0.5",
+  "version": "0.0.8",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"
@@ -8,9 +8,9 @@
   "author": "Credenza",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.11.16",
+    "@types/node": "^20.11.17",
     "typescript": "^5.3.3",
-    "vite": "^5.0.12",
+    "vite": "^5.1.2",
     "vite-plugin-dts": "^3.7.2"
   },
   "main": "dist/main.js",
@@ -19,6 +19,6 @@
     "dist"
   ],
   "dependencies": {
-    "ethers": "^6.10.0"
+    "ethers": "^6.11.0"
   }
 }
