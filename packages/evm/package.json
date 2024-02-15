@@ -19,6 +19,6 @@
     "dist"
   ],
   "dependencies": {
-    "ethers": "^6.11.0"
+    "ethers": "^6.11.1"
   }
 }
