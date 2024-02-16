@@ -48,27 +48,25 @@ export class MetamaskExtension {
   }
 
   public async _switchChain(params: TChainConfig) {
+    this._isAvailable()
     if (switchChainPromise) return switchChainPromise
 
-    this._isAvailable()
-    const currentChainId = await this.metamaskProvider.request({ method: 'eth_chainId' })
-    if (currentChainId === params.chainId) return
-    try {
-      switchChainPromise = this.metamaskProvider.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: params.chainId }],
+    switchChainPromise = this.metamaskProvider
+      .request({ method: 'eth_chainId' })
+      .then((currentChainId) => {
+        if (currentChainId === params.chainId) return Promise.reject(new Error('SWITCH_CHAIN_NOT_REQUIRED'))
+        return this._addChain(params)
       })
-      await switchChainPromise
-    } catch (err) {
-      if (err.code === 4902) {
-        switchChainPromise = this._addChain(params)
-        await switchChainPromise
-      } else throw err
-    }
-    switchChainPromise = this.metamaskProvider.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: params.chainId }],
-    })
+      .then(() => {
+        return this.metamaskProvider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: params.chainId }],
+        })
+      })
+      .catch((err) => {
+        if (err.message === 'SWITCH_CHAIN_NOT_REQUIRED') return Promise.resolve()
+        return Promise.reject(err)
+      })
     await switchChainPromise
     switchChainPromise = undefined
   }
