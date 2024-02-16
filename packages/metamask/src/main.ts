@@ -5,6 +5,7 @@ import detectEthereumProvider from '@metamask/detect-provider'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 
+let switchChainPromise: Promise<unknown> | undefined
 export class MetamaskExtension {
   public name = 'metamask' as const
   private sdk: CredenzaSDK
@@ -16,7 +17,9 @@ export class MetamaskExtension {
       const provider = await detectEthereumProvider<MetaMaskInpageProvider>()
       if (!provider || !provider.isMetaMask) return
       this.metamaskProvider = provider
-    } catch (err) {}
+    } catch (err) {
+      /** */
+    }
   }
 
   private _isAvailable() {
@@ -45,22 +48,29 @@ export class MetamaskExtension {
   }
 
   public async _switchChain(params: TChainConfig) {
+    if (switchChainPromise) return switchChainPromise
+
     this._isAvailable()
     const currentChainId = await this.metamaskProvider.request({ method: 'eth_chainId' })
     if (currentChainId === params.chainId) return
     try {
-      return await this.metamaskProvider.request({
+      switchChainPromise = this.metamaskProvider.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: params.chainId }],
       })
+      await switchChainPromise
     } catch (err) {
-      if (err.code === 4902) await this._addChain(params)
-      else throw err
+      if (err.code === 4902) {
+        switchChainPromise = this._addChain(params)
+        await switchChainPromise
+      } else throw err
     }
-    return await this.metamaskProvider.request({
+    switchChainPromise = this.metamaskProvider.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: params.chainId }],
     })
+    await switchChainPromise
+    switchChainPromise = undefined
   }
 
   public async _getProvider() {
