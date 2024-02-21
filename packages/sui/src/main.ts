@@ -37,8 +37,12 @@ export class SuiExtension {
   }
 
   public getSuiClient(): SuiClient {
-    this._assureLogin()
     return this.client
+  }
+
+  public getNetworkName() {
+    this._assureLogin()
+    return this.currentSuiNetwork
   }
 
   public async getAddress(): Promise<string> {
@@ -48,11 +52,6 @@ export class SuiExtension {
       this.suiAddress = address
     }
     return this.suiAddress as string
-  }
-
-  public getNetworkName() {
-    this._assureLogin()
-    return this.currentSuiNetwork
   }
 
   public async signPersonalMessage(message: string) {
