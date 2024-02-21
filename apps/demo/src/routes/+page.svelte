@@ -25,7 +25,7 @@
   let newPassword = ''
   let confirmPassword = ''
   let name = ''
-  let image = ''
+  let picture = ''
 
   const sdk = new CredenzaSDK({
     clientId: PUBLIC_CLIENT_ID,
@@ -61,7 +61,8 @@
     sdk.oauth.login({
       scope: 'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui',
       redirectUrl: window.location.href,
-      //type: OAuthExtension.LOGIN_TYPE.GOOGLE,
+      //type: OAuthExtension.LOGIN_TYPE.PASSWORDLESS,
+      //passwordless_type: OAuthExtension.PASSWORDLESS_LOGIN_TYPE.PHONE,
     })
   }
 
@@ -75,16 +76,28 @@
     await handleLogin()
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     sdk.logout()
     isLoggedIn = false
+    console.log('User logged out')
+  }
+
+  const handleRevokeSession = async (opts?: { revokeAllSessions?: boolean; revokeBrowserSession?: boolean }) => {
+    const loginProvider = sdk.getLoginProvider()
+    if (opts?.revokeBrowserSession && loginProvider === 'oauth') {
+      sdk.oauth.revokeBrowserSessionWithRedirect(window.location.href)
+    }
+    if (opts?.revokeAllSessions && loginProvider === 'oauth') {
+      await sdk.oauth.revokeSession()
+      console.log('Session revoked')
+    }
   }
 
   const handleGetUserInfo = async () => {
     const result = await sdk.account.info()
     console.log('UserInfo: ', result)
     name = result.name || ''
-    image = result.image || ''
+    picture = result.picture || ''
   }
 
   const handleSwitchChain = async () => {
@@ -145,7 +158,7 @@
   }
 
   const handleUpdateProfile = async () => {
-    const result = await sdk.account.updateProfile({ name, image })
+    const result = await sdk.account.updateProfile({ name, picture })
     console.log('Profile updated:', result)
   }
 
@@ -168,6 +181,14 @@
   <button on:click={handleMetamaskLogin}> Login With Metamask </button>
   <button on:click={handleWalletConnectLogin}> Login With WalletConnect </button>
 {:else}
+  <div>
+    <button on:click={handleLogout}> Logout </button>
+    <button on:click={() => handleRevokeSession({ revokeAllSessions: true })}> Revoke session </button>
+    <button on:click={() => handleRevokeSession({ revokeBrowserSession: true })}>
+      Revoke browser session with redirect
+    </button>
+  </div>
+  <br />
   <select bind:value={chainConfig} on:change={handleSwitchChain}>
     {#each [mumbai, spicy] as chain}
       <option selected={chain.chainId === chainConfig.chainId} value={chain}>
@@ -175,7 +196,6 @@
       </option>
     {/each}
   </select>
-  <button on:click={handleLogout}> Logout </button>
   <button on:click={handleGetUserInfo}> Log Account Info </button>
   <button on:click={handleGetEvmAddress}> Log Blockchain Info </button>
   <div>
@@ -211,7 +231,7 @@
   <br />
   <div>
     <input type="text" bind:value={name} placeholder="name" />
-    <input type="text" bind:value={image} placeholder="image url" />
+    <input type="text" bind:value={picture} placeholder="image url" />
     <button on:click={handleUpdateProfile}> Update profile </button>
   </div>
 

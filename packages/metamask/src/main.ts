@@ -5,6 +5,7 @@ import detectEthereumProvider from '@metamask/detect-provider'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 
+let switchChainPromise: Promise<unknown> | undefined
 export class MetamaskExtension {
   public name = 'metamask' as const
   private sdk: CredenzaSDK
@@ -16,7 +17,9 @@ export class MetamaskExtension {
       const provider = await detectEthereumProvider<MetaMaskInpageProvider>()
       if (!provider || !provider.isMetaMask) return
       this.metamaskProvider = provider
-    } catch (err) {}
+    } catch (err) {
+      /** */
+    }
   }
 
   private _isAvailable() {
@@ -46,21 +49,26 @@ export class MetamaskExtension {
 
   public async _switchChain(params: TChainConfig) {
     this._isAvailable()
-    const currentChainId = await this.metamaskProvider.request({ method: 'eth_chainId' })
-    if (currentChainId === params.chainId) return
-    try {
-      return await this.metamaskProvider.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: params.chainId }],
+    if (switchChainPromise) return switchChainPromise
+
+    switchChainPromise = this.metamaskProvider
+      .request({ method: 'eth_chainId' })
+      .then((currentChainId) => {
+        if (currentChainId === params.chainId) return Promise.reject(new Error('SWITCH_CHAIN_NOT_REQUIRED'))
+        return this._addChain(params)
       })
-    } catch (err) {
-      if (err.code === 4902) await this._addChain(params)
-      else throw err
-    }
-    return await this.metamaskProvider.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: params.chainId }],
-    })
+      .then(() => {
+        return this.metamaskProvider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: params.chainId }],
+        })
+      })
+      .catch((err) => {
+        if (err.message === 'SWITCH_CHAIN_NOT_REQUIRED') return Promise.resolve()
+        return Promise.reject(err)
+      })
+    await switchChainPromise
+    switchChainPromise = undefined
   }
 
   public async _getProvider() {

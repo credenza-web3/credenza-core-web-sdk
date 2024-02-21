@@ -5,14 +5,13 @@ import { generateRandomString } from '@packages/common/str/str'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import { jwtDecode } from 'jwt-decode'
 import { LS_OAUTH_NONCE_KEY, LS_OAUTH_STATE_KEY } from './constants/localstorage'
+import { OAUTH_LOGIN_TYPE, OAUTH_PASSWORDLESS_LOGIN_TYPE } from './constants/login-types'
+import type { TOAuthLoginOpts } from './main.types'
+import { revokeOAuth2Session } from './lib/http-requests'
 
 export class OAuthExtension {
-  static LOGIN_TYPE = {
-    CREDENTIALS: 'credentials',
-    PASSWORDLESS: 'passwordless',
-    GOOGLE: 'google',
-    TICKETMASTER: 'ticketmaster',
-  }
+  static LOGIN_TYPE = OAUTH_LOGIN_TYPE
+  static PASSWORDLESS_LOGIN_TYPE = OAUTH_PASSWORDLESS_LOGIN_TYPE
 
   public name = 'oauth' as const
   private sdk: CredenzaSDK
@@ -22,11 +21,18 @@ export class OAuthExtension {
     await this._handleRedirectResult()
   }
 
-  login(opts: {
-    scope: string
-    redirectUrl: string
-    type?: (typeof OAuthExtension.LOGIN_TYPE)[keyof typeof OAuthExtension.LOGIN_TYPE]
-  }) {
+  async revokeSession() {
+    if (!this.sdk.isLoggedIn()) throw new Error('Revoke failed: User is not logged in')
+    return await revokeOAuth2Session(this.sdk)
+  }
+
+  revokeBrowserSessionWithRedirect(redirectUri: string) {
+    const url = new URL(getOAuthApiUrl(this.sdk) + '/oauth2/logout')
+    url.searchParams.append('redirect_uri', redirectUri)
+    return (window.location.href = url.toString())
+  }
+
+  login(opts: TOAuthLoginOpts) {
     const nonce = generateRandomString()
     const state = generateRandomString()
 
@@ -37,9 +43,12 @@ export class OAuthExtension {
     url.searchParams.append('redirect_uri', opts.redirectUrl)
     url.searchParams.append('nonce', nonce)
     url.searchParams.append('state', state)
+    url.searchParams.append('credenza_session_length_seconds', String(opts.session_length_seconds ?? 60 * 60))
+
     if (opts.type) {
-      if (opts.type !== 'credentials') url.pathname += `/${opts.type}`
+      if (opts.type !== OAUTH_LOGIN_TYPE.CREDENTIALS) url.pathname += `/${opts.type}`
       url.searchParams.append('allowed_login_types', opts.type)
+      if (opts?.passwordless_type) url.searchParams.append('allowed_passwordless_login_type', opts.passwordless_type)
     }
 
     set(LS_OAUTH_NONCE_KEY, nonce)
