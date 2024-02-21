@@ -53,23 +53,22 @@
 
 <br />
 <div>
-  <div style="border: 1px dashed #000; text-align: center">EVM</div>
-  <br />
-  <select bind:value={chainConfig} on:change={handleSwitchChain}>
-    {#each [mumbai, spicy] as chain}
-      <option selected={chain.chainId === chainConfig.chainId} value={chain}>
-        {chain.displayName} ({chain.chainId})
-      </option>
-    {/each}
-  </select>
-  <button on:click={handleGetEvmAddress}> Log Blockchain Info </button>
-  <div>
-    <br />
+  <div style="border: 1px solid #000; text-align: center">EVM</div>
+  <div style="margin-top: 5px">
+    <select bind:value={chainConfig} on:change={handleSwitchChain}>
+      {#each [mumbai, spicy] as chain}
+        <option selected={chain.chainId === chainConfig.chainId} value={chain}>
+          {chain.displayName} ({chain.chainId})
+        </option>
+      {/each}
+    </select>
+    <button on:click={handleGetEvmAddress}> Log Blockchain Info </button>
+  </div>
+  <div style="margin-top: 5px">
     <input type="text" bind:value={transferTo} style="min-width: 350px" placeholder="0x..." />
     <button on:click={handleTransferNativeCurrencyEvm}> Transfer native currency EVM </button>
   </div>
-  <div>
-    <br />
+  <div style="margin-top: 5px">
     <input type="text" bind:value={messageToSign} style="min-width: 350px" placeholder="" />
     <button on:click={handleSignMessage}> Sign Message </button>
   </div>

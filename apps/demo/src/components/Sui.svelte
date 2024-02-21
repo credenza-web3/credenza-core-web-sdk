@@ -53,17 +53,17 @@
 
 <br />
 <div>
-  <div style="border: 1px dashed #000; text-align: center">SUI</div>
-  <br />
-  <button on:click={handleGetSuiAddress}>Sui Address</button>
-  <button on:click={handleSuiBalance}> Sui balance </button>
-  <button on:click={handleSuiFaucet}> Sui Faucet </button>
-  <div>
-    <br />
+  <div style="border: 1px solid #000; text-align: center;">SUI</div>
+  <div style="margin-top: 5px">
+    <button on:click={handleGetSuiAddress}>Sui Address</button>
+    <button on:click={handleSuiBalance}> Sui balance </button>
+    <button on:click={handleSuiFaucet}> Sui Faucet </button>
+  </div>
+  <div style="margin-top: 5px">
     <input type="text" bind:value={messageToSign} style="min-width: 500px" placeholder="" />
     <button on:click={handleSuiSignMessage}> Sui Sign Message </button>
   </div>
-  <div>
+  <div style="margin-top: 5px">
     <input type="text" bind:value={transferToAddress} style="min-width: 500px" placeholder="" />
     <button on:click={handleSuiTransfer}> Sui Transfer </button>
   </div>
