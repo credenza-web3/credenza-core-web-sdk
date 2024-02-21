@@ -31,7 +31,7 @@
     clientId: PUBLIC_CLIENT_ID,
     env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
     extensions: [
-      new SuiExtension(),
+      new SuiExtension(SuiExtension.SUI_NETWORK.DEVNET),
       new EvmExtension({
         chainConfig,
         extensions: [
@@ -59,7 +59,8 @@
 
   const handleOAuthLogin = () => {
     sdk.oauth.login({
-      scope: 'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui',
+      scope:
+        'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write',
       redirectUrl: window.location.href,
       //type: OAuthExtension.LOGIN_TYPE.PASSWORDLESS,
       //passwordless_type: OAuthExtension.PASSWORDLESS_LOGIN_TYPE.PHONE,
