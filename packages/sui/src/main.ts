@@ -50,6 +50,11 @@ export class SuiExtension {
     return this.suiAddress as string
   }
 
+  public getNetworkName() {
+    this._assureLogin()
+    return this.currentSuiNetwork
+  }
+
   public async signPersonalMessage(message: string) {
     this._assureLogin()
     const result = await signSuiData(this.sdk, {
