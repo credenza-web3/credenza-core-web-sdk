@@ -1,9 +1,9 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
-import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
+import { getSuiApiUrl } from '@packages/common/sui/sui'
 
-export async function getSuiSalt(sdk: CredenzaSDK) {
+export async function getSuiAddress(sdk: CredenzaSDK) {
   try {
-    const response = await fetch(`${getOAuthApiUrl(sdk)}/accounts/sui/salt`, {
+    const response = await fetch(`${getSuiApiUrl(sdk)}/accounts/address`, {
       headers: {
         Authorization: `Bearer ${sdk.getAccessToken()}`,
       },
