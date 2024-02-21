@@ -51,7 +51,7 @@
 
 <br />
 <div>
-  <div style="border: 1px solid #000; text-align: center">ACCOUNT</div>
+  <div style="border: 2px solid #000; text-align: center">ACCOUNT</div>
   <div style="margin-top: 5px">
     <button on:click={handleGetUserInfo}> Log Account Info </button>
   </div>

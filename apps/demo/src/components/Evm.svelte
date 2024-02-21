@@ -53,7 +53,7 @@
 
 <br />
 <div>
-  <div style="border: 1px solid #000; text-align: center">EVM</div>
+  <div style="border: 2px solid #000; text-align: center">EVM</div>
   <div style="margin-top: 5px">
     <select bind:value={chainConfig} on:change={handleSwitchChain}>
       {#each [mumbai, spicy] as chain}
