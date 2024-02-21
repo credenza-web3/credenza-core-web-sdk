@@ -1,14 +1,11 @@
 <script lang="ts">
   import type { CredenzaSDK } from '@credenza3/web-sdk/src/main'
   import { SuiExtension } from '@credenza3/web-sdk-ext-sui/src/main'
-  import { getFullnodeUrl, SuiClient } from '@mysten/sui.js/client'
   import { getFaucetHost, requestSuiFromFaucetV0 } from '@mysten/sui.js/faucet'
   import { MIST_PER_SUI } from '@mysten/sui.js/utils'
   import { TransactionBlock } from '@mysten/sui.js/transactions'
 
   export let sdk: CredenzaSDK
-
-  const suiClient = new SuiClient({ url: getFullnodeUrl('devnet') })
 
   let messageToSign = 'test message'
   let transferToAddress = '0x656e8778c895f266be103088653e5437000cdb84399e40b43fa9a690c9a7da8f'
@@ -19,7 +16,8 @@
   }
 
   const handleSuiBalance = async () => {
-    const balance = await suiClient.getBalance({
+    const client = sdk.sui.getSuiClient()
+    const balance = await client.getBalance({
       owner: await sdk.sui.getAddress(),
     })
     const result = Number.parseInt(balance.totalBalance) / Number(MIST_PER_SUI)
@@ -34,7 +32,7 @@
       host: getFaucetHost(currentNetwork),
       recipient: await sdk.sui.getAddress(),
     })
-    console.log('Sui faucet result', result)
+    console.log('Sui faucet result:', result)
   }
 
   const handleSuiSignMessage = async () => {
