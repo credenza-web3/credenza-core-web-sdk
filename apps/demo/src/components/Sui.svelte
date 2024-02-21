@@ -10,7 +10,7 @@
   const suiClient = new SuiClient({ url: getFullnodeUrl('devnet') })
 
   let messageToSign = 'test message'
-  let transferToAddress = '0xfd9290417f7810f62a93cec8b57b5b6c9e16ddc11627a4df88b5d3db68851baf'
+  let transferToAddress = '0x656e8778c895f266be103088653e5437000cdb84399e40b43fa9a690c9a7da8f'
 
   const handleGetSuiAddress = async () => {
     const address = await sdk.sui.getAddress()
@@ -44,7 +44,7 @@
     if (!transferToAddress) return
 
     const txb = new TransactionBlock()
-    const [coin] = txb.splitCoins(txb.gas, [10])
+    const [coin] = txb.splitCoins(txb.gas, [Math.round(1 * Number(MIST_PER_SUI))])
     txb.transferObjects([coin], transferToAddress)
     const result = await sdk.sui.signAndExecuteTransactionBlock(txb)
     console.log('Tx sent:', result)
