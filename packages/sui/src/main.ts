@@ -5,6 +5,7 @@ import { verifyTransactionBlock, verifyPersonalMessage } from '@mysten/sui.js/ve
 import { getSuiAddress, signSuiData } from './lib/http-requests'
 import { SUI_NETWORK } from './main.constants'
 import type { TSuiNetwork } from './main.types'
+import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 
 export class SuiExtension {
   static SUI_NETWORK = SUI_NETWORK
@@ -20,6 +21,9 @@ export class SuiExtension {
 
   public async _initialize(sdk: CredenzaSDK) {
     this.sdk = sdk
+    this.sdk.on(SDK_EVENT.LOGOUT, () => {
+      this.suiAddress = undefined
+    })
   }
 
   private _assureLogin() {
