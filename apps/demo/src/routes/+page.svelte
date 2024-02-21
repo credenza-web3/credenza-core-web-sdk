@@ -8,16 +8,13 @@
   import { AccountExtension } from '@credenza3/web-sdk-ext-account/src/main'
   import { MetamaskExtension } from '@credenza3/web-sdk-ext-metamask/src/main'
   import { WalletConnectExtension } from '@credenza3/web-sdk-ext-walletconnect/src/main'
-  import { EvmExtension, ethers } from '@credenza3/web-sdk-ext-evm/src/main'
+  import { EvmExtension } from '@credenza3/web-sdk-ext-evm/src/main'
   import { SuiExtension } from '@credenza3/web-sdk-ext-sui/src/main'
 
   import Sui from '../components/Sui.svelte'
-
-  const { isAddress } = ethers
+  import Evm from '../components/Evm.svelte'
 
   let chainConfig = spicy
-  let transferTo = '0xc4F69E4fB203F832616f8CCb134ba25417455039'
-  let messageToSign = ''
   let emailToChange = ''
   let phoneToChange = '+'
   let verificationCode = ''
@@ -101,45 +98,6 @@
     picture = result.picture || ''
   }
 
-  const handleSwitchChain = async () => {
-    await sdk.evm.switchChain(chainConfig)
-    console.log('New chain config: ', chainConfig)
-    const provider = await sdk.evm.getEthersProvider()
-    console.log('ChainID:', (await provider.getNetwork()).chainId)
-  }
-
-  const handleTransferNativeCurrencyEvm = async () => {
-    const provider = await sdk.evm.getEthersProvider()
-    console.log('ChainID:', (await provider.getNetwork()).chainId)
-    const signer = await provider.getSigner()
-    console.log('Current address: ', await signer.getAddress())
-    if (!isAddress(transferTo.trim())) throw new Error('Invalid transfer address')
-    console.log('To Address: ', transferTo)
-    const tx = {
-      to: transferTo.trim(),
-      value: '1',
-    }
-    const result = await signer.sendTransaction(tx)
-    console.log('Transaction response: ', result)
-  }
-
-  const handleSignMessage = async () => {
-    const provider = await sdk.evm.getEthersProvider()
-    const signer = await provider.getSigner()
-    const sig = await signer.signMessage(messageToSign.trim())
-    console.log('Signature: ', sig)
-    console.log(await signer.getAddress(), ethers.verifyMessage(messageToSign, sig))
-    messageToSign = ''
-  }
-
-  const handleGetEvmAddress = async () => {
-    const provider = await sdk.evm.getEthersProvider()
-    console.log('ChainID:', (await provider.getNetwork()).chainId)
-    const signer = await provider.getSigner()
-    const result = await signer.getAddress()
-    console.log('Evm address: ', result)
-  }
-
   const handleChangeEmail = async () => {
     const result = await sdk.account.changeEmail(emailToChange)
     console.log('Change email request sent: ', result)
@@ -190,25 +148,7 @@
     </button>
   </div>
   <br />
-  <select bind:value={chainConfig} on:change={handleSwitchChain}>
-    {#each [mumbai, spicy] as chain}
-      <option selected={chain.chainId === chainConfig.chainId} value={chain}>
-        {chain.displayName} ({chain.chainId})
-      </option>
-    {/each}
-  </select>
   <button on:click={handleGetUserInfo}> Log Account Info </button>
-  <button on:click={handleGetEvmAddress}> Log Blockchain Info </button>
-  <div>
-    <br />
-    <input type="text" bind:value={transferTo} style="min-width: 350px" placeholder="0x..." />
-    <button on:click={handleTransferNativeCurrencyEvm}> Transfer native currency EVM </button>
-  </div>
-  <div>
-    <br />
-    <input type="text" bind:value={messageToSign} style="min-width: 350px" placeholder="" />
-    <button on:click={handleSignMessage}> Sign Message </button>
-  </div>
   <br />
   <div>
     <input type="email" bind:value={emailToChange} style="min-width: 350px" placeholder="Email address" />
@@ -236,5 +176,6 @@
     <button on:click={handleUpdateProfile}> Update profile </button>
   </div>
 
+  <Evm {sdk} bind:chainConfig />
   <Sui {sdk} />
 {/if}
