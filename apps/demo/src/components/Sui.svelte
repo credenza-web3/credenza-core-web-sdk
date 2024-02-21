@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { CredenzaSDK } from '@credenza3/web-sdk/src/main'
+  import { SuiExtension } from '@credenza3/web-sdk-ext-sui/src/main'
   import { getFullnodeUrl, SuiClient } from '@mysten/sui.js/client'
   import { getFaucetHost, requestSuiFromFaucetV0 } from '@mysten/sui.js/faucet'
   import { MIST_PER_SUI } from '@mysten/sui.js/utils'
@@ -26,8 +27,11 @@
   }
 
   const handleSuiFaucet = async () => {
+    const currentNetwork = sdk.sui.getNetworkName()
+    if (currentNetwork === SuiExtension.SUI_NETWORK.MAINNET) throw new Error('faucet is not available for mainnet')
+
     const result = await requestSuiFromFaucetV0({
-      host: getFaucetHost('devnet'),
+      host: getFaucetHost(currentNetwork),
       recipient: await sdk.sui.getAddress(),
     })
     console.log('Sui faucet result', result)
