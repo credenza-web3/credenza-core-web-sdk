@@ -16,12 +16,13 @@
   import Account from '../components/Account.svelte'
 
   let chainConfig = spicy
+  let suiNetworkName = SuiExtension.SUI_NETWORK.DEVNET
 
   const sdk = new CredenzaSDK({
     clientId: PUBLIC_CLIENT_ID,
     env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
     extensions: [
-      new SuiExtension(SuiExtension.SUI_NETWORK.TESTNET),
+      new SuiExtension(suiNetworkName),
       new EvmExtension({
         chainConfig,
         extensions: [
@@ -106,5 +107,5 @@
   </div>
   <Account {sdk} />
   <Evm {sdk} bind:chainConfig />
-  <Sui {sdk} />
+  <Sui {sdk} bind:suiNetworkName />
 {/if}

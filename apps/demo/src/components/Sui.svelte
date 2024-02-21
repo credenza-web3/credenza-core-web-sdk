@@ -6,6 +6,7 @@
   import { TransactionBlock } from '@mysten/sui.js/transactions'
 
   export let sdk: CredenzaSDK
+  export let suiNetworkName: (typeof SuiExtension.SUI_NETWORK)[keyof typeof SuiExtension.SUI_NETWORK]
 
   let messageToSign = 'test message'
   let transferToAddress = '0x656e8778c895f266be103088653e5437000cdb84399e40b43fa9a690c9a7da8f'
@@ -35,6 +36,11 @@
     console.log('Sui faucet result:', result)
   }
 
+  const handleSuiSwitchNetwork = () => {
+    sdk.sui.switchNetwork(suiNetworkName)
+    console.log('Switched to: ', sdk.sui.getNetworkName())
+  }
+
   const handleSuiSignMessage = async () => {
     if (!messageToSign) return
     console.log('Sui signing:', messageToSign)
@@ -57,6 +63,13 @@
 <div>
   <div style="border: 2px solid #000; text-align: center;">SUI</div>
   <div style="margin-top: 5px">
+    <select bind:value={suiNetworkName} on:change={handleSuiSwitchNetwork}>
+      {#each Object.values(SuiExtension.SUI_NETWORK) as network}
+        <option selected={suiNetworkName === network} value={network}>
+          {network}
+        </option>
+      {/each}
+    </select>
     <button on:click={handleGetSuiAddress}>Sui Address</button>
     <button on:click={handleSuiBalance}> Sui balance </button>
     <button on:click={handleSuiFaucet}> Sui Faucet </button>

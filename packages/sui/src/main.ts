@@ -14,8 +14,8 @@ export class SuiExtension {
   private suiAddress: string | undefined
   private currentSuiNetwork: TSuiNetwork
 
-  constructor(suiEnv: TSuiNetwork = SUI_NETWORK.MAINNET) {
-    this.switchNetwork(suiEnv)
+  constructor(suiNetwork: TSuiNetwork = SUI_NETWORK.MAINNET) {
+    this.switchNetwork(suiNetwork)
   }
 
   public async _initialize(sdk: CredenzaSDK) {
