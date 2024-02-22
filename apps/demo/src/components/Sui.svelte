@@ -72,7 +72,9 @@
     </select>
     <button on:click={handleGetSuiAddress}>Sui Address</button>
     <button on:click={handleSuiBalance}> Sui balance </button>
-    <button on:click={handleSuiFaucet}> Sui Faucet </button>
+    {#if suiNetworkName === SuiExtension.SUI_NETWORK.DEVNET}
+      <button on:click={handleSuiFaucet}> Sui Faucet </button>
+    {/if}
   </div>
   <div style="margin-top: 5px">
     <input type="text" bind:value={messageToSign} style="min-width: 500px" placeholder="" />
