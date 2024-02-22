@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$env/static/public'
-  import { mumbai, spicy } from './chain-config'
+  import { mumbai, spicy } from '../evm-chain-config'
 
   import { CredenzaSDK } from '@credenza3/web-sdk/src/main'
   import { OAuthExtension } from '@credenza3/web-sdk-ext-oauth/src/main'
@@ -15,7 +15,7 @@
   import Evm from '../components/Evm.svelte'
   import Account from '../components/Account.svelte'
 
-  let chainConfig = spicy
+  let evmChainConfig = spicy
   let suiNetworkName = SuiExtension.SUI_NETWORK.DEVNET
 
   const sdk = new CredenzaSDK({
@@ -24,7 +24,7 @@
     extensions: [
       new SuiExtension(suiNetworkName),
       new EvmExtension({
-        chainConfig,
+        chainConfig: evmChainConfig,
         extensions: [
           new MetamaskExtension(),
           new WalletConnectExtension({
@@ -106,6 +106,6 @@
     </button>
   </div>
   <Account {sdk} />
-  <Evm {sdk} bind:chainConfig />
+  <Evm {sdk} bind:chainConfig={evmChainConfig} />
   <Sui {sdk} bind:suiNetworkName />
 {/if}

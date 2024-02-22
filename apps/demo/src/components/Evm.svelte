@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { CredenzaSDK } from '@credenza3/web-sdk/src/main'
   import { ethers } from '@credenza3/web-sdk-ext-evm/src/main'
-  import { mumbai, spicy } from '../routes/chain-config'
+  import { mumbai, spicy } from '../evm-chain-config'
 
   export let sdk: CredenzaSDK
   export let chainConfig: typeof mumbai | typeof spicy

@@ -45,7 +45,6 @@ export class SuiExtension {
   }
 
   public getNetworkName() {
-    this._assureLogin()
     return this.currentSuiNetwork
   }
 
