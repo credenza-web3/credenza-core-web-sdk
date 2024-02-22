@@ -52,7 +52,7 @@
     if (!transferToAddress) return
 
     const txb = new TransactionBlock()
-    const [coin] = txb.splitCoins(txb.gas, [Math.round(1 * Number(MIST_PER_SUI))])
+    const [coin] = txb.splitCoins(txb.gas, [Math.round(0.1 * Number(MIST_PER_SUI))])
     txb.transferObjects([coin], transferToAddress)
     const result = await sdk.sui.signAndExecuteTransactionBlock(txb)
     console.log('Tx sent:', result)
