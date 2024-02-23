@@ -22,7 +22,7 @@
     clientId: PUBLIC_CLIENT_ID,
     env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
     extensions: [
-      new SuiExtension(suiNetworkName),
+      new SuiExtension({ suiNetwork: suiNetworkName }),
       new EvmExtension({
         chainConfig: evmChainConfig,
         extensions: [

@@ -15,7 +15,7 @@ export class SuiExtension {
   private suiAddress: string | undefined
   private currentSuiNetwork: TSuiNetwork
 
-  constructor(suiNetwork: TSuiNetwork = SUI_NETWORK.MAINNET) {
+  constructor({ suiNetwork = SUI_NETWORK.MAINNET }: { suiNetwork: TSuiNetwork }) {
     this.switchNetwork(suiNetwork)
   }
 
@@ -32,19 +32,20 @@ export class SuiExtension {
     return accessToken
   }
 
-  public switchNetwork(suiNetwork: TSuiNetwork) {
+  public switchNetwork(suiNetwork: TSuiNetwork): { client: SuiClient; network: TSuiNetwork } {
     if (this.client && this.currentSuiNetwork === suiNetwork) throw new Error(`Already on sui ${suiNetwork}`)
 
     this.client = new SuiClient({ url: getFullnodeUrl(suiNetwork) })
     this.currentSuiNetwork = suiNetwork
     this.suiAddress = undefined
+    return { client: this.getSuiClient(), network: this.getNetworkName() }
   }
 
   public getSuiClient(): SuiClient {
     return this.client
   }
 
-  public getNetworkName() {
+  public getNetworkName(): TSuiNetwork {
     return this.currentSuiNetwork
   }
 
@@ -57,7 +58,7 @@ export class SuiExtension {
     return this.suiAddress as string
   }
 
-  public async signPersonalMessage(message: string) {
+  public async signPersonalMessage(message: string): Promise<{ signature: string; bytes: string }> {
     this._assureLogin()
     const result = await signSuiData(this.sdk, {
       method: this.signPersonalMessage.name,
@@ -67,7 +68,9 @@ export class SuiExtension {
     return result
   }
 
-  public async signTransactionBlock(txb: TransactionBlock) {
+  public async signTransactionBlock(
+    txb: TransactionBlock,
+  ): Promise<{ signature: string; transactionBlock: Uint8Array }> {
     this._assureLogin()
     txb.setSenderIfNotSet(await this.getAddress())
     const transactionBlock = await txb.build({ client: this.client })
@@ -79,7 +82,9 @@ export class SuiExtension {
     return { signature, transactionBlock }
   }
 
-  public async signAndExecuteTransactionBlock(txb: TransactionBlock) {
+  public async signAndExecuteTransactionBlock(
+    txb: TransactionBlock,
+  ): ReturnType<typeof this.client.executeTransactionBlock> {
     const txbParams = await this.signTransactionBlock(txb)
     return await this.client.executeTransactionBlock(txbParams)
   }
