@@ -13,8 +13,8 @@
     "vite": "^5.1.4",
     "vite-plugin-dts": "^3.7.3"
   },
-  "main": "dist/main.js",
   "types": "dist/main.d.ts",
+  "main": "dist/main.js",
   "files": [
     "dist"
   ],
