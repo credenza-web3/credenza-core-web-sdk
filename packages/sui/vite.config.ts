@@ -10,6 +10,9 @@ export default defineConfig({
       name: 'CredenzaSuiExtension',
       entry: resolve(__dirname, 'src/main.ts'),
     },
+    rollupOptions: {
+      external: ['@mysten/sui.js'],
+    },
   },
   resolve: {
     alias: {
