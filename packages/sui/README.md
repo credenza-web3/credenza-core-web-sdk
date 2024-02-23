@@ -48,17 +48,17 @@ const address = await sdk.sui.getAddress(): string
 Sign Personal message
 
 ```
-const address = await sdk.sui.signPersonalMessage(message: string): Promise<{signature: string; bytes: string}
+const result = await sdk.sui.signPersonalMessage(message: string): Promise<{signature: string; bytes: string}
 ```
 
 Sign Transaction block
 
 ```
-const address = await sdk.sui.signTransactionBlock(tbx: TransactionBlock): Promise<{signature: string; transactionBlock: Uint8Array}
+const result = await sdk.sui.signTransactionBlock(tbx: TransactionBlock): Promise<{signature: string; transactionBlock: Uint8Array}
 ```
 
 Sign And execute Transaction block
 
 ```
-const address = await sdk.sui.signAndExecuteTransactionBlock(tbx: TransactionBlock): Promise<SuiTransactionBlockResponse>
+const result = await sdk.sui.signAndExecuteTransactionBlock(tbx: TransactionBlock): Promise<SuiTransactionBlockResponse>
 ```
