@@ -222,6 +222,10 @@ importers:
         version: 3.7.3(@types/node@20.11.20)(typescript@5.3.3)(vite@5.1.4)
 
   packages/sui:
+    dependencies:
+      '@mysten/sui.js':
+        specifier: ^0.50.1
+        version: 0.50.1
     devDependencies:
       '@types/node':
         specifier: ^20.11.20
