@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { CredenzaSDK } from '@credenza3/web-sdk/src/main'
-  import { ethers } from '@credenza3/web-sdk-ext-evm/src/main'
+  import type { CredenzaSDK } from '@credenza3/core-web/src/main'
+  import { ethers } from '@credenza3/core-web-evm-ext/src/main'
   import { mumbai, spicy } from '../evm-chain-config'
 
   export let sdk: CredenzaSDK

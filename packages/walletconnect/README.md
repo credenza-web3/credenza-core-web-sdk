@@ -3,9 +3,9 @@
 ## Installation
 
 ```
-npm i @credenza3/web-sdk-ext-walletconnect
+npm i @credenza3/core-web-evm-walletconnect-ext
 
-import { WalletConnectExtension } from '@credenza3/web-sdk-ext-walletconnect'
+import { WalletConnectExtension } from '@credenza3/core-web-evm-walletconnect-ext'
 ```
 
 ## Usage

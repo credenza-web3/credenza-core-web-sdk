@@ -38,25 +38,25 @@ importers:
 
   apps/demo:
     dependencies:
-      '@credenza3/web-sdk':
+      '@credenza3/core-web':
         specifier: workspace:*
         version: link:../../packages/core
-      '@credenza3/web-sdk-ext-account':
+      '@credenza3/core-web-account-ext':
         specifier: workspace:*
         version: link:../../packages/account
-      '@credenza3/web-sdk-ext-evm':
+      '@credenza3/core-web-evm-ext':
         specifier: workspace:*
         version: link:../../packages/evm
-      '@credenza3/web-sdk-ext-metamask':
+      '@credenza3/core-web-evm-metamask-ext':
         specifier: workspace:*
         version: link:../../packages/metamask
-      '@credenza3/web-sdk-ext-oauth':
+      '@credenza3/core-web-oauth-ext':
         specifier: workspace:*
         version: link:../../packages/oauth
-      '@credenza3/web-sdk-ext-sui':
+      '@credenza3/core-web-sui-ext':
         specifier: workspace:*
         version: link:../../packages/sui
-      '@credenza3/web-sdk-ext-walletconnect':
+      '@credenza3/core-web-evm-walletconnect-ext':
         specifier: workspace:*
         version: link:../../packages/walletconnect
       '@mysten/sui.js':

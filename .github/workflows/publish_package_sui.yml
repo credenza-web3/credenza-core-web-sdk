@@ -1,4 +1,4 @@
-name: Publish @credenza3/web-sdk-ext-sui
+name: Publish @credenza3/core-web-sui-ext
 
 # Controls when the workflow will run
 on:

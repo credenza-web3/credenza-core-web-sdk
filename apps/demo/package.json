@@ -15,13 +15,13 @@
     "test:unit": "vitest"
   },
   "dependencies": {
-    "@credenza3/web-sdk": "workspace:*",
-    "@credenza3/web-sdk-ext-account": "workspace:*",
-    "@credenza3/web-sdk-ext-evm": "workspace:*",
-    "@credenza3/web-sdk-ext-metamask": "workspace:*",
-    "@credenza3/web-sdk-ext-oauth": "workspace:*",
-    "@credenza3/web-sdk-ext-sui": "workspace:*",
-    "@credenza3/web-sdk-ext-walletconnect": "workspace:*",
+    "@credenza3/core-web": "workspace:*",
+    "@credenza3/core-web-account-ext": "workspace:*",
+    "@credenza3/core-web-evm-ext": "workspace:*",
+    "@credenza3/core-web-evm-metamask-ext": "workspace:*",
+    "@credenza3/core-web-oauth-ext": "workspace:*",
+    "@credenza3/core-web-sui-ext": "workspace:*",
+    "@credenza3/core-web-evm-walletconnect-ext": "workspace:*",
     "@mysten/sui.js": "^0.50.1"
   },
   "devDependencies": {

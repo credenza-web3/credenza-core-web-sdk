@@ -3,9 +3,9 @@
 ## Installation
 
 ```
-npm i @credenza3/web-sdk-ext-oauth
+npm i @credenza3/core-web-oauth-ext
 
-import { OAuthExtension } from '@credenza3/web-sdk-ext-oauth'
+import { OAuthExtension } from '@credenza3/core-web-oauth-ext'
 ```
 
 ## Usage

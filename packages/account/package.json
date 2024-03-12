@@ -1,6 +1,6 @@
 {
-  "name": "@credenza3/web-sdk-ext-account",
-  "version": "0.0.8",
+  "name": "@credenza3/core-web-account-ext",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"

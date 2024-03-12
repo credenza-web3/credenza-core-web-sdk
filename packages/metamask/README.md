@@ -3,9 +3,9 @@
 ## Installation
 
 ```
-npm i @credenza3/web-sdk-ext-metamask
+npm i @credenza3/core-web-evm-metamask-ext
 
-import { MetamaskExtension } from '@credenza3/web-sdk-ext-metamask'
+import { MetamaskExtension } from '@credenza3/core-web-evm-metamask-ext'
 ```
 
 ## Usage

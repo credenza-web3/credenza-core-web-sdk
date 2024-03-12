@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { CredenzaSDK } from '@credenza3/web-sdk/src/main'
+  import type { CredenzaSDK } from '@credenza3/core-web/src/main'
 
   export let sdk: CredenzaSDK
 

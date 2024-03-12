@@ -1,4 +1,4 @@
-import { Eip1193Provider, JsonRpcProvider, VoidSigner, TransactionLike, toNumber } from 'ethers'
+import { type Eip1193Provider, JsonRpcProvider, VoidSigner, type TransactionLike, toNumber } from 'ethers'
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { listAccounts, sign } from './lib/http-requests'
 import { OAUTH_API_URL } from '@packages/common/constants/oauth'

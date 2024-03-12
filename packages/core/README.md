@@ -7,20 +7,20 @@ Visit https://developers.credenza3.com/ sign in and create your Client
 ## Installation
 
 ```
-npm install @credenza3/web-sdk
+npm install @credenza3/core-web
 ```
 
 ## Extensions
 
-[OAuthExtension](https://www.npmjs.com/package/@credenza3/web-sdk-ext-oauth)
+[OAuthExtension](https://www.npmjs.com/package/@credenza3/core-web-oauth-ext)
 
-[AccountExtension](https://www.npmjs.com/package/@credenza3/web-sdk-ext-account)
+[AccountExtension](https://www.npmjs.com/package/@credenza3/core-web-account-ext)
 
-[EvmExtension](https://www.npmjs.com/package/@credenza3/web-sdk-ext-evm)
+[EvmExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-ext)
 
--- [WalletConnectExtension](https://www.npmjs.com/package/@credenza3/web-sdk-ext-walletconnect)
+-- [WalletConnectExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-walletconnect-ext)
 
--- [MetamaskExtension](https://www.npmjs.com/package/@credenza3/web-sdk-ext-metamask)
+-- [MetamaskExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-metamask-ext)
 
 ## Usage
 
