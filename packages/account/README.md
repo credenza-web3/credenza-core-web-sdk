@@ -3,9 +3,9 @@
 ## Installation
 
 ```
-npm i @credenza3/web-sdk-ext-account
+npm i @credenza3/core-web-account-ext
 
-import { AccountExtension } from '@credenza3/web-sdk-ext-account'
+import { AccountExtension } from '@credenza3/core-web-account-ext'
 ```
 
 ## Usage

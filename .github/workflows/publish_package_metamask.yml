@@ -1,4 +1,4 @@
-name: Publish @credenza3/web-sdk-ext-metamask
+name: Publish @credenza3/core-web-evm-metamask-ext
 
 # Controls when the workflow will run
 on:

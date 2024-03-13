@@ -1,4 +1,4 @@
-name: Publish @credenza3/web-sdk-ext-oauth
+name: Publish @credenza3/core-web-oauth-ext
 
 # Controls when the workflow will run
 on:

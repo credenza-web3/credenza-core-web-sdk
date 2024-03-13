@@ -4,9 +4,9 @@
 
 ```
 npm i @mysten/sui.js
-npm i @credenza3/web-sdk-ext-evm
+npm i @credenza3/core-web-sui-ext
 
-import { SuiExtension } from '@credenza3/web-sdk-ext-evm'
+import { SuiExtension } from '@credenza3/core-web-sui-ext'
 ```
 
 ## Usage

@@ -1,4 +1,4 @@
-name: Publish @credenza3/web-sdk-ext-walletconnect
+name: Publish @credenza3/core-web-evm-walletconnect-ext
 
 # Controls when the workflow will run
 on:

@@ -15,31 +15,31 @@
     "test:unit": "vitest"
   },
   "dependencies": {
-    "@credenza3/web-sdk": "workspace:*",
-    "@credenza3/web-sdk-ext-account": "workspace:*",
-    "@credenza3/web-sdk-ext-evm": "workspace:*",
-    "@credenza3/web-sdk-ext-metamask": "workspace:*",
-    "@credenza3/web-sdk-ext-oauth": "workspace:*",
-    "@credenza3/web-sdk-ext-sui": "workspace:*",
-    "@credenza3/web-sdk-ext-walletconnect": "workspace:*",
-    "@mysten/sui.js": "^0.50.1"
+    "@credenza3/core-web": "workspace:*",
+    "@credenza3/core-web-account-ext": "workspace:*",
+    "@credenza3/core-web-evm-ext": "workspace:*",
+    "@credenza3/core-web-evm-metamask-ext": "workspace:*",
+    "@credenza3/core-web-oauth-ext": "workspace:*",
+    "@credenza3/core-web-sui-ext": "workspace:*",
+    "@credenza3/core-web-evm-walletconnect-ext": "workspace:*",
+    "@mysten/sui.js": "^0.51.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.41.2",
+    "@playwright/test": "^1.42.1",
     "@sveltejs/adapter-auto": "^3.1.1",
     "@sveltejs/adapter-static": "^3.0.1",
-    "@sveltejs/kit": "^2.5.1",
+    "@sveltejs/kit": "^2.5.3",
     "@sveltejs/vite-plugin-svelte": "^3.0.2",
-    "@typescript-eslint/eslint-plugin": "^7.0.2",
-    "@typescript-eslint/parser": "^7.0.2",
-    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "eslint": "^8.57.0",
     "prettier": "^3.2.5",
-    "prettier-plugin-svelte": "^3.2.1",
+    "prettier-plugin-svelte": "^3.2.2",
     "svelte": "^4.2.12",
-    "svelte-check": "^3.6.4",
+    "svelte-check": "^3.6.7",
     "tslib": "^2.6.2",
-    "typescript": "^5.3.3",
-    "vite": "^5.1.4",
+    "typescript": "^5.4.2",
+    "vite": "^5.1.6",
     "vitest": "^1.3.1"
   }
 }

@@ -3,9 +3,9 @@
 ## Installation
 
 ```
-npm i @credenza3/web-sdk-ext-evm
+npm i @credenza3/core-web-evm-ext
 
-import { EvmExtension } from '@credenza3/web-sdk-ext-evm'
+import { EvmExtension } from '@credenza3/core-web-evm-ext'
 ```
 
 ## Usage
@@ -59,7 +59,7 @@ const evmProvider = await sdk.evm.getProvider()
 In case you need the only credenza evm provider
 
 ```
-import { CredenzaProvider } from '@credenza3/web-sdk-ext-evm'
+import { CredenzaProvider } from '@credenza3/core-web-evm-ext'
 ```
 
 ## Ethers js
@@ -69,7 +69,7 @@ import { CredenzaProvider } from '@credenza3/web-sdk-ext-evm'
 If you prefer to use ethers.js you can import it from the evm extension
 
 ```
-import { ethers } from '@credenza3/web-sdk-ext-evm'
+import { ethers } from '@credenza3/core-web-evm-ext'
 ```
 
 Get ethers provider

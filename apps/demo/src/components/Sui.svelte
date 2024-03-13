@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { CredenzaSDK } from '@credenza3/web-sdk/src/main'
-  import { SuiExtension } from '@credenza3/web-sdk-ext-sui/src/main'
+  import type { CredenzaSDK } from '@credenza3/core-web/src/main'
+  import { SuiExtension } from '@credenza3/core-web-sui-ext/src/main'
   import { getFaucetHost, requestSuiFromFaucetV0 } from '@mysten/sui.js/faucet'
   import { MIST_PER_SUI } from '@mysten/sui.js/utils'
   import { TransactionBlock } from '@mysten/sui.js/transactions'

@@ -5,5 +5,5 @@ pnpm install
 pnpm run dev
 ```
 
-[https://credenza-web-sdk.pages.dev](https://credenza-web-sdk.pages.dev)
+[https://credenza-core-web.pages.dev](https://credenza-core-web.pages.dev)
 Test page Staging env
