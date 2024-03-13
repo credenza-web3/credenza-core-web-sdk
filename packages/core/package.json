@@ -9,9 +9,9 @@
   "author": "Credenza",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.11.20",
-    "typescript": "^5.3.3",
-    "vite": "^5.1.4",
+    "@types/node": "^20.11.26",
+    "typescript": "^5.4.2",
+    "vite": "^5.1.6",
     "vite-plugin-dts": "^3.7.3"
   },
   "main": "dist/main.js",
