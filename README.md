@@ -10,7 +10,7 @@ Test page Staging env
 
 ## Extensions
 
-[SDKCore] (https://www.npmjs.com/package/@credenza3/core-web)
+[SDKCore](https://www.npmjs.com/package/@credenza3/core-web)
 
 -[SuiExtension](https://www.npmjs.com/package/@credenza3/core-web-sui-ext)
 
