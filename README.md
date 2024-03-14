@@ -21,4 +21,5 @@ Test page Staging env
 -[EvmExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-ext)
 
 --[WalletConnectExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-walletconnect-ext)
+
 --[MetamaskExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-metamask-ext)
