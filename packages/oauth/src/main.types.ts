@@ -6,4 +6,6 @@ export type TOAuthLoginOpts = {
   session_length_seconds?: number
   type?: (typeof OAUTH_LOGIN_TYPE)[keyof typeof OAUTH_LOGIN_TYPE]
   passwordless_type?: (typeof OAUTH_PASSWORDLESS_LOGIN_TYPE)[keyof typeof OAUTH_PASSWORDLESS_LOGIN_TYPE]
+  force_email?: string
+  force_phone?: string
 }

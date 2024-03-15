@@ -32,6 +32,7 @@ export class OAuthExtension {
     return (window.location.href = url.toString())
   }
 
+  // eslint-disable-next-line complexity
   login(opts: TOAuthLoginOpts) {
     const nonce = generateRandomString()
     const state = generateRandomString()
@@ -48,7 +49,14 @@ export class OAuthExtension {
     if (opts.type) {
       if (opts.type !== OAUTH_LOGIN_TYPE.CREDENTIALS) url.pathname += `/${opts.type}`
       url.searchParams.append('allowed_login_types', opts.type)
-      if (opts?.passwordless_type) url.searchParams.append('allowed_passwordless_login_type', opts.passwordless_type)
+      if (opts?.passwordless_type) {
+        url.searchParams.append('allowed_passwordless_login_type', opts.passwordless_type)
+        if (opts.force_email && opts.passwordless_type === OAUTH_PASSWORDLESS_LOGIN_TYPE.EMAIL) {
+          url.searchParams.append('force_email', opts.force_email)
+        } else if (opts.force_phone && opts.passwordless_type === OAUTH_PASSWORDLESS_LOGIN_TYPE.EMAIL) {
+          url.searchParams.append('force_phone', opts.force_phone)
+        }
+      }
     }
 
     set(LS_OAUTH_NONCE_KEY, nonce)
