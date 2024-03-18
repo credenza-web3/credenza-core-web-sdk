@@ -44,17 +44,17 @@ export class OAuthExtension {
     url.searchParams.append('redirect_uri', opts.redirectUrl)
     url.searchParams.append('nonce', nonce)
     url.searchParams.append('state', state)
-    url.searchParams.append('credenza_session_length_seconds', String(opts.session_length_seconds ?? 60 * 60))
+    url.searchParams.append('credenza_session_length_seconds', String(opts.sessionLengthSeconds ?? 60 * 60))
 
     if (opts.type) {
       if (opts.type !== OAUTH_LOGIN_TYPE.CREDENTIALS) url.pathname += `/${opts.type}`
       url.searchParams.append('allowed_login_types', opts.type)
-      if (opts?.passwordless_type) {
-        url.searchParams.append('allowed_passwordless_login_type', opts.passwordless_type)
-        if (opts.force_email && opts.passwordless_type === OAUTH_PASSWORDLESS_LOGIN_TYPE.EMAIL) {
-          url.searchParams.append('force_email', opts.force_email)
-        } else if (opts.force_phone && opts.passwordless_type === OAUTH_PASSWORDLESS_LOGIN_TYPE.PHONE) {
-          url.searchParams.append('force_phone', opts.force_phone)
+      if (opts?.passwordlessType) {
+        url.searchParams.append('allowed_passwordless_login_type', opts.passwordlessType)
+        if (opts.forceEmail && opts.passwordlessType === OAUTH_PASSWORDLESS_LOGIN_TYPE.EMAIL) {
+          url.searchParams.append('force_email', opts.forceEmail)
+        } else if (opts.forcePhone && opts.passwordlessType === OAUTH_PASSWORDLESS_LOGIN_TYPE.PHONE) {
+          url.searchParams.append('force_phone', opts.forcePhone)
         }
       }
     }

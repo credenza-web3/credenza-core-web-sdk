@@ -28,22 +28,22 @@ await sdk.oauth.login({
 
   // defines Authentication flow session duration
   // defaults to 1h
-  session_length_seconds?: number
+  sessionLengthSeconds?: number
 
   // explicitly define login type
   type?: OAuthExtension.LOGIN_TYPE.<SELECTED_TYPE>
 
   // explicitly define passwordless login type
   // only available if `type` set to OAuthExtension.LOGIN_TYPE.PASSWORDLESS`
-  passwordless_type?: OAuthExtension.PASSWORDLESS_LOGIN_TYPE<SELECTED_TYPE>
+  passwordlessType?: OAuthExtension.PASSWORDLESS_LOGIN_TYPE<SELECTED_TYPE>
 
   // explicitly define passwordless email. This will skip email enter page and send verification email and navigate user to verification page.
   // only available if `passwordless_type` set to OAuthExtension.PASSWORDLESS_LOGIN_TYPE.EMAIL`
-  force_email?: string
+  forceEmail?: string
 
   // explicitly define passwordless phone. This will skip phone enter page and send verification sms and navigate user to verification page.
   // only available if `passwordless_type` set to OAuthExtension.PASSWORDLESS_LOGIN_TYPE.PHONE`
-  force_phone?: string
+  forcePhone?: string
 })
 ```
 
