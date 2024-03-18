@@ -53,9 +53,9 @@
       scope:
         'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write',
       redirectUrl: window.location.href,
-      type: OAuthExtension.LOGIN_TYPE.PASSWORDLESS,
-      passwordlessType: OAuthExtension.PASSWORDLESS_LOGIN_TYPE.EMAIL,
-      forceEmail: 'fokindmitr+passwordless@gmail.com',
+      //type: OAuthExtension.LOGIN_TYPE.PASSWORDLESS,
+      //passwordlessType: OAuthExtension.PASSWORDLESS_LOGIN_TYPE.EMAIL,
+      //forceEmail: 'test@test.com',
     })
   }
 
