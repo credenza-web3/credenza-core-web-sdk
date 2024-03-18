@@ -36,6 +36,14 @@ await sdk.oauth.login({
   // explicitly define passwordless login type
   // only available if `type` set to OAuthExtension.LOGIN_TYPE.PASSWORDLESS`
   passwordless_type?: OAuthExtension.PASSWORDLESS_LOGIN_TYPE<SELECTED_TYPE>
+
+  // explicitly define passwordless email. This will skip email enter page and send verification email and navigate user to verification page.
+  // only available if `passwordless_type` set to OAuthExtension.PASSWORDLESS_LOGIN_TYPE.EMAIL`
+  force_email?: string
+
+  // explicitly define passwordless phone. This will skip phone enter page and send verification sms and navigate user to verification page.
+  // only available if `passwordless_type` set to OAuthExtension.PASSWORDLESS_LOGIN_TYPE.PHONE`
+  force_phone?: string
 })
 ```
 
