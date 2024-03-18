@@ -54,7 +54,8 @@
         'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write',
       redirectUrl: window.location.href,
       //type: OAuthExtension.LOGIN_TYPE.PASSWORDLESS,
-      //passwordless_type: OAuthExtension.PASSWORDLESS_LOGIN_TYPE.PHONE,
+      //passwordless_type: OAuthExtension.PASSWORDLESS_LOGIN_TYPE.EMAIL,
+      //force_email: 'test@gmail.com'
     })
   }
 
