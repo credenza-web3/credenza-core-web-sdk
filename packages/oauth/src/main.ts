@@ -53,7 +53,7 @@ export class OAuthExtension {
         url.searchParams.append('allowed_passwordless_login_type', opts.passwordless_type)
         if (opts.force_email && opts.passwordless_type === OAUTH_PASSWORDLESS_LOGIN_TYPE.EMAIL) {
           url.searchParams.append('force_email', opts.force_email)
-        } else if (opts.force_phone && opts.passwordless_type === OAUTH_PASSWORDLESS_LOGIN_TYPE.EMAIL) {
+        } else if (opts.force_phone && opts.passwordless_type === OAUTH_PASSWORDLESS_LOGIN_TYPE.PHONE) {
           url.searchParams.append('force_phone', opts.force_phone)
         }
       }
