@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$env/static/public'
-  import { mumbai, spicy } from '../evm-chain-config'
+  import { amoy, spicy } from '../evm-chain-config'
 
   import { CredenzaSDK } from '@credenza3/core-web/src/main'
   import { OAuthExtension } from '@credenza3/core-web-oauth-ext/src/main'
@@ -29,7 +29,7 @@
           new MetamaskExtension(),
           new WalletConnectExtension({
             projectId: 'e98bfa148f5b128914133e707b993b1d',
-            chains: [mumbai, spicy],
+            chains: [amoy, spicy],
             metadata: {
               name: 'Test',
               description: 'Test description ',
