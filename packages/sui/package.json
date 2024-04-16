@@ -8,10 +8,10 @@
   "author": "Credenza",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.11.28",
-    "typescript": "^5.4.2",
-    "vite": "^5.1.6",
-    "vite-plugin-dts": "^3.7.3"
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.9",
+    "vite-plugin-dts": "^3.8.3"
   },
   "types": "dist/main.d.ts",
   "main": "dist/main.js",
@@ -19,6 +19,6 @@
     "dist"
   ],
   "dependencies": {
-    "@mysten/sui.js": "^0.51.0"
+    "@mysten/sui.js": "^0.51.2"
   }
 }
