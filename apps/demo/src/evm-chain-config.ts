@@ -1,8 +1,8 @@
-export const mumbai = {
-  chainId: '0x13881',
-  rpcUrl: 'https://polygon-mumbai-bor.publicnode.com',
-  displayName: 'Mumbai',
-  blockExplorer: 'https://mumbai.polygonscan.com/',
+export const amoy = {
+  chainId: '0x13882',
+  rpcUrl: 'https://rpc-amoy.polygon.technology',
+  displayName: 'Amoy',
+  blockExplorer: 'https://www.oklink.com/amoy',
   nativeCurrency: {
     name: 'MATIC',
     symbol: 'MATIC',
