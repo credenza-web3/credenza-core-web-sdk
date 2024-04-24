@@ -13,15 +13,15 @@
     "@metamask/providers": "^16.0.0",
     "eslint": "^8.57.0",
     "eslint-config-custom": "workspace:*",
-    "ethers": "^6.11.1",
+    "ethers": "^6.12.0",
     "husky": "^9.0.11",
     "prettier": "^3.2.5",
     "prettier-plugin-svelte": "^3.2.3",
     "tsconfig": "workspace:*",
     "turbo": "latest"
   },
-  "packageManager": "pnpm@8.9.0",
   "engines": {
-    "node": ">=20.10"
+    "node": ">=20.10",
+    "pnpm": ">=9.0.0"
   }
 }
