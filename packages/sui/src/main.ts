@@ -1,9 +1,9 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
-import { getFullnodeUrl, SuiClient } from '@mysten/sui.js/client'
+import { SuiClient } from '@mysten/sui.js/client'
 import { TransactionBlock } from '@mysten/sui.js/transactions'
 import { verifyTransactionBlock, verifyPersonalMessage } from '@mysten/sui.js/verify'
 import { getSuiAddress, signSuiData } from './lib/http-requests'
-import { SUI_NETWORK } from './main.constants'
+import { SUI_NETWORK, SUI_RPC_URLS } from './main.constants'
 import type { TSuiNetwork } from './main.types'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 
@@ -35,7 +35,7 @@ export class SuiExtension {
   public switchNetwork(suiNetwork: TSuiNetwork): { client: SuiClient; network: TSuiNetwork } {
     if (this.client && this.currentSuiNetwork === suiNetwork) throw new Error(`Already on sui ${suiNetwork}`)
 
-    this.client = new SuiClient({ url: getFullnodeUrl(suiNetwork) })
+    this.client = new SuiClient({ url: SUI_RPC_URLS[suiNetwork] })
     this.currentSuiNetwork = suiNetwork
     this.suiAddress = undefined
     return { client: this.getSuiClient(), network: this.getNetworkName() }
