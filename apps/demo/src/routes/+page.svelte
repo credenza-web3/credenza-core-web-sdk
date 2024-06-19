@@ -14,6 +14,7 @@
   import Sui from '../components/Sui.svelte'
   import Evm from '../components/Evm.svelte'
   import Account from '../components/Account.svelte'
+  import { ZkLoginExtension } from '@packages/zk-login/src/main'
 
   let evmChainConfig = spicy
   let suiNetworkName = SuiExtension.SUI_NETWORK.DEVNET
@@ -22,7 +23,7 @@
     clientId: PUBLIC_CLIENT_ID,
     env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
     extensions: [
-      new SuiExtension({ suiNetwork: suiNetworkName }),
+      new SuiExtension({ suiNetwork: suiNetworkName, extensions: [new ZkLoginExtension()] }),
       new EvmExtension({
         chainConfig: evmChainConfig,
         extensions: [
@@ -56,6 +57,16 @@
       //type: OAuthExtension.LOGIN_TYPE.PASSWORDLESS,
       //passwordlessType: OAuthExtension.PASSWORDLESS_LOGIN_TYPE.EMAIL,
       //forceEmail: 'test@test.com',
+    })
+  }
+
+  const handleSuiZkLogin = async () => {
+    console.log(sdk.sui.zkLogin.generateZkNonce())
+    sdk.oauth.login({
+      scope:
+        'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write',
+      redirectUrl: window.location.href,
+      nonce: sdk.sui.zkLogin.generateZkNonce(),
     })
   }
 
@@ -98,6 +109,7 @@
   <button on:click={handleOAuthLogin}> Login With OAuth2 </button>
   <button on:click={handleMetamaskLogin}> Login With Metamask </button>
   <button on:click={handleWalletConnectLogin}> Login With WalletConnect </button>
+  <button on:click={handleSuiZkLogin}> Login With sui zk-login </button>
 {:else}
   <div>
     <button on:click={handleLogout}> Logout </button>

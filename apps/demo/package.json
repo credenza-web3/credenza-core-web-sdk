@@ -22,6 +22,7 @@
     "@credenza3/core-web-oauth-ext": "workspace:*",
     "@credenza3/core-web-sui-ext": "workspace:*",
     "@credenza3/core-web-evm-walletconnect-ext": "workspace:*",
+    "@credenza3/core-web-sui-zklogin-ext": "workspace:*",
     "@mysten/sui.js": "^0.51.2"
   },
   "devDependencies": {

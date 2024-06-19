@@ -6,7 +6,10 @@ import { getSuiAddress, signSuiData } from './lib/http-requests'
 import { SUI_NETWORK, SUI_RPC_URLS } from './main.constants'
 import type { TSuiNetwork } from './main.types'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
+import { ZkLoginExtension } from '@packages/zk-login/src/main'
 
+type TExtensionName = ZkLoginExtension['name']
+type TExtension = ZkLoginExtension
 export class SuiExtension {
   static SUI_NETWORK = SUI_NETWORK
   public name = 'sui' as const
@@ -14,13 +17,25 @@ export class SuiExtension {
   private client: SuiClient
   private suiAddress: string | undefined
   private currentSuiNetwork: TSuiNetwork
+  private extensions: TExtensionName[] = []
 
-  constructor({ suiNetwork = SUI_NETWORK.MAINNET }: { suiNetwork: TSuiNetwork }) {
+  public zkLogin: ZkLoginExtension
+
+  constructor({ suiNetwork = SUI_NETWORK.MAINNET, extensions }: { suiNetwork: TSuiNetwork; extensions: TExtension[] }) {
     this.switchNetwork(suiNetwork)
+    for (const ext of extensions || []) {
+      Object.assign(this, { [ext.name]: ext })
+      this.extensions.push(ext.name)
+    }
   }
 
   public async _initialize(sdk: CredenzaSDK) {
     this.sdk = sdk
+
+    for (const extensionName of this.extensions) {
+      await this[extensionName]?._initialize(this.sdk)
+    }
+
     this.sdk.on(SDK_EVENT.LOGOUT, () => {
       this.suiAddress = undefined
     })
