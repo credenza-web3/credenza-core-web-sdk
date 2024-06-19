@@ -1,6 +1,6 @@
 export const amoy = {
   chainId: '0x13882',
-  rpcUrl: 'https://rpc-amoy.polygon.technology',
+  rpcUrl: `https://rpc.ankr.com/polygon_amoy`,
   displayName: 'Amoy',
   blockExplorer: 'https://www.oklink.com/amoy',
   nativeCurrency: {
