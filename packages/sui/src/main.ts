@@ -2,11 +2,13 @@ import type { CredenzaSDK } from '@packages/core/src/main'
 import { SuiClient } from '@mysten/sui.js/client'
 import { TransactionBlock } from '@mysten/sui.js/transactions'
 import { verifyTransactionBlock, verifyPersonalMessage } from '@mysten/sui.js/verify'
-import { getSuiAddress, signSuiData } from './lib/http-requests'
+import { getSuiAddress, signSuiData } from './lib/helpers'
 import { SUI_NETWORK, SUI_RPC_URLS } from './main.constants'
 import type { TSuiNetwork } from './main.types'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 import { ZkLoginExtension } from '@packages/zk-login/src/main'
+import { LS_OAUTH_IS_ZKLOGIN_KEY } from '@packages/oauth/src/constants/localstorage'
+import { get } from '@packages/common/localstorage/localstorage'
 
 type TExtensionName = ZkLoginExtension['name']
 type TExtension = ZkLoginExtension
@@ -18,6 +20,7 @@ export class SuiExtension {
   private suiAddress: string | undefined
   private currentSuiNetwork: TSuiNetwork
   private extensions: TExtensionName[] = []
+  private isZkLogin: boolean
 
   public zkLogin: ZkLoginExtension
 
@@ -39,6 +42,12 @@ export class SuiExtension {
     this.sdk.on(SDK_EVENT.LOGOUT, () => {
       this.suiAddress = undefined
     })
+
+    this.isZkLogin = get(LS_OAUTH_IS_ZKLOGIN_KEY) === 'true'
+  }
+
+  public setIsZklogin(enabled: boolean) {
+    this.isZkLogin = enabled
   }
 
   private _assureLogin() {
@@ -67,7 +76,7 @@ export class SuiExtension {
   public async getAddress(): Promise<string> {
     this._assureLogin()
     if (!this.suiAddress) {
-      const { address } = await getSuiAddress(this.sdk)
+      const { address } = await getSuiAddress(this.sdk, this.isZkLogin)
       this.suiAddress = address
     }
     return this.suiAddress as string
@@ -78,8 +87,9 @@ export class SuiExtension {
     const result = await signSuiData(this.sdk, {
       method: this.signPersonalMessage.name,
       param: Buffer.from(message).toString('base64'),
+      isZkLogin: this.isZkLogin,
     })
-    await verifyPersonalMessage(new TextEncoder().encode(message), result.signature)
+    if (!this.isZkLogin) await verifyPersonalMessage(new TextEncoder().encode(message), result.signature)
     return result
   }
 
@@ -92,8 +102,9 @@ export class SuiExtension {
     const { signature } = await signSuiData(this.sdk, {
       method: this.signTransactionBlock.name,
       param: Buffer.from(transactionBlock).toString('base64'),
+      isZkLogin: this.isZkLogin,
     })
-    await verifyTransactionBlock(transactionBlock, signature)
+    if (!this.isZkLogin) await verifyTransactionBlock(transactionBlock, signature)
     return { signature, transactionBlock }
   }
 

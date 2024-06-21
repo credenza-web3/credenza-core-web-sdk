@@ -3,9 +3,9 @@
 ## Installation
 
 ```
-npm i @credenza3/core-web-evm-metamask-ext
+npm i @credenza3/core-web-sui-zklogin-ext
 
-import { MetamaskExtension } from '@credenza3/core-web-evm-metamask-ext'
+import { ZkLoginExtension } from '@credenza3/core-web-sui-zklogin-ext'
 ```
 
 ## Usage
@@ -15,16 +15,13 @@ Create the SDK instance
 ```
 const sdk = new CredenzaSDK({
   extensions: [
-    new EvmExtension({
-      chainConfig,
-      extensions: [new MetamaskExtension()],
-    })
-  ],
+    new SuiExtension({ suiNetwork: suiNetworkName, extensions: [new ZkLoginExtension()] }),
+  ]
 })
 ```
 
-Login with metamask
+Login with zklogin
 
 ```
-await sdk.evm.metamask.login()
+await sdk.sui.zkLogin.login()
 ```

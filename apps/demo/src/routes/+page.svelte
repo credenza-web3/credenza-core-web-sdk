@@ -61,13 +61,7 @@
   }
 
   const handleSuiZkLogin = async () => {
-    console.log(sdk.sui.zkLogin.generateZkNonce())
-    sdk.oauth.login({
-      scope:
-        'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write',
-      redirectUrl: window.location.href,
-      nonce: sdk.sui.zkLogin.generateZkNonce(),
-    })
+    sdk.sui.zkLogin.login()
   }
 
   const handleMetamaskLogin = async () => {

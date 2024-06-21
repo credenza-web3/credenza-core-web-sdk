@@ -4,7 +4,7 @@ import { set, get } from '@packages/common/localstorage/localstorage'
 import { generateRandomString } from '@packages/common/str/str'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import { jwtDecode } from 'jwt-decode'
-import { LS_OAUTH_NONCE_KEY, LS_OAUTH_STATE_KEY } from './constants/localstorage'
+import { LS_OAUTH_IS_ZKLOGIN_KEY, LS_OAUTH_NONCE_KEY, LS_OAUTH_STATE_KEY } from './constants/localstorage'
 import { OAUTH_LOGIN_TYPE, OAUTH_PASSWORDLESS_LOGIN_TYPE } from './constants/login-types'
 import type { TOAuthLoginOpts } from './main.types'
 import { revokeOAuth2Session } from './lib/http-requests'
@@ -61,6 +61,11 @@ export class OAuthExtension {
 
     set(LS_OAUTH_NONCE_KEY, opts.nonce)
     set(LS_OAUTH_STATE_KEY, state)
+
+    if (opts.isZkLogin) {
+      set(LS_OAUTH_IS_ZKLOGIN_KEY, opts.isZkLogin ? 'true' : 'false')
+      this.sdk.sui?.setIsZklogin(opts.isZkLogin)
+    }
 
     window.location.href = url.toString()
   }

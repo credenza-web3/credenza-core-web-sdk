@@ -9,4 +9,5 @@ export type TOAuthLoginOpts = {
   forceEmail?: string
   forcePhone?: string
   nonce?: string
+  isZkLogin?: boolean
 }

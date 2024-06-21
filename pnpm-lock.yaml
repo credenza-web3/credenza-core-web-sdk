@@ -59,6 +59,9 @@ importers:
       '@credenza3/core-web-sui-ext':
         specifier: workspace:*
         version: link:../../packages/sui
+      '@credenza3/core-web-sui-zklogin-ext':
+        specifier: workspace:*
+        version: link:../../packages/zk-login
       '@mysten/sui.js':
         specifier: ^0.51.2
         version: 0.51.2(svelte@4.2.15)(typescript@5.4.5)
