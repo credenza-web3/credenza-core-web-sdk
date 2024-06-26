@@ -8,18 +8,20 @@ import {
   generateNonce,
 } from '@mysten/zklogin'
 import { jwtDecode } from 'jwt-decode'
-import { SuiClient } from '@mysten/sui.js/client'
-import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519'
+import { SuiClient } from '@mysten/sui/client'
+import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
 
-import { TransactionBlock } from '@mysten/sui.js/transactions'
+import { Transaction } from '@mysten/sui/transactions'
 import { getZkKeysFromCache, getZkRandomnessFromCache, setZkCache } from './lib/cache'
+import { getSuiZkSalt } from './lib/http-requests'
+import { getZkProofUrl } from './lib/helper'
 
 export class ZkLoginExtension {
   public name = 'zkLogin' as const
   private sdk: CredenzaSDK
   private suiClient: SuiClient
   private _userAddress: string
-  private _salt: string = '91415186453971526646820450783233590556'
+  private _salt: string
   private _decodedJwt: { sub: string; aud: string }
   private _maxEpoch: number
   private _extendedEphemeralPublicKey: string
@@ -39,7 +41,7 @@ export class ZkLoginExtension {
       } catch (err) {
         this._ephemeralKeyPair = new Ed25519Keypair()
       }
-      // @ts-expect-error for some reaason the type Ed25519PublicKey is not valid as PublicKey
+
       this._extendedEphemeralPublicKey = getExtendedEphemeralPublicKey(this._ephemeralKeyPair.getPublicKey())
       this._randomness = getZkRandomnessFromCache() || generateRandomness()
 
@@ -54,7 +56,6 @@ export class ZkLoginExtension {
   }
 
   public generateZkNonce = () => {
-    // @ts-expect-error for some reaason the type Ed25519PublicKey is not valid as PublicKey
     return generateNonce(this._ephemeralKeyPair.getPublicKey(), this._maxEpoch, this._randomness)
   }
 
@@ -63,7 +64,7 @@ export class ZkLoginExtension {
     if (!token) return
 
     this._decodedJwt = jwtDecode(token)
-    const url = 'https://prover-dev.mystenlabs.com/v1'
+    const url = getZkProofUrl(this.sdk.sui.getNetworkName())
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -74,25 +75,56 @@ export class ZkLoginExtension {
         extendedEphemeralPublicKey: this._extendedEphemeralPublicKey,
         maxEpoch: this._maxEpoch,
         jwtRandomness: this._randomness,
-        salt: this._salt,
+        salt: await this._getZkSalt(),
         keyClaimName: 'sub',
       }),
     })
-    const test = await response.json()
-    return test
+    return await response.json()
   }
 
-  public getZkLoginSignature = async (): Promise<{ signature: string }> => {
+  public signTransactionBlock = async (
+    txb: Transaction,
+  ): Promise<{ signature: string; transactionBlock: Uint8Array }> => {
     const partialZkLoginSignature = await this._zkProof()
 
-    const addressSeed = genAddressSeed(BigInt(this._salt), 'sub', this._decodedJwt.sub, this._decodedJwt.aud).toString()
-    const txb = new TransactionBlock()
-    const { address } = await this.getAddress()
-    txb.setSender(address)
+    const addressSeed = genAddressSeed(
+      BigInt(await this._getZkSalt()),
+      'sub',
+      this._decodedJwt.sub,
+      this._decodedJwt.aud,
+    ).toString()
+
     const { signature: userSignature } = await txb.sign({
       client: this.suiClient,
       signer: this._ephemeralKeyPair,
     })
+
+    const zkLoginSignature = getZkLoginSignature({
+      inputs: {
+        ...partialZkLoginSignature,
+        addressSeed,
+      },
+      maxEpoch: this._maxEpoch,
+      userSignature,
+    })
+
+    const transactionBlock = await txb.build({ client: this.suiClient })
+    return { signature: zkLoginSignature, transactionBlock }
+  }
+
+  public signPersonalMessage = async (message: string) => {
+    const partialZkLoginSignature = await this._zkProof()
+
+    const addressSeed = genAddressSeed(
+      BigInt(await this._getZkSalt()),
+      'sub',
+      this._decodedJwt.sub,
+      this._decodedJwt.aud,
+    ).toString()
+
+    const messageData = new Uint8Array(Buffer.from(message))
+    const { signature: userSignature } = await this._ephemeralKeyPair.signPersonalMessage(messageData)
+
     const zkLoginSignature = getZkLoginSignature({
       inputs: {
         ...partialZkLoginSignature,
@@ -105,21 +137,14 @@ export class ZkLoginExtension {
     return { signature: zkLoginSignature }
   }
 
-  public async getAddress() {
-    if (!this._userAddress) {
-      this._userAddress = jwtToAddress(this.sdk.getAccessToken() as string, this._salt)
-    }
-
-    return { address: this._userAddress }
+  private _getZkSalt = async () => {
+    return this._salt || (this._salt = await getSuiZkSalt(this.sdk))
   }
 
-  public login() {
-    this.sdk.oauth.login({
-      scope:
-        'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write',
-      redirectUrl: window.location.href,
-      nonce: this.generateZkNonce(),
-      isZkLogin: true,
-    })
+  public async getAddress() {
+    if (!this._userAddress) {
+      this._userAddress = jwtToAddress(this.sdk.getAccessToken() as string, await this._getZkSalt())
+    }
+    return { address: this._userAddress }
   }
 }

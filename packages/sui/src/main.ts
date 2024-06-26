@@ -1,14 +1,12 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
-import { SuiClient } from '@mysten/sui.js/client'
-import { TransactionBlock } from '@mysten/sui.js/transactions'
-import { verifyTransactionBlock, verifyPersonalMessage } from '@mysten/sui.js/verify'
-import { getSuiAddress, signSuiData } from './lib/helpers'
+import { SuiClient } from '@mysten/sui/client'
+import { Transaction } from '@mysten/sui/transactions'
 import { SUI_NETWORK, SUI_RPC_URLS } from './main.constants'
 import type { TSuiNetwork } from './main.types'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
-import { ZkLoginExtension } from '@packages/zk-login/src/main'
-import { LS_OAUTH_IS_ZKLOGIN_KEY } from '@packages/oauth/src/constants/localstorage'
-import { get } from '@packages/common/localstorage/localstorage'
+import { ZkLoginExtension } from '@packages/sui-zk-login/src/main'
+import { getSuiAddressHttp } from './lib/http-requests'
+import { defaultSignSuiBlockData, defaultSignSuiPersonalMessage } from './lib/helpers'
 
 type TExtensionName = ZkLoginExtension['name']
 type TExtension = ZkLoginExtension
@@ -20,7 +18,6 @@ export class SuiExtension {
   private suiAddress: string | undefined
   private currentSuiNetwork: TSuiNetwork
   private extensions: TExtensionName[] = []
-  private isZkLogin: boolean
 
   public zkLogin: ZkLoginExtension
 
@@ -39,15 +36,15 @@ export class SuiExtension {
       await this[extensionName]?._initialize(this.sdk)
     }
 
+    if (this.extensions.length) {
+      this._signSuiBlockData = async (txb: Transaction) => await sdk.sui.zkLogin.signTransactionBlock(txb)
+      this._signSuiPersonalMessage = async (message: string) => await sdk.sui.zkLogin.signPersonalMessage(message)
+      this._getSuiAddress = async () => await sdk.sui.zkLogin.getAddress()
+    }
+
     this.sdk.on(SDK_EVENT.LOGOUT, () => {
       this.suiAddress = undefined
     })
-
-    this.isZkLogin = get(LS_OAUTH_IS_ZKLOGIN_KEY) === 'true'
-  }
-
-  public setIsZklogin(enabled: boolean) {
-    this.isZkLogin = enabled
   }
 
   private _assureLogin() {
@@ -76,7 +73,7 @@ export class SuiExtension {
   public async getAddress(): Promise<string> {
     this._assureLogin()
     if (!this.suiAddress) {
-      const { address } = await getSuiAddress(this.sdk, this.isZkLogin)
+      const { address } = await this._getSuiAddress()
       this.suiAddress = address
     }
     return this.suiAddress as string
@@ -84,34 +81,31 @@ export class SuiExtension {
 
   public async signPersonalMessage(message: string): Promise<{ signature: string; bytes: string }> {
     this._assureLogin()
-    const result = await signSuiData(this.sdk, {
-      method: this.signPersonalMessage.name,
-      param: Buffer.from(message).toString('base64'),
-      isZkLogin: this.isZkLogin,
-    })
-    if (!this.isZkLogin) await verifyPersonalMessage(new TextEncoder().encode(message), result.signature)
-    return result
+    return this._signSuiPersonalMessage(message)
   }
 
-  public async signTransactionBlock(
-    txb: TransactionBlock,
-  ): Promise<{ signature: string; transactionBlock: Uint8Array }> {
+  public async signTransactionBlock(txb: Transaction): Promise<{ signature: string; transactionBlock: Uint8Array }> {
     this._assureLogin()
     txb.setSenderIfNotSet(await this.getAddress())
-    const transactionBlock = await txb.build({ client: this.client })
-    const { signature } = await signSuiData(this.sdk, {
-      method: this.signTransactionBlock.name,
-      param: Buffer.from(transactionBlock).toString('base64'),
-      isZkLogin: this.isZkLogin,
-    })
-    if (!this.isZkLogin) await verifyTransactionBlock(transactionBlock, signature)
+
+    const { signature, transactionBlock } = await this._signSuiBlockData(txb)
     return { signature, transactionBlock }
   }
 
   public async signAndExecuteTransactionBlock(
-    txb: TransactionBlock,
+    txb: Transaction,
   ): ReturnType<typeof this.client.executeTransactionBlock> {
     const txbParams = await this.signTransactionBlock(txb)
     return await this.client.executeTransactionBlock(txbParams)
+  }
+
+  private _signSuiBlockData = async (txb: Transaction) =>
+    await defaultSignSuiBlockData({ txb, client: this.client, sdk: this.sdk, method: this.signTransactionBlock.name })
+
+  private _signSuiPersonalMessage = async (message: string) =>
+    await defaultSignSuiPersonalMessage({ message, sdk: this.sdk, method: this.signPersonalMessage.name })
+
+  private _getSuiAddress = async (): Promise<{ address: string }> => {
+    return await getSuiAddressHttp(this.sdk)
   }
 }

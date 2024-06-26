@@ -19,8 +19,8 @@
     "dist"
   ],
   "dependencies": {
+    "@mysten/sui": "^1.2.0",
     "@mysten/zklogin": "^0.7.8",
-    "@mysten/sui.js": "^0.51.2",
     "jwt-decode": "^4.0.0"
   }
 }

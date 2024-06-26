@@ -19,6 +19,6 @@
     "dist"
   ],
   "dependencies": {
-    "@mysten/sui.js": "^0.51.2"
+    "@mysten/sui": "^1.2.0"
   }
 }

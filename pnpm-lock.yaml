@@ -61,10 +61,10 @@ importers:
         version: link:../../packages/sui
       '@credenza3/core-web-sui-zklogin-ext':
         specifier: workspace:*
-        version: link:../../packages/zk-login
-      '@mysten/sui.js':
-        specifier: ^0.51.2
-        version: 0.51.2(svelte@4.2.15)(typescript@5.4.5)
+        version: link:../../packages/sui-zk-login
+      '@mysten/sui':
+        specifier: ^1.2.0
+        version: 1.2.0(svelte@4.2.15)(typescript@5.4.5)
     devDependencies:
       '@playwright/test':
         specifier: ^1.43.1
@@ -223,9 +223,34 @@ importers:
 
   packages/sui:
     dependencies:
-      '@mysten/sui.js':
-        specifier: ^0.51.2
-        version: 0.51.2(typescript@5.4.5)
+      '@mysten/sui':
+        specifier: ^1.2.0
+        version: 1.2.0(svelte@4.2.15)(typescript@5.4.5)
+    devDependencies:
+      '@types/node':
+        specifier: ^20.12.7
+        version: 20.12.7
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+      vite:
+        specifier: ^5.2.10
+        version: 5.2.10(@types/node@20.12.7)
+      vite-plugin-dts:
+        specifier: ^3.9.0
+        version: 3.9.0(@types/node@20.12.7)(rollup@4.14.3)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7))
+
+  packages/sui-zk-login:
+    dependencies:
+      '@mysten/sui':
+        specifier: ^1.2.0
+        version: 1.2.0(svelte@4.2.15)(typescript@5.4.5)
+      '@mysten/zklogin':
+        specifier: ^0.7.8
+        version: 0.7.8(svelte@4.2.15)(typescript@5.4.5)
+      jwt-decode:
+        specifier: ^4.0.0
+        version: 4.0.0
     devDependencies:
       '@types/node':
         specifier: ^20.12.7
@@ -264,31 +289,6 @@ importers:
         specifier: ^3.9.0
         version: 3.9.0(@types/node@20.12.7)(rollup@4.14.3)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7))
 
-  packages/zk-login:
-    dependencies:
-      '@mysten/sui.js':
-        specifier: ^0.51.2
-        version: 0.51.2(svelte@4.2.15)(typescript@5.4.5)
-      '@mysten/zklogin':
-        specifier: ^0.7.8
-        version: 0.7.8(svelte@4.2.15)(typescript@5.4.5)
-      jwt-decode:
-        specifier: ^4.0.0
-        version: 4.0.0
-    devDependencies:
-      '@types/node':
-        specifier: ^20.12.7
-        version: 20.12.7
-      typescript:
-        specifier: ^5.4.5
-        version: 5.4.5
-      vite:
-        specifier: ^5.2.10
-        version: 5.2.10(@types/node@20.12.7)
-      vite-plugin-dts:
-        specifier: ^3.9.0
-        version: 3.9.0(@types/node@20.12.7)(rollup@4.14.3)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7))
-
 packages:
 
   '@0no-co/graphql.web@1.0.6':
@@ -298,11 +298,6 @@ packages:
     peerDependenciesMeta:
       graphql:
         optional: true
-
-  '@0no-co/graphqlsp@1.10.0':
-    resolution: {integrity: sha512-qPNjG9WOf2YwUKvyLazaj8piTffjKJ1m4gCuqRIbHy0iwsmquTSn0JtyNtO3aewjsfyI13pmsKqWs+v2BJPg1A==}
-    peerDependencies:
-      typescript: ^5.0.0
 
   '@0no-co/graphqlsp@1.12.8':
     resolution: {integrity: sha512-arW3ZzifyKIJhehoAlsP069AX73EN6q358bOCf+8z00PmfPR2DSxq7uGGSj0oFNe3vEDtGYl88HmFEWQ+0+dwQ==}
@@ -518,27 +513,10 @@ packages:
     resolution: {integrity: sha512-zQ0IqbdX8FZ9aw11vP+dZkKDkS+kgIvQPHnSAXzP9pLu+Rfu3D3XEeLbicvoXJTYnhZiPmsZUxgdzXwNKxRPbA==}
     engines: {node: '>=14'}
 
-  '@gql.tada/cli-utils@1.0.1':
-    resolution: {integrity: sha512-oHdG0FJ9xCAf+l7FgnepiO6tUElMRWcc4qF5qAXBISkuACUzORXCjcSroGt/DmKRiRfhvk+fj3dGr4bCBAfw/A==}
-    peerDependencies:
-      typescript: ^5.0.0
-
   '@gql.tada/cli-utils@1.3.10':
     resolution: {integrity: sha512-wmKW/4UuDR9rkgpXnzP2skftNO4Kc/LNkFImKXe0waus+ipvJLaV3dwQ1CghKQ1THzWl2KLp/yJ80BdFWA+HzA==}
     peerDependencies:
       graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
-      typescript: ^5.0.0
-
-  '@gql.tada/internal@0.1.3':
-    resolution: {integrity: sha512-wIvykBId7O0gaizmSl5n5AhbQsgJVLTUsFBm3RsfQ9dVfpmT+Fhy2yHX+yNgiVECg2EimXMhs4ltcE4EuZ2WOA==}
-    peerDependencies:
-      graphql: ^16.8.1
-      typescript: ^5.0.0
-
-  '@gql.tada/internal@0.2.0':
-    resolution: {integrity: sha512-NuYuk8y41icCtBd6xRRX0Bk9s29WRQ0Ydkx56BbvHS5oCDL6gCrpehWrx4TqcZaQ5AUPSBScclef9ImvwoZsfg==}
-    peerDependencies:
-      graphql: ^16.8.1
       typescript: ^5.0.0
 
   '@gql.tada/internal@1.0.1':
@@ -675,18 +653,15 @@ packages:
     resolution: {integrity: sha512-z10PF9JV6SbjFq+/rYabM+8CVlMokgl8RFGvieSGNTmrkQanfHn+15XBrhG3BgUfvmTeSeyShfOHpG0i9zEdcg==}
     deprecated: Motion One for Vue is deprecated. Use Oku Motion instead https://oku-ui.com/motion
 
-  '@mysten/bcs@0.11.1':
-    resolution: {integrity: sha512-xP85isNSYUCHd3O/g+TmZYmg4wK6cU8q/n/MebkIGP4CYVJZz2wU/G24xIZ3wI+0iTop4dfgA5kYrg/DQKCUzA==}
-
   '@mysten/bcs@1.0.2':
     resolution: {integrity: sha512-haHT0km/9yIIe8lwo8gDFxGLnoxfRF4WmEVCz4lDXbEVQRsZkF0zB97kukiwMjDuFBaGVUhrOMCLz6td8tSMaQ==}
 
-  '@mysten/sui.js@0.51.2':
-    resolution: {integrity: sha512-RRG/VHhVvkQlWqodFZagRxVDo3SbXh4e3xTBplhPNNyybugbWj/V+wGrNv5/KtxfVxHBw6jTCoB798ijqPBq7g==}
-    engines: {node: '>=16'}
-
   '@mysten/sui@1.1.2':
     resolution: {integrity: sha512-S1MfGvbkUxKGd39bfA6G21UVwJSSgJW8uKHinSByjt86+YKvSZxlF5zr6RVKcP4Rn8gl5ytMbZQfCPn+0nuGTg==}
+    engines: {node: '>=18'}
+
+  '@mysten/sui@1.2.0':
+    resolution: {integrity: sha512-USDOckZPGcwi2QAuKHEcieoVuW8Xgsm8vtKyXaRrhVLG2t2q3hCEigquiLXh7S3okBbD/P35xjvhR9PdUeqweA==}
     engines: {node: '>=18'}
 
   '@mysten/zklogin@0.7.8':
@@ -1034,9 +1009,6 @@ packages:
     peerDependencies:
       svelte: ^4.0.0 || ^5.0.0-next.0
       vite: ^5.0.0
-
-  '@ts-morph/common@0.23.0':
-    resolution: {integrity: sha512-m7Lllj9n/S6sOkCkRftpM7L24uvmfXQFedlW/4hENcuJH1HHm9u5EgxZb9uVjQSCGrbBWBkOGgcTxNg36r6ywA==}
 
   '@types/argparse@1.0.38':
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
@@ -1478,9 +1450,6 @@ packages:
     resolution: {integrity: sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==}
     engines: {node: '>=6'}
 
-  code-block-writer@13.0.1:
-    resolution: {integrity: sha512-c5or4P6erEA69TxaxTNcHUNcIn+oyxSRTOWV+pSYF+z4epXqNvwvJ70XPGjPNgue83oAFAPBRQYwpAJ/Hpe/Sg==}
-
   code-red@1.0.4:
     resolution: {integrity: sha512-7qJWqItLA8/VPVlKJlFXU+NBlo/qyfs39aJcuMT/2ere32ZqvF5OSxgdM5xOfJJ7O429gg2HM47y8v9P+9wrNw==}
 
@@ -1873,12 +1842,6 @@ packages:
   globrex@0.1.2:
     resolution: {integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==}
 
-  gql.tada@1.5.1:
-    resolution: {integrity: sha512-mcrNSQFw6oF3A8kF0wNKEBge02hWgQyjoDuBVrDSvTWF/jr7BooD64KTCQE2SQfT/r14YAxrvU95WPUxgcXLDw==}
-    hasBin: true
-    peerDependencies:
-      typescript: ^5.0.0
-
   gql.tada@1.7.6:
     resolution: {integrity: sha512-wuFq2qmWFFQETV1qz2rWqIJ65qlLxxpiuMEDOB7zqmWnKGHYQ2k/bttyDGOKwroK2cgPZ8TGhzzaUQj9MZmwxw==}
     hasBin: true
@@ -2212,11 +2175,6 @@ packages:
 
   mkdirp@0.5.6:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
-    hasBin: true
-
-  mkdirp@3.0.1:
-    resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
-    engines: {node: '>=10'}
     hasBin: true
 
   mlly@1.6.1:
@@ -2820,9 +2778,6 @@ packages:
     peerDependencies:
       typescript: '>=4.2.0'
 
-  ts-morph@22.0.0:
-    resolution: {integrity: sha512-M9MqFGZREyeb5fTl6gNHKZLqBQA0TjA1lea+CR48R8EBTDuWrNqW6ccC5QvjNR4s6wDumD3LTCjOFSp9iwlzaw==}
-
   tslib@1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
 
@@ -3180,15 +3135,6 @@ snapshots:
     optionalDependencies:
       graphql: 16.8.1
 
-  '@0no-co/graphqlsp@1.10.0(typescript@5.4.5)':
-    dependencies:
-      '@gql.tada/internal': 0.1.3(graphql@16.8.1)(typescript@5.4.5)
-      graphql: 16.8.1
-      node-fetch: 2.7.0
-      typescript: 5.4.5
-    transitivePeerDependencies:
-      - encoding
-
   '@0no-co/graphqlsp@1.12.8(graphql@16.8.1)(typescript@5.4.5)':
     dependencies:
       '@gql.tada/internal': 1.0.1(graphql@16.8.1)(typescript@5.4.5)
@@ -3348,16 +3294,6 @@ snapshots:
       ethereum-cryptography: 2.1.3
       micro-ftch: 0.3.1
 
-  '@gql.tada/cli-utils@1.0.1(typescript@5.4.5)':
-    dependencies:
-      '@0no-co/graphqlsp': 1.10.0(typescript@5.4.5)
-      '@gql.tada/internal': 0.2.0(graphql@16.8.1)(typescript@5.4.5)
-      graphql: 16.8.1
-      ts-morph: 22.0.0
-      typescript: 5.4.5
-    transitivePeerDependencies:
-      - encoding
-
   '@gql.tada/cli-utils@1.3.10(graphql@16.8.1)(svelte@4.2.15)(typescript@5.4.5)':
     dependencies:
       '@0no-co/graphqlsp': 1.12.8(graphql@16.8.1)(typescript@5.4.5)
@@ -3369,18 +3305,6 @@ snapshots:
       typescript: 5.4.5
     transitivePeerDependencies:
       - svelte
-
-  '@gql.tada/internal@0.1.3(graphql@16.8.1)(typescript@5.4.5)':
-    dependencies:
-      '@0no-co/graphql.web': 1.0.6(graphql@16.8.1)
-      graphql: 16.8.1
-      typescript: 5.4.5
-
-  '@gql.tada/internal@0.2.0(graphql@16.8.1)(typescript@5.4.5)':
-    dependencies:
-      '@0no-co/graphql.web': 1.0.6(graphql@16.8.1)
-      graphql: 16.8.1
-      typescript: 5.4.5
 
   '@gql.tada/internal@1.0.1(graphql@16.8.1)(typescript@5.4.5)':
     dependencies:
@@ -3599,18 +3523,14 @@ snapshots:
       '@motionone/dom': 10.17.0
       tslib: 2.6.2
 
-  '@mysten/bcs@0.11.1':
-    dependencies:
-      bs58: 5.0.0
-
   '@mysten/bcs@1.0.2':
     dependencies:
       bs58: 5.0.0
 
-  '@mysten/sui.js@0.51.2(svelte@4.2.15)(typescript@5.4.5)':
+  '@mysten/sui@1.1.2(svelte@4.2.15)(typescript@5.4.5)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.8.1)
-      '@mysten/bcs': 0.11.1
+      '@mysten/bcs': 1.0.2
       '@noble/curves': 1.4.0
       '@noble/hashes': 1.4.0
       '@scure/bip32': 1.4.0
@@ -3619,31 +3539,13 @@ snapshots:
       bech32: 2.0.0
       gql.tada: 1.7.6(graphql@16.8.1)(svelte@4.2.15)(typescript@5.4.5)
       graphql: 16.8.1
-      superstruct: 1.0.4
       tweetnacl: 1.0.3
+      valibot: 0.25.0
     transitivePeerDependencies:
       - svelte
       - typescript
 
-  '@mysten/sui.js@0.51.2(typescript@5.4.5)':
-    dependencies:
-      '@graphql-typed-document-node/core': 3.2.0(graphql@16.8.1)
-      '@mysten/bcs': 0.11.1
-      '@noble/curves': 1.4.0
-      '@noble/hashes': 1.4.0
-      '@scure/bip32': 1.4.0
-      '@scure/bip39': 1.3.0
-      '@suchipi/femver': 1.0.0
-      bech32: 2.0.0
-      gql.tada: 1.5.1(graphql@16.8.1)(typescript@5.4.5)
-      graphql: 16.8.1
-      superstruct: 1.0.4
-      tweetnacl: 1.0.3
-    transitivePeerDependencies:
-      - encoding
-      - typescript
-
-  '@mysten/sui@1.1.2(svelte@4.2.15)(typescript@5.4.5)':
+  '@mysten/sui@1.2.0(svelte@4.2.15)(typescript@5.4.5)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.8.1)
       '@mysten/bcs': 1.0.2
@@ -4014,13 +3916,6 @@ snapshots:
       vitefu: 0.2.5(vite@5.2.10(@types/node@20.12.7))
     transitivePeerDependencies:
       - supports-color
-
-  '@ts-morph/common@0.23.0':
-    dependencies:
-      fast-glob: 3.3.2
-      minimatch: 9.0.4
-      mkdirp: 3.0.1
-      path-browserify: 1.0.1
 
   '@types/argparse@1.0.38': {}
 
@@ -4817,8 +4712,6 @@ snapshots:
 
   clsx@1.2.1: {}
 
-  code-block-writer@13.0.1: {}
-
   code-red@1.0.4:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.15
@@ -5271,16 +5164,6 @@ snapshots:
 
   globrex@0.1.2: {}
 
-  gql.tada@1.5.1(graphql@16.8.1)(typescript@5.4.5):
-    dependencies:
-      '@0no-co/graphql.web': 1.0.6(graphql@16.8.1)
-      '@gql.tada/cli-utils': 1.0.1(typescript@5.4.5)
-      '@gql.tada/internal': 0.2.0(graphql@16.8.1)(typescript@5.4.5)
-      typescript: 5.4.5
-    transitivePeerDependencies:
-      - encoding
-      - graphql
-
   gql.tada@1.7.6(graphql@16.8.1)(svelte@4.2.15)(typescript@5.4.5):
     dependencies:
       '@0no-co/graphql.web': 1.0.6(graphql@16.8.1)
@@ -5601,8 +5484,6 @@ snapshots:
   mkdirp@0.5.6:
     dependencies:
       minimist: 1.2.8
-
-  mkdirp@3.0.1: {}
 
   mlly@1.6.1:
     dependencies:
@@ -6156,11 +6037,6 @@ snapshots:
   ts-api-utils@1.3.0(typescript@5.4.5):
     dependencies:
       typescript: 5.4.5
-
-  ts-morph@22.0.0:
-    dependencies:
-      '@ts-morph/common': 0.23.0
-      code-block-writer: 13.0.1
 
   tslib@1.14.1: {}
 

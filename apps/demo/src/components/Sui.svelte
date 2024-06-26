@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { CredenzaSDK } from '@credenza3/core-web/src/main'
   import { SuiExtension } from '@credenza3/core-web-sui-ext/src/main'
-  import { getFaucetHost, requestSuiFromFaucetV0 } from '@mysten/sui.js/faucet'
-  import { MIST_PER_SUI } from '@mysten/sui.js/utils'
-  import { TransactionBlock } from '@mysten/sui.js/transactions'
+  import { getFaucetHost, requestSuiFromFaucetV0 } from '@mysten/sui/faucet'
+  import { MIST_PER_SUI } from '@mysten/sui/utils'
+  import { Transaction } from '@mysten/sui/transactions'
 
   export let sdk: CredenzaSDK
   export let suiNetworkName: (typeof SuiExtension.SUI_NETWORK)[keyof typeof SuiExtension.SUI_NETWORK]
@@ -51,7 +51,7 @@
   const handleSuiTransfer = async () => {
     if (!transferToAddress) return
 
-    const txb = new TransactionBlock()
+    const txb = new Transaction()
     const [coin] = txb.splitCoins(txb.gas, [Math.round(0.1 * Number(MIST_PER_SUI))])
     txb.transferObjects([coin], transferToAddress)
     const result = await sdk.sui.signAndExecuteTransactionBlock(txb)

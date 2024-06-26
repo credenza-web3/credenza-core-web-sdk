@@ -3,7 +3,7 @@
 ## Installation
 
 ```
-npm i @mysten/sui.js
+npm i @mysten/sui
 npm i @credenza3/core-web-sui-ext
 
 import { SuiExtension } from '@credenza3/core-web-sui-ext'
