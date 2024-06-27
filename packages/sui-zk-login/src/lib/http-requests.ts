@@ -3,6 +3,7 @@ import { getSuiApiUrl } from '@packages/common/sui/sui'
 
 export async function getSuiZkSalt(sdk: CredenzaSDK): Promise<string> {
   try {
+    return '91415186453971526646820450783233590556'
     const response = await fetch(`${getSuiApiUrl(sdk)}/accounts/zk/salt`, {
       headers: {
         Authorization: `Bearer ${sdk.getAccessToken()}`,

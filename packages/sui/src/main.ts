@@ -13,13 +13,17 @@ type TExtension = ZkLoginExtension
 export class SuiExtension {
   static SUI_NETWORK = SUI_NETWORK
   public name = 'sui' as const
+  public zkLogin: ZkLoginExtension
+
   private sdk: CredenzaSDK
   private client: SuiClient
   private suiAddress: string | undefined
   private currentSuiNetwork: TSuiNetwork
   private extensions: TExtensionName[] = []
 
-  public zkLogin: ZkLoginExtension
+  private _signSuiBlockData: (txb: Transaction) => ReturnType<typeof defaultSignSuiBlockData>
+  private _signSuiPersonalMessage: (message: string) => ReturnType<typeof defaultSignSuiPersonalMessage>
+  private _getSuiAddress: () => ReturnType<typeof getSuiAddressHttp>
 
   constructor({ suiNetwork = SUI_NETWORK.MAINNET, extensions }: { suiNetwork: TSuiNetwork; extensions: TExtension[] }) {
     this.switchNetwork(suiNetwork)
@@ -36,15 +40,29 @@ export class SuiExtension {
       await this[extensionName]?._initialize(this.sdk)
     }
 
-    if (this.extensions.length) {
-      this._signSuiBlockData = async (txb: Transaction) => await sdk.sui.zkLogin.signTransactionBlock(txb)
-      this._signSuiPersonalMessage = async (message: string) => await sdk.sui.zkLogin.signPersonalMessage(message)
-      this._getSuiAddress = async () => await sdk.sui.zkLogin.getAddress()
-    }
-
     this.sdk.on(SDK_EVENT.LOGOUT, () => {
       this.suiAddress = undefined
     })
+
+    if (this.extensions.length) {
+      this._signSuiBlockData = sdk.sui.zkLogin.signTransactionBlock.bind(this.sdk.sui.zkLogin)
+      this._signSuiPersonalMessage = sdk.sui.zkLogin.signPersonalMessage.bind(this.sdk.sui.zkLogin)
+      this._getSuiAddress = sdk.sui.zkLogin.getAddress.bind(this.sdk.sui.zkLogin)
+
+      return
+    }
+    this._signSuiBlockData = async (txb: Transaction) =>
+      await defaultSignSuiBlockData({
+        txb,
+        client: this.client,
+        sdk: this.sdk,
+        method: this.signTransactionBlock.name,
+      })
+
+    this._signSuiPersonalMessage = async (message: string) =>
+      await defaultSignSuiPersonalMessage({ message, sdk: this.sdk, method: this.signPersonalMessage.name })
+
+    this._getSuiAddress = async () => await getSuiAddressHttp(this.sdk)
   }
 
   private _assureLogin() {
@@ -97,15 +115,5 @@ export class SuiExtension {
   ): ReturnType<typeof this.client.executeTransactionBlock> {
     const txbParams = await this.signTransactionBlock(txb)
     return await this.client.executeTransactionBlock(txbParams)
-  }
-
-  private _signSuiBlockData = async (txb: Transaction) =>
-    await defaultSignSuiBlockData({ txb, client: this.client, sdk: this.sdk, method: this.signTransactionBlock.name })
-
-  private _signSuiPersonalMessage = async (message: string) =>
-    await defaultSignSuiPersonalMessage({ message, sdk: this.sdk, method: this.signPersonalMessage.name })
-
-  private _getSuiAddress = async (): Promise<{ address: string }> => {
-    return await getSuiAddressHttp(this.sdk)
   }
 }
