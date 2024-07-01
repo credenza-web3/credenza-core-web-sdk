@@ -31,28 +31,35 @@ export class ZkLoginExtension {
   async _initialize(sdk: CredenzaSDK) {
     try {
       this.sdk = sdk
-      this.suiClient = this.sdk.sui.getSuiClient()
-      const { epoch } = await this.suiClient.getLatestSuiSystemState()
-      this._maxEpoch = Number(epoch) + 2
-
-      try {
-        const { publicKey, secretKey } = getZkKeysFromCache()
-        this._ephemeralKeyPair = new Ed25519Keypair({ publicKey, secretKey })
-      } catch (err) {
-        this._ephemeralKeyPair = new Ed25519Keypair()
-      }
-
-      this._extendedEphemeralPublicKey = getExtendedEphemeralPublicKey(this._ephemeralKeyPair.getPublicKey())
-      this._randomness = getZkRandomnessFromCache() || generateRandomness()
-
-      setZkCache(
-        Array.from(this._ephemeralKeyPair.getPublicKey().toRawBytes()),
-        Array.from(this._ephemeralKeyPair['keypair'].secretKey),
-        this._randomness,
-      )
+      await this._setEpoch()
+      await this._setKeyPairs()
     } catch (err) {
       /** */
     }
+  }
+
+  async _setEpoch() {
+    this.suiClient = this.sdk.sui.getSuiClient()
+    const { epoch } = await this.suiClient.getLatestSuiSystemState()
+    this._maxEpoch = Number(epoch) + 2
+  }
+
+  private _setKeyPairs = async () => {
+    try {
+      const { publicKey, secretKey } = getZkKeysFromCache()
+      this._ephemeralKeyPair = new Ed25519Keypair({ publicKey, secretKey })
+    } catch (err) {
+      this._ephemeralKeyPair = new Ed25519Keypair()
+    }
+
+    this._extendedEphemeralPublicKey = getExtendedEphemeralPublicKey(this._ephemeralKeyPair.getPublicKey())
+    this._randomness = getZkRandomnessFromCache() || generateRandomness()
+
+    setZkCache(
+      Array.from(this._ephemeralKeyPair.getPublicKey().toRawBytes()),
+      Array.from(this._ephemeralKeyPair['keypair'].secretKey),
+      this._randomness,
+    )
   }
 
   public generateZkNonce = () => {

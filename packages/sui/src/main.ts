@@ -77,6 +77,9 @@ export class SuiExtension {
     this.client = new SuiClient({ url: SUI_RPC_URLS[suiNetwork] })
     this.currentSuiNetwork = suiNetwork
     this.suiAddress = undefined
+
+    void this.zkLogin?._setEpoch()
+
     return { client: this.getSuiClient(), network: this.getNetworkName() }
   }
 
