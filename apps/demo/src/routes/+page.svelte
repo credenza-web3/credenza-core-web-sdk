@@ -52,7 +52,7 @@
   const handleOAuthLogin = () => {
     sdk.oauth.login({
       scope:
-        'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write',
+        'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',
       redirectUrl: window.location.href,
       nonce: sdk.sui.zkLogin.generateZkNonce(),
       //type: OAuthExtension.LOGIN_TYPE.PASSWORDLESS,
