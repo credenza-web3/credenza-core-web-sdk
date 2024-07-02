@@ -34,7 +34,7 @@ export class OAuthExtension {
 
   // eslint-disable-next-line complexity
   login(opts: TOAuthLoginOpts) {
-    const nonce = generateRandomString()
+    if (!opts.nonce) opts.nonce = generateRandomString()
     const state = generateRandomString()
 
     const url = new URL(getOAuthApiUrl(this.sdk) + '/oauth2/authorize')
@@ -42,7 +42,7 @@ export class OAuthExtension {
     url.searchParams.append('response_type', 'token')
     url.searchParams.append('scope', opts.scope)
     url.searchParams.append('redirect_uri', opts.redirectUrl)
-    url.searchParams.append('nonce', nonce)
+    url.searchParams.append('nonce', opts.nonce)
     url.searchParams.append('state', state)
     url.searchParams.append('credenza_session_length_seconds', String(opts.sessionLengthSeconds ?? 60 * 60))
 
@@ -59,7 +59,7 @@ export class OAuthExtension {
       }
     }
 
-    set(LS_OAUTH_NONCE_KEY, nonce)
+    set(LS_OAUTH_NONCE_KEY, opts.nonce)
     set(LS_OAUTH_STATE_KEY, state)
 
     window.location.href = url.toString()

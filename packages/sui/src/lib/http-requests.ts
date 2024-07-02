@@ -1,7 +1,7 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { getSuiApiUrl } from '@packages/common/sui/sui'
 
-export async function getSuiAddress(sdk: CredenzaSDK) {
+export async function getSuiAddressHttp(sdk: CredenzaSDK) {
   try {
     const response = await fetch(`${getSuiApiUrl(sdk)}/accounts/address`, {
       headers: {
@@ -16,7 +16,7 @@ export async function getSuiAddress(sdk: CredenzaSDK) {
   }
 }
 
-export async function signSuiData(sdk: CredenzaSDK, data: { method: string; param: string }) {
+export async function signSuiDataHttp(sdk: CredenzaSDK, data: { method: string; param: string }) {
   try {
     const response = await fetch(`${getSuiApiUrl(sdk)}/accounts/sign`, {
       method: 'POST',

@@ -8,4 +8,5 @@ export type TOAuthLoginOpts = {
   passwordlessType?: (typeof OAUTH_PASSWORDLESS_LOGIN_TYPE)[keyof typeof OAUTH_PASSWORDLESS_LOGIN_TYPE]
   forceEmail?: string
   forcePhone?: string
+  nonce?: string
 }
