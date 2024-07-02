@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'packages/zk-login/package.json'
+      - 'packages/sui-zk-login/package.json'
   workflow_dispatch:
 
 jobs:
@@ -30,13 +30,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build package
-        working-directory: ./packages/zk-login
+        working-directory: ./packages/sui-zk-login
         run: pnpm run build
       - name: Set tag variable
         id: vars
-        run: echo "NPM_DEPLOYMENT_TAG=$(node npm-tag.js packages/zk-login)" >> $GITHUB_OUTPUT
+        run: echo "NPM_DEPLOYMENT_TAG=$(node npm-tag.js packages/sui-zk-login)" >> $GITHUB_OUTPUT
       - name: Publish package
-        working-directory: ./packages/zk-login
+        working-directory: ./packages/sui-zk-login
         run: pnpm publish --access public --tag ${{ steps.vars.outputs.NPM_DEPLOYMENT_TAG}}
         env:
           NPM_AUTH_TOKEN: ${{secrets.CREDENZA_PUBLISH_TOKEN}}
