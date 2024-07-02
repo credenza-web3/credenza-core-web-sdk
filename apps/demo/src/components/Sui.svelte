@@ -37,8 +37,13 @@
   }
 
   const handleSuiSwitchNetwork = () => {
-    sdk.sui.switchNetwork(suiNetworkName)
-    console.log('Switched to: ', sdk.sui.getNetworkName())
+    try {
+      sdk.sui.switchNetwork(suiNetworkName)
+      console.log('Switched to: ', sdk.sui.getNetworkName())
+    } catch (e) {
+      alert(`Failed to switch network: ${e.message}`)
+      suiNetworkName = sdk.sui.getNetworkName()
+    }
   }
 
   const handleSuiSignMessage = async () => {

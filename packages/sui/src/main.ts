@@ -7,6 +7,7 @@ import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 import { ZkLoginExtension } from '@packages/sui-zk-login/src/main'
 import { getSuiAddressHttp } from './lib/http-requests'
 import { defaultSignSuiBlockData, defaultSignSuiPersonalMessage } from './lib/helpers'
+import { SDK_ENV } from '@packages/common/constants/core'
 
 type TExtensionName = ZkLoginExtension['name']
 type TExtension = ZkLoginExtension
@@ -20,6 +21,7 @@ export class SuiExtension {
   private suiAddress: string | undefined
   private currentSuiNetwork: TSuiNetwork
   private extensions: TExtensionName[] = []
+  private _isZkActive = false
 
   private _signSuiBlockData: (txb: Transaction) => ReturnType<typeof defaultSignSuiBlockData>
   private _signSuiPersonalMessage: (message: string) => ReturnType<typeof defaultSignSuiPersonalMessage>
@@ -44,7 +46,10 @@ export class SuiExtension {
       this.suiAddress = undefined
     })
 
-    if (this.extensions.length) {
+    const isValidForZk =
+      this.extensions.length && sdk.env === SDK_ENV.PROD && this.currentSuiNetwork === SUI_NETWORK.DEVNET
+    if (isValidForZk) {
+      this._isZkActive = true
       this._signSuiBlockData = sdk.sui.zkLogin.signTransactionBlock.bind(this.sdk.sui.zkLogin)
       this._signSuiPersonalMessage = sdk.sui.zkLogin.signPersonalMessage.bind(this.sdk.sui.zkLogin)
       this._getSuiAddress = sdk.sui.zkLogin.getAddress.bind(this.sdk.sui.zkLogin)
@@ -72,13 +77,12 @@ export class SuiExtension {
   }
 
   public switchNetwork(suiNetwork: TSuiNetwork): { client: SuiClient; network: TSuiNetwork } {
+    if (this._isZkActive) throw new Error('ZK is available only on devnet')
     if (this.client && this.currentSuiNetwork === suiNetwork) throw new Error(`Already on sui ${suiNetwork}`)
 
     this.client = new SuiClient({ url: SUI_RPC_URLS[suiNetwork] })
     this.currentSuiNetwork = suiNetwork
     this.suiAddress = undefined
-
-    void this.zkLogin?._setEpoch()
 
     return { client: this.getSuiClient(), network: this.getNetworkName() }
   }
