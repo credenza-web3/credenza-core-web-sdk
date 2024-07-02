@@ -1,4 +1,4 @@
-# CREDENZA WEB SDK MetamaskExtension
+# CREDENZA WEB SDK SUI ZK EXTENSION
 
 ## Installation
 
