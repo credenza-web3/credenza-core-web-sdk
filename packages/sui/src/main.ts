@@ -61,11 +61,10 @@ export class SuiExtension {
         txb,
         client: this.client,
         sdk: this.sdk,
-        method: this.signTransactionBlock.name,
       })
 
     this._signSuiPersonalMessage = async (message: string) =>
-      await defaultSignSuiPersonalMessage({ message, sdk: this.sdk, method: this.signPersonalMessage.name })
+      await defaultSignSuiPersonalMessage({ message, sdk: this.sdk })
 
     this._getSuiAddress = async () => await getSuiAddressHttp(this.sdk)
   }
