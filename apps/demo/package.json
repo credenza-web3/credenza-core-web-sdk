@@ -23,23 +23,23 @@
     "@credenza3/core-web-oauth-ext": "workspace:*",
     "@credenza3/core-web-sui-ext": "workspace:*",
     "@credenza3/core-web-sui-zklogin-ext": "workspace:*",
-    "@mysten/sui": "^1.2.0"
+    "@mysten/sui": "^1.2.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.43.1",
-    "@sveltejs/adapter-auto": "^3.2.0",
-    "@sveltejs/adapter-static": "^3.0.1",
-    "@sveltejs/kit": "^2.5.7",
-    "@sveltejs/vite-plugin-svelte": "^3.1.0",
-    "@typescript-eslint/eslint-plugin": "^7.7.1",
-    "@typescript-eslint/parser": "^7.7.1",
-    "prettier": "^3.2.5",
-    "prettier-plugin-svelte": "^3.2.3",
-    "svelte": "^4.2.15",
-    "svelte-check": "^3.6.9",
-    "tslib": "^2.6.2",
-    "typescript": "^5.4.5",
-    "vite": "^5.2.10",
-    "vitest": "^1.5.0"
+    "@playwright/test": "^1.45.1",
+    "@sveltejs/adapter-auto": "^3.2.2",
+    "@sveltejs/adapter-static": "^3.0.2",
+    "@sveltejs/kit": "^2.5.18",
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
+    "@typescript-eslint/parser": "^7.15.0",
+    "prettier": "^3.3.2",
+    "prettier-plugin-svelte": "^3.2.5",
+    "svelte": "^4.2.18",
+    "svelte-check": "^3.8.4",
+    "tslib": "^2.6.3",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.3",
+    "vitest": "^1.6.0"
   }
 }

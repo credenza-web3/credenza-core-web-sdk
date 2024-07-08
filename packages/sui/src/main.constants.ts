@@ -11,3 +11,8 @@ export const SUI_RPC_URLS = {
   [SUI_NETWORK.TESTNET]: 'https://rpc.ankr.com/sui_testnet',
   [SUI_NETWORK.MAINNET]: 'https://fullnode.mainnet.sui.io:443',
 } as const
+
+export const SUI_SIGN_METHODS = {
+  SIGN_TRANSACTION: 'signTransaction',
+  SIGN_PERSONAL_MESSAGE: 'signPersonalMessage',
+} as const

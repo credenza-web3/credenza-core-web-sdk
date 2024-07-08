@@ -48,7 +48,9 @@ export class WalletConnectExtension {
         enableEIP6963: true,
         enableInjected: false,
         enableCoinbase: false,
-        enableEmail: false,
+        auth: {
+          email: false,
+        },
         metadata: this.metadata,
       }),
       chains: this._getChains(),
