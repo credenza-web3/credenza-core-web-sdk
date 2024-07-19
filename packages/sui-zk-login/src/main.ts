@@ -15,6 +15,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { getZkKeysFromCache, getZkRandomnessFromCache, setZkCache } from './lib/cache'
 import { getSuiZkSalt } from './lib/http-requests'
 import { getZkProofUrl } from './lib/helper'
+import { verifyPersonalMessageSignature } from '@mysten/sui/verify'
 
 export class ZkLoginExtension {
   public name = 'zkLogin' as const
@@ -129,9 +130,8 @@ export class ZkLoginExtension {
       this._decodedJwt.aud,
     ).toString()
 
-    const messageData = new Uint8Array(Buffer.from(message))
+    const messageData = new TextEncoder().encode(message)
     const { signature: userSignature } = await this._ephemeralKeyPair.signPersonalMessage(messageData)
-
     const zkLoginSignature = getZkLoginSignature({
       inputs: {
         ...partialZkLoginSignature,
@@ -139,6 +139,10 @@ export class ZkLoginExtension {
       },
       maxEpoch: this._maxEpoch,
       userSignature,
+    })
+
+    await verifyPersonalMessageSignature(messageData, zkLoginSignature, {
+      client: this.sdk.sui.getSuiGqlClient(),
     })
 
     return { signature: zkLoginSignature }
