@@ -15,9 +15,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { getZkKeysFromCache, getZkRandomnessFromCache, setZkCache } from './lib/cache'
 import { getSuiZkSalt } from './lib/http-requests'
 import { getZkProofUrl } from './lib/helper'
-import { verifyPersonalMessageSignature, verifySignature } from '@mysten/sui/verify'
-import { SUI_NETWORK } from '@packages/sui/src/main.constants'
-import { parseZkLoginSignature } from '@mysten/sui/zklogin'
+import { verifyPersonalMessageSignature } from '@mysten/sui/verify'
 import { graphql } from '@mysten/sui/graphql/schemas/2024.4'
 
 export class ZkLoginExtension {
