@@ -15,6 +15,8 @@ import { Transaction } from '@mysten/sui/transactions'
 import { getZkKeysFromCache, getZkRandomnessFromCache, setZkCache } from './lib/cache'
 import { getSuiZkSalt } from './lib/http-requests'
 import { getZkProofUrl } from './lib/helper'
+import { verifyPersonalMessageSignature } from '@mysten/sui/verify'
+import { graphql } from '@mysten/sui/graphql/schemas/2024.4'
 
 export class ZkLoginExtension {
   public name = 'zkLogin' as const
@@ -31,14 +33,29 @@ export class ZkLoginExtension {
   async _initialize(sdk: CredenzaSDK) {
     try {
       this.sdk = sdk
-      await this._setEpoch()
       await this._setKeyPairs()
+      await this._setEpoch()
     } catch (err) {
       /** */
     }
   }
 
   async _setEpoch() {
+    const { data } = await this.sdk.sui.getSuiGqlClient().query({
+      query: graphql(`
+        query Zklogin {
+          epoch {
+            epochId
+          }
+        }
+      `),
+    })
+
+    if (data?.epoch?.epochId) {
+      this._maxEpoch = data?.epoch?.epochId + 2
+      return
+    }
+
     this.suiClient = this.sdk.sui.getSuiClient()
     const { epoch } = await this.suiClient.getLatestSuiSystemState()
     this._maxEpoch = Number(epoch) + 2
@@ -129,9 +146,8 @@ export class ZkLoginExtension {
       this._decodedJwt.aud,
     ).toString()
 
-    const messageData = new Uint8Array(Buffer.from(message))
+    const messageData = new TextEncoder().encode(message)
     const { signature: userSignature } = await this._ephemeralKeyPair.signPersonalMessage(messageData)
-
     const zkLoginSignature = getZkLoginSignature({
       inputs: {
         ...partialZkLoginSignature,
@@ -139,6 +155,10 @@ export class ZkLoginExtension {
       },
       maxEpoch: this._maxEpoch,
       userSignature,
+    })
+
+    await verifyPersonalMessageSignature(messageData, zkLoginSignature, {
+      client: this.sdk.sui.getSuiGqlClient(),
     })
 
     return { signature: zkLoginSignature }

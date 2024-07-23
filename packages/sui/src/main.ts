@@ -1,13 +1,14 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { SuiClient } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
-import { SUI_NETWORK, SUI_RPC_URLS } from './main.constants'
+import { SUI_GQL_URLS, SUI_NETWORK, SUI_RPC_URLS } from './main.constants'
 import type { TSuiNetwork } from './main.types'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 import { ZkLoginExtension } from '@packages/sui-zk-login/src/main'
 import { getSuiAddressHttp } from './lib/http-requests'
 import { defaultSignSuiBlockData, defaultSignSuiPersonalMessage } from './lib/helpers'
 import { SDK_ENV } from '@packages/common/constants/core'
+import { SuiGraphQLClient } from '@mysten/sui/graphql'
 
 type TExtensionName = ZkLoginExtension['name']
 type TExtension = ZkLoginExtension
@@ -18,6 +19,7 @@ export class SuiExtension {
 
   private sdk: CredenzaSDK
   private client: SuiClient
+  private gqlClient: SuiGraphQLClient
   private suiAddress: string | undefined
   private currentSuiNetwork: TSuiNetwork
   private extensions: TExtensionName[] = []
@@ -80,10 +82,17 @@ export class SuiExtension {
     if (this.client && this.currentSuiNetwork === suiNetwork) throw new Error(`Already on sui ${suiNetwork}`)
 
     this.client = new SuiClient({ url: SUI_RPC_URLS[suiNetwork] })
+    this.gqlClient = new SuiGraphQLClient({
+      url: SUI_GQL_URLS[suiNetwork],
+    })
     this.currentSuiNetwork = suiNetwork
     this.suiAddress = undefined
 
     return { client: this.getSuiClient(), network: this.getNetworkName() }
+  }
+
+  public getSuiGqlClient(): SuiGraphQLClient {
+    return this.gqlClient
   }
 
   public getSuiClient(): SuiClient {
