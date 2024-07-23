@@ -24,7 +24,7 @@ export class ZkLoginExtension {
   private suiClient: SuiClient
   private _userAddress: string
   private _salt: string
-  private _decodedJwt: { sub: string; aud: string }
+  private _decodedJwt: { sub: string; aud: string; iss: string }
   private _maxEpoch: number
   private _extendedEphemeralPublicKey: string
   private _ephemeralKeyPair: Ed25519Keypair
@@ -33,6 +33,7 @@ export class ZkLoginExtension {
   async _initialize(sdk: CredenzaSDK) {
     try {
       this.sdk = sdk
+      this.suiClient = this.sdk.sui.getSuiClient()
       await this._setKeyPairs()
       await this._setEpoch()
     } catch (err) {
@@ -56,7 +57,6 @@ export class ZkLoginExtension {
       return
     }
 
-    this.suiClient = this.sdk.sui.getSuiClient()
     const { epoch } = await this.suiClient.getLatestSuiSystemState()
     this._maxEpoch = Number(epoch) + 2
   }
