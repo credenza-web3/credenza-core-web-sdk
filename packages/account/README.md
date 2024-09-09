@@ -19,10 +19,10 @@ const sdk = new CredenzaSDK({
 })
 ```
 
-Get UserInfo
+Get UserInfo // makes an API call and returns user object
 
 ```
-await sdk.account.info()
+const user = await sdk.account.info()
 ```
 
 Update Profile data
@@ -58,4 +58,10 @@ Change Phone number (Disabled for logged in with social networks users)
 await sdk.account.changePhone(phone: string)
 // Verify by passing the code received in the SMS
 await sdk.account.verifyCode(code: string)
+```
+
+Get pending verifications (for email and phone. To display unverified contact data)
+
+```
+const pending = await sdk.accountpendingVerificationContacts()
 ```

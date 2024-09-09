@@ -12,14 +12,14 @@ Test page Staging env
 
 [SDKCore](https://www.npmjs.com/package/@credenza3/core-web)
 
--[SuiExtension](https://www.npmjs.com/package/@credenza3/core-web-sui-ext)
+- [OAuthExtension](https://www.npmjs.com/package/@credenza3/core-web-oauth-ext)
 
--[AccountExtension](https://www.npmjs.com/package/@credenza3/core-web-account-ext)
+- [AccountExtension](https://www.npmjs.com/package/@credenza3/core-web-account-ext)
 
--[OAuthExtension](https://www.npmjs.com/package/@credenza3/core-web-oauth-ext)
+- [SuiExtension](https://www.npmjs.com/package/@credenza3/core-web-sui-ext)
 
--[EvmExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-ext)
+  - [ZkExtension](https://www.npmjs.com/package/@credenza3/core-web-sui-zklogin-ext)
 
---[WalletConnectExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-walletconnect-ext)
+- [EvmExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-ext)
 
---[MetamaskExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-metamask-ext)
+  - [MetamaskExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-metamask-ext)

@@ -9,6 +9,16 @@ npm i @credenza3/core-web-sui-ext
 import { SuiExtension } from '@credenza3/core-web-sui-ext'
 ```
 
+## Constants for reference
+
+```
+SUI_NETWORK = {
+  DEVNET: 'devnet',
+  TESTNET: 'testnet',
+  MAINNET: 'mainnet',
+}
+```
+
 ## Usage
 
 Create the SDK instance
@@ -33,6 +43,12 @@ Get sui sdk client
 const client = sdk.sui.getSuiClient(): SuiClient
 ```
 
+Get sui sdk graphql client
+
+```
+const gqlClient = sdk.sui.getSuiGqlClient(): SuiGraphQLClient
+```
+
 Get current sui network name
 
 ```
@@ -54,11 +70,11 @@ const result = await sdk.sui.signPersonalMessage(message: string): Promise<{sign
 Sign Transaction block
 
 ```
-const result = await sdk.sui.signTransactionBlock(tbx: TransactionBlock): Promise<{signature: string; transactionBlock: Uint8Array}
+const result = await sdk.sui.signTransactionBlock(tbx: Transaction): Promise<{signature: string; transactionBlock: Uint8Array}
 ```
 
 Sign And execute Transaction block
 
 ```
-const result = await sdk.sui.signAndExecuteTransactionBlock(tbx: TransactionBlock): Promise<SuiTransactionBlockResponse>
+const result = await sdk.sui.signAndExecuteTransactionBlock(tbx: Transaction)
 ```
