@@ -30,6 +30,9 @@ await sdk.oauth.login({
   // defaults to 1h
   sessionLengthSeconds?: number
 
+  // explicitly define nonce
+  nonce?: string
+
   // explicitly define login type
   type?: OAuthExtension.LOGIN_TYPE.<SELECTED_TYPE>
 

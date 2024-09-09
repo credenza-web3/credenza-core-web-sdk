@@ -35,23 +35,35 @@ const sdk = new CredenzaSDK({
       chainConfig,
       extensions: [
         new MetamaskExtension(),
-        new WalletConnectExtension(),
       ],
     })
   ],
 })
 ```
 
-Switch Chain
+Switch Chain. Calls different switch chain implementations depending on LoginProvider (metamask | ouath)
 
 ```
 await sdk.evm.switchChain(chainConfig)
+```
+
+Get current chain config.
+
+```
+const config = await sdk.evm.getChainConfig()
 ```
 
 Get provider
 
 ```
 const evmProvider = await sdk.evm.getProvider()
+```
+
+Get ethers provider
+
+```
+// wraps evmProvider with new ethers.BrowserProvider()
+const provider = await sdk.evm.getEthersProvider()
 ```
 
 ## Credenza EVM provider
@@ -70,13 +82,6 @@ If you prefer to use ethers.js you can import it from the evm extension
 
 ```
 import { ethers } from '@credenza3/core-web-evm-ext'
-```
-
-Get ethers provider
-
-```
-// wraps evmProvider with new ethers.BrowserProvider()
-const provider = await sdk.evm.getEthersProvider()
 ```
 
 ## Events

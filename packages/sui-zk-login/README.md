@@ -33,3 +33,25 @@ sdk.oauth.login({
 
 nonce: sdk.sui.zkLogin.generateZkNonce(), is mandatory for zk login
 ```
+
+## ZK blockchain operations
+
+(ALL methods listed below are avaialbe directly by using sdk.sui.METHOD_NAME if ZK extensions is used. So basically sdk.sui.getAddress is returning the result of sdk.sui.zkLogin.getAddress if ZK extensions is active)
+
+Get current sui ZK address
+
+```
+const address = await sdk.sui.zkLogin.getAddress(): string
+```
+
+Sign Personal message
+
+```
+const result = await sdk.sui.zkLogin.signPersonalMessage(message: string): Promise<{signature: string; bytes: string}
+```
+
+Sign Transaction block
+
+```
+const result = await sdk.sui.zkLogin.signTransactionBlock(tbx: Transaction): Promise<{signature: string; transactionBlock: Uint8Array}
+```

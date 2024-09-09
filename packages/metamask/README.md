@@ -23,8 +23,14 @@ const sdk = new CredenzaSDK({
 })
 ```
 
-Login with metamask
+Login with metamask and set access token
 
 ```
 await sdk.evm.metamask.login()
+```
+
+Get metamask address
+
+```
+const address = await sdk.evm.metamask.getAddress()
 ```
