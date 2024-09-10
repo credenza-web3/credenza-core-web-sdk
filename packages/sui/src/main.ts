@@ -42,16 +42,17 @@ export class SuiExtension {
 
     for (const extensionName of this.extensions) {
       await this[extensionName]?._initialize(this.sdk)
+
+      if (this[extensionName].name === 'zkLogin') {
+        this._isZkActive = true
+      }
     }
 
     this.sdk.on(SDK_EVENT.LOGOUT, () => {
       this.suiAddress = undefined
     })
 
-    const isValidForZk =
-      this.extensions.length && sdk.env === SDK_ENV.PROD && this.currentSuiNetwork === SUI_NETWORK.DEVNET
-    if (isValidForZk) {
-      this._isZkActive = true
+    if (this._isZkActive && sdk.env === SDK_ENV.PROD) {
       this._signSuiBlockData = sdk.sui.zkLogin.signTransactionBlock.bind(this.sdk.sui.zkLogin)
       this._signSuiPersonalMessage = sdk.sui.zkLogin.signPersonalMessage.bind(this.sdk.sui.zkLogin)
       this._getSuiAddress = sdk.sui.zkLogin.getAddress.bind(this.sdk.sui.zkLogin)
@@ -78,7 +79,6 @@ export class SuiExtension {
   }
 
   public switchNetwork(suiNetwork: TSuiNetwork): { client: SuiClient; network: TSuiNetwork } {
-    if (this._isZkActive) throw new Error('ZK is available only on devnet')
     if (this.client && this.currentSuiNetwork === suiNetwork) throw new Error(`Already on sui ${suiNetwork}`)
 
     this.client = new SuiClient({ url: SUI_RPC_URLS[suiNetwork] })
@@ -87,6 +87,10 @@ export class SuiExtension {
     })
     this.currentSuiNetwork = suiNetwork
     this.suiAddress = undefined
+
+    if (this._isZkActive) {
+      void this.zkLogin._setEpoch()
+    }
 
     return { client: this.getSuiClient(), network: this.getNetworkName() }
   }
