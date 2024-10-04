@@ -4,7 +4,7 @@ export const getZkProofUrl = (network: TSuiNetwork) => {
   switch (network) {
     case 'mainnet':
     case 'testnet':
-      return 'https://prover.mystenlabs.com/v1'
+      return 'https://sui-zk-prover.credenza3.com/v1'
     case 'devnet':
       return 'https://prover-dev.mystenlabs.com/v1'
     default:

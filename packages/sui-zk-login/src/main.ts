@@ -89,6 +89,7 @@ export class ZkLoginExtension {
 
     this._decodedJwt = jwtDecode(token)
     const url = getZkProofUrl(this.sdk.sui.getNetworkName())
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -103,6 +104,12 @@ export class ZkLoginExtension {
         keyClaimName: 'sub',
       }),
     })
+
+    if (!response.ok) {
+      this.sdk.logout()
+      this.sdk.oauth.revokeBrowserSessionWithRedirect(window.location.href)
+      return
+    }
     return await response.json()
   }
 

@@ -17,7 +17,13 @@
   import Account from '../components/Account.svelte'
 
   let evmChainConfig = spicy
-  let suiNetworkName = SuiExtension.SUI_NETWORK.DEVNET
+  const suiNetworkFromLS =
+    typeof window !== 'undefined'
+      ? (window.localStorage?.getItem(
+          'CREDENZA_SUI_NETWORK',
+        ) as (typeof SuiExtension.SUI_NETWORK)[keyof typeof SuiExtension.SUI_NETWORK])
+      : null
+  let suiNetworkName = suiNetworkFromLS || SuiExtension.SUI_NETWORK.DEVNET
 
   const sdk = new CredenzaSDK({
     clientId: PUBLIC_CLIENT_ID,
