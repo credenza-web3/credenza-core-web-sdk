@@ -43,7 +43,7 @@ export class SuiExtension {
     for (const extensionName of this.extensions) {
       await this[extensionName]?._initialize(this.sdk)
 
-      if (this[extensionName].name === 'zkLogin') {
+      if (this[extensionName].name === 'zkLogin' && this.sdk.env === SDK_ENV.PROD) {
         this._isZkActive = true
       }
     }
@@ -79,6 +79,7 @@ export class SuiExtension {
   }
 
   public switchNetwork(suiNetwork: TSuiNetwork): { client: SuiClient; network: TSuiNetwork } {
+    if (this._isZkActive) throw new Error(`SUI ZK Login is active, cannot switch network`)
     if (this.client && this.currentSuiNetwork === suiNetwork) throw new Error(`Already on sui ${suiNetwork}`)
 
     this.client = new SuiClient({ url: SUI_RPC_URLS[suiNetwork] })
@@ -87,10 +88,6 @@ export class SuiExtension {
     })
     this.currentSuiNetwork = suiNetwork
     this.suiAddress = undefined
-
-    if (this._isZkActive) {
-      void this.zkLogin._setEpoch()
-    }
 
     return { client: this.getSuiClient(), network: this.getNetworkName() }
   }
