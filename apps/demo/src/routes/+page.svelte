@@ -74,13 +74,16 @@
     const token = prompt(`Enter the ${isIdToken ? 'ID' : 'access'} token`)
     if (!token) return
 
-    await sdk.oauth.loginWithJwt({
+    const result = await sdk.oauth.loginWithJwt({
       scope:
         'openid profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',
       validatorId,
+      //responseType: 'code',
+      //...(await sdk.oauth.buildCodeChallenge('challenge')),
       ...(isIdToken ? { idToken: token } : { accessToken: token }),
     })
-    await handleLogin()
+    if (sdk.isLoggedIn()) await handleLogin()
+    console.log('Jwt Login success:', result)
   }
 
   const handleMetamaskLogin = async () => {

@@ -87,4 +87,19 @@ export class OAuthExtension {
       window.location.hash = ''
     }
   }
+
+  async buildS256CodeChallenge(codeVerifier: string): Promise<{ codeChallenge: string; codeChallengeMethod: 'S256' }> {
+    const encoder = new TextEncoder()
+    const data = encoder.encode(codeVerifier)
+    const arrBuf = await window.crypto.subtle.digest('SHA-256', data)
+    const codeChallenge = btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(arrBuf))))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '')
+
+    return {
+      codeChallenge,
+      codeChallengeMethod: 'S256',
+    }
+  }
 }

@@ -2,11 +2,20 @@ import { OAUTH_LOGIN_TYPE, OAUTH_PASSWORDLESS_LOGIN_TYPE } from './constants/log
 
 export type TOAuthLoginBaseOpts = {
   scope: string
-  responseType?: 'token' | 'code'
   nonce?: string
   state?: string
   sessionLengthSeconds?: number
 }
+
+export type TOAuthLoginResponseTypeOpts =
+  | {
+      responseType?: 'token'
+    }
+  | {
+      responseType: 'code'
+      codeChallengeMethod: 'S256' | 'plain'
+      codeChallenge: string
+    }
 
 export type TOAuthLoginRedirectUrlOpts = {
   redirectUrl: string
@@ -29,5 +38,6 @@ export type TOAuthLoginJwtOpts = {
 export type TOAuthLoginWithRedirectOpts = TOAuthLoginBaseOpts &
   TOAuthLoginRedirectUrlOpts &
   TOAuthLoginTypeOpts &
-  TOAuthPasswordlessLoginOpts
-export type TOAuthLoginWithJwtOpts = TOAuthLoginBaseOpts & TOAuthLoginJwtOpts
+  TOAuthPasswordlessLoginOpts &
+  TOAuthLoginResponseTypeOpts
+export type TOAuthLoginWithJwtOpts = TOAuthLoginBaseOpts & TOAuthLoginJwtOpts & TOAuthLoginResponseTypeOpts

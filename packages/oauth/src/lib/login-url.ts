@@ -9,16 +9,28 @@ import type {
   TOAuthLoginRedirectUrlOpts,
   TOAuthLoginTypeOpts,
   TOAuthPasswordlessLoginOpts,
+  TOAuthLoginResponseTypeOpts,
 } from '../main.types'
 
-export function buildLoginUrl(sdk: CredenzaSDK, opts: TOAuthLoginBaseOpts): URL {
+function extendLoginUrlWithResponseType(url: URL, opts: TOAuthLoginResponseTypeOpts): void {
+  url.searchParams.append('response_type', opts.responseType || 'token')
+  if (opts.responseType === 'code') {
+    if (!opts.codeChallenge || !opts.codeChallengeMethod) {
+      throw new Error('code_challenge and code_challenge_method are required for response_type=code')
+    }
+    url.searchParams.append('code_challenge', opts.codeChallenge)
+    url.searchParams.append('code_challenge_method', opts.codeChallengeMethod)
+  }
+}
+
+export function buildLoginUrl(sdk: CredenzaSDK, opts: TOAuthLoginBaseOpts & TOAuthLoginResponseTypeOpts): URL {
   const url = new URL(getOAuthApiUrl(sdk) + '/oauth2/authorize')
   url.searchParams.append('client_id', sdk.clientId)
   url.searchParams.append('scope', opts.scope)
   url.searchParams.append('nonce', opts.nonce || generateRandomString())
   url.searchParams.append('state', opts.state || generateRandomString())
-  url.searchParams.append('response_type', opts.responseType || 'token')
   url.searchParams.append('credenza_session_length_seconds', String(opts.sessionLengthSeconds ?? 60 * 60))
+  extendLoginUrlWithResponseType(url, opts)
   return url
 }
 
