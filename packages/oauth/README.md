@@ -19,10 +19,10 @@ const sdk = new CredenzaSDK({
 })
 ```
 
-Login with Credenza OAuth2
+Login with Credenza OAuth2 UI
 
 ```
-await sdk.oauth.login({
+await sdk.oauth.loginWithRedirect({
   scope: 'profile email phone blockchain.evm.write blockchain.evm',
   redirectUrl: window.location.href, // must be configured in client settings
 
@@ -32,6 +32,15 @@ await sdk.oauth.login({
 
   // explicitly define nonce
   nonce?: string
+
+  // explicitly define state
+  state?: string
+
+  responseType?: 'token' | 'code' // 'token
+
+  // Required if 'responseType' === 'code'
+  codeChallenge: string
+  codeChallengeMethod: 'S256' | 'plain'
 
   // explicitly define login type
   type?: OAuthExtension.LOGIN_TYPE.<SELECTED_TYPE>
@@ -50,6 +59,20 @@ await sdk.oauth.login({
 })
 ```
 
+Login with JWT
+
+```
+await sdk.oauth.loginWithRedirect({
+  scope: 'openid profile email phone blockchain.evm.write blockchain.evm',
+  validatorId: string
+  accessToken?: string
+  idToken?: string
+  responseType?: 'token' | 'code' // 'token
+  codeChallenge?: string
+  codeChallengeMethod?: 'S256' | 'plain'
+})
+```
+
 Destroy OAuth flow session (Requires user to be logged in)
 
 ```
@@ -60,4 +83,19 @@ Destroy OAuth flow browser session and redirect user.
 
 ```
 await sdk.oauth.revokeBrowserSessionWithRedirect(<REDIRECT_URI>)
+```
+
+Build Code Challenge
+
+```
+const {
+  codeChallenge,
+  codeChallengeMethod
+} = await sdk.oauth.buildS256CodeChallenge(codeVerifier: string)
+```
+
+Set access token. Allows to manually set the access token. Typically used for 'code' grant flow
+
+```
+await sdk.oauth.setAccessToken(token: string)
 ```

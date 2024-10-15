@@ -1,13 +1,14 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
 import { set, get } from '@packages/common/localstorage/localstorage'
-import { generateRandomString } from '@packages/common/str/str'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import { jwtDecode } from 'jwt-decode'
 import { LS_OAUTH_NONCE_KEY, LS_OAUTH_STATE_KEY } from './constants/localstorage'
 import { OAUTH_LOGIN_TYPE, OAUTH_PASSWORDLESS_LOGIN_TYPE } from './constants/login-types'
-import type { TOAuthLoginOpts } from './main.types'
-import { revokeOAuth2Session } from './lib/http-requests'
+import type { TOAuthLoginWithRedirectOpts, TOAuthLoginWithJwtOpts } from './main.types'
+import { revokeOAuth2Session, loginWithJwtRequest } from './lib/http-requests'
+import * as loginUrl from './lib/login-url'
+import { recursiveToCamel } from '@packages/common/obj/obj'
 
 export class OAuthExtension {
   static LOGIN_TYPE = OAUTH_LOGIN_TYPE
@@ -32,37 +33,27 @@ export class OAuthExtension {
     return (window.location.href = url.toString())
   }
 
-  // eslint-disable-next-line complexity
-  login(opts: TOAuthLoginOpts) {
-    if (!opts.nonce) opts.nonce = generateRandomString()
-    const state = generateRandomString()
+  login(opts: TOAuthLoginWithRedirectOpts) {
+    // eslint-disable-next-line no-console
+    console.warn(`login is deprecated and will be removed soon. Use "loginWithRedirect" instead.`)
+    return this.loginWithRedirect(opts)
+  }
+  loginWithRedirect(opts: TOAuthLoginWithRedirectOpts) {
+    const url = loginUrl.buildLoginUrl(this.sdk, opts)
+    loginUrl.extendLoginUrlWithRedirectUri(url, opts)
+    loginUrl.extendLoginUrlWithLoginType(url, opts)
+    loginUrl.extendLoginUrlWithPasswordlessConfig(url, opts)
 
-    const url = new URL(getOAuthApiUrl(this.sdk) + '/oauth2/authorize')
-    url.searchParams.append('client_id', this.sdk.clientId)
-    url.searchParams.append('response_type', 'token')
-    url.searchParams.append('scope', opts.scope)
-    url.searchParams.append('redirect_uri', opts.redirectUrl)
-    url.searchParams.append('nonce', opts.nonce)
-    url.searchParams.append('state', state)
-    url.searchParams.append('credenza_session_length_seconds', String(opts.sessionLengthSeconds ?? 60 * 60))
-
-    if (opts.type) {
-      if (opts.type !== OAUTH_LOGIN_TYPE.CREDENTIALS) url.pathname += `/${opts.type}`
-      url.searchParams.append('allowed_login_types', opts.type)
-      if (opts?.passwordlessType) {
-        url.searchParams.append('allowed_passwordless_login_type', opts.passwordlessType)
-        if (opts.forceEmail && opts.passwordlessType === OAUTH_PASSWORDLESS_LOGIN_TYPE.EMAIL) {
-          url.searchParams.append('force_email', opts.forceEmail)
-        } else if (opts.forcePhone && opts.passwordlessType === OAUTH_PASSWORDLESS_LOGIN_TYPE.PHONE) {
-          url.searchParams.append('force_phone', opts.forcePhone)
-        }
-      }
-    }
-
-    set(LS_OAUTH_NONCE_KEY, opts.nonce)
-    set(LS_OAUTH_STATE_KEY, state)
+    set(LS_OAUTH_NONCE_KEY, url.searchParams.get('nonce') as string)
+    set(LS_OAUTH_STATE_KEY, url.searchParams.get('state') as string)
 
     window.location.href = url.toString()
+  }
+
+  async loginWithJwt(opts: TOAuthLoginWithJwtOpts) {
+    const result = await loginWithJwtRequest(this.sdk, opts)
+    if (result.access_token) await this.setAccessToken(result.access_token)
+    return recursiveToCamel(result)
   }
 
   async _handleRedirectResult() {
@@ -86,12 +77,31 @@ export class OAuthExtension {
 
     const nonce = get(LS_OAUTH_NONCE_KEY)
     if (nonce !== decodedJwt.nonce) throw new Error('Invalid nonce')
-    await this.sdk._setAccessToken(hashObj.access_token, LS_LOGIN_PROVIDER.OAUTH)
+    await this.setAccessToken(hashObj.access_token)
 
     if (history && window.location.hash) {
       history.replaceState(null, document.title, window.location.pathname + window.location.search)
     } else {
       window.location.hash = ''
     }
+  }
+
+  async buildS256CodeChallenge(codeVerifier: string): Promise<{ codeChallenge: string; codeChallengeMethod: 'S256' }> {
+    const encoder = new TextEncoder()
+    const data = encoder.encode(codeVerifier)
+    const arrBuf = await window.crypto.subtle.digest('SHA-256', data)
+    const codeChallenge = btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(arrBuf))))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '')
+
+    return {
+      codeChallenge,
+      codeChallengeMethod: 'S256',
+    }
+  }
+
+  public async setAccessToken(token: string) {
+    await this.sdk._setAccessToken(token, LS_LOGIN_PROVIDER.OAUTH)
   }
 }
