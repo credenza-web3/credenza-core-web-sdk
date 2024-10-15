@@ -19,10 +19,21 @@ const sdk = new CredenzaSDK({
 })
 ```
 
-Login with Credenza OAuth2
+Login with JWT
 
 ```
-await sdk.oauth.login({
+await sdk.oauth.loginWithRedirect({
+  scope: 'openid profile email phone blockchain.evm.write blockchain.evm',
+  validatorId: string
+  accessToken?: string
+  idToken?: string
+})
+```
+
+Login with Credenza OAuth2 UI
+
+```
+await sdk.oauth.loginWithRedirect({
   scope: 'profile email phone blockchain.evm.write blockchain.evm',
   redirectUrl: window.location.href, // must be configured in client settings
 

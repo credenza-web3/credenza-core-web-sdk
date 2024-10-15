@@ -3,6 +3,7 @@ export const OAUTH_LOGIN_TYPE = {
   PASSWORDLESS: 'passwordless',
   GOOGLE: 'google',
   TICKETMASTER: 'ticketmaster',
+  JWT: 'jwt',
 } as const
 
 export const OAUTH_PASSWORDLESS_LOGIN_TYPE = {
