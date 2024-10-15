@@ -93,3 +93,9 @@ const {
   codeChallengeMethod
 } = await sdk.oauth.buildS256CodeChallenge(codeVerifier: string)
 ```
+
+Set access token. Allows to manually set the access token. Typically used for 'code' grant flow
+
+```
+await sdk.oauth.setAccessToken(token: string)
+```

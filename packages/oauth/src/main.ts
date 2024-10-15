@@ -52,9 +52,7 @@ export class OAuthExtension {
 
   async loginWithJwt(opts: TOAuthLoginWithJwtOpts) {
     const result = await loginWithJwtRequest(this.sdk, opts)
-    if (result.access_token) {
-      await this.sdk._setAccessToken(result.access_token, LS_LOGIN_PROVIDER.OAUTH)
-    }
+    if (result.access_token) await this.setAccessToken(result.access_token)
     return recursiveToCamel(result)
   }
 
@@ -79,7 +77,7 @@ export class OAuthExtension {
 
     const nonce = get(LS_OAUTH_NONCE_KEY)
     if (nonce !== decodedJwt.nonce) throw new Error('Invalid nonce')
-    await this.sdk._setAccessToken(hashObj.access_token, LS_LOGIN_PROVIDER.OAUTH)
+    await this.setAccessToken(hashObj.access_token)
 
     if (history && window.location.hash) {
       history.replaceState(null, document.title, window.location.pathname + window.location.search)
@@ -101,5 +99,9 @@ export class OAuthExtension {
       codeChallenge,
       codeChallengeMethod: 'S256',
     }
+  }
+
+  public async setAccessToken(token: string) {
+    await this.sdk._setAccessToken(token, LS_LOGIN_PROVIDER.OAUTH)
   }
 }
