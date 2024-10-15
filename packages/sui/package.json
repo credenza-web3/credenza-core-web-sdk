@@ -1,6 +1,6 @@
 {
   "name": "@credenza3/core-web-sui-ext",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"
@@ -19,6 +19,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mysten/sui": "^1.2.1"
+    "@mysten/sui": "^1.2.1",
+    "buffer": "^6.0.3"
   }
 }

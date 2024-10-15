@@ -226,6 +226,9 @@ importers:
       '@mysten/sui':
         specifier: ^1.2.1
         version: 1.2.1(svelte@4.2.18)(typescript@5.5.3)
+      buffer:
+        specifier: ^6.0.3
+        version: 6.0.3
     devDependencies:
       '@types/node':
         specifier: ^20.14.9
