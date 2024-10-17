@@ -9,11 +9,11 @@ import { EVM_EVENT } from './lib/events/events.constants'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 import type { Eip1193Provider } from 'ethers'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
-import type { WalletConnectExtension } from '@packages/walletconnect/src/main'
+
 import * as ethers from 'ethers'
 
-type TExtensionName = MetamaskExtension['name'] | WalletConnectExtension['name']
-type TExtension = MetamaskExtension | WalletConnectExtension
+type TExtensionName = MetamaskExtension['name']
+type TExtension = MetamaskExtension
 
 export { ethers, CredenzaProvider }
 export class EvmExtension {
@@ -26,7 +26,6 @@ export class EvmExtension {
   private extensions: TExtensionName[] = []
 
   public metamask: MetamaskExtension
-  public walletconnect: WalletConnectExtension
 
   constructor(params: { chainConfig: TChainConfig; extensions: TExtension[] }) {
     if (!params.chainConfig.chainId || !params.chainConfig.rpcUrl)
@@ -56,9 +55,6 @@ export class EvmExtension {
       switch (this.sdk.getLoginProvider()) {
         case LS_LOGIN_PROVIDER.METAMASK: {
           return await this.metamask._getProvider()
-        }
-        case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
-          return await this.walletconnect._getProvider()
         }
         case LS_LOGIN_PROVIDER.OAUTH: {
           const credenzaProvider = new CredenzaProvider({ chainConfig: this.chainConfig, sdk: this.sdk })
@@ -93,10 +89,6 @@ export class EvmExtension {
       switch (this.sdk.getLoginProvider()) {
         case LS_LOGIN_PROVIDER.METAMASK: {
           await this.metamask._switchChain(chainConfig)
-          break
-        }
-        case LS_LOGIN_PROVIDER.WALLET_CONNECT: {
-          await this.walletconnect._switchChain(chainConfig)
           break
         }
         case LS_LOGIN_PROVIDER.OAUTH: {
