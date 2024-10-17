@@ -10,7 +10,6 @@ import type { AccountExtension } from '@packages/account/src/main'
 import type { MetamaskExtension } from '@packages/metamask/src/main'
 import type { ZkLoginExtension } from '@packages/sui-zk-login/src/main'
 import type { EvmExtension } from '@packages/evm/src/main'
-import type { WalletConnectExtension } from '@packages/walletconnect/src/main'
 import type { SuiExtension } from '@packages/sui/src/main'
 
 type TExtensionName = OAuthExtension['name'] | AccountExtension['name'] | EvmExtension['name'] | SuiExtension['name']
@@ -27,7 +26,6 @@ export class CredenzaSDK {
   public account: AccountExtension
   public metamask: MetamaskExtension
   public evm: EvmExtension
-  public walletconnect: WalletConnectExtension
   public sui: SuiExtension
   public zklogin: ZkLoginExtension
 
