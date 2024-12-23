@@ -9,7 +9,7 @@
   import { MetamaskExtension } from '@credenza3/core-web-evm-metamask-ext/src/main'
   import { EvmExtension } from '@credenza3/core-web-evm-ext/src/main'
   import { SuiExtension } from '@credenza3/core-web-sui-ext/src/main'
-  import { ZkLoginExtension } from '@packages/sui-zk-login/src/main'
+  // import { ZkLoginExtension } from '@packages/sui-zk-login/src/main'
 
   import Sui from '../components/Sui.svelte'
   import Evm from '../components/Evm.svelte'
@@ -28,7 +28,7 @@
     clientId: PUBLIC_CLIENT_ID,
     env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
     extensions: [
-      new SuiExtension({ suiNetwork: suiNetworkName, extensions: [new ZkLoginExtension()] }),
+      new SuiExtension({ suiNetwork: suiNetworkName, extensions: [] }),
       new EvmExtension({
         chainConfig: evmChainConfig,
         extensions: [
@@ -49,7 +49,7 @@
       scope:
         'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',
       redirectUrl: window.location.href,
-      nonce: sdk.sui.zkLogin.generateZkNonce(),
+      // nonce: sdk.sui.zkLogin.generateZkNonce(),
       //type: OAuthExtension.LOGIN_TYPE.PASSWORDLESS,
       //passwordlessType: OAuthExtension.PASSWORDLESS_LOGIN_TYPE.EMAIL,
       //forceEmail: 'test@test.com',
