@@ -2,7 +2,7 @@ export const amoy = {
   chainId: '0x13882',
   rpcUrl: `https://rpc.ankr.com/polygon_amoy`,
   displayName: 'Amoy',
-  blockExplorer: 'https://www.oklink.com/amoy',
+  blockExplorer: 'https://www.oklink.com/amoy/',
   nativeCurrency: {
     name: 'MATIC',
     symbol: 'MATIC',
@@ -18,6 +18,18 @@ export const spicy = {
   nativeCurrency: {
     name: 'CHZ',
     symbol: 'CHZ',
+    decimals: 18,
+  },
+}
+
+export const fuji = {
+  chainId: '0xa869',
+  rpcUrl: 'https://rpc.ankr.com/avalanche_fuji',
+  displayName: 'Fuji',
+  blockExplorer: 'https://subnets-test.avax.network/c-chain/',
+  nativeCurrency: {
+    name: 'AVAX',
+    symbol: 'AVAX',
     decimals: 18,
   },
 }
