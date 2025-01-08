@@ -1,4 +1,5 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
+import { Buffer } from 'buffer'
 import { signSuiDataHttp } from './http-requests'
 import { Transaction } from '@mysten/sui/transactions'
 import { SuiClient } from '@mysten/sui/client'

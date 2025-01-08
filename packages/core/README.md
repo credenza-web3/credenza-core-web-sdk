@@ -35,7 +35,6 @@ const sdk = new CredenzaSDK({
   extensions: [
     new EvmExtension({chainConfig, extensions: [
       new MetamaskExtension()
-      new WalletConnectExtension()
     ]}),
     new OAuthExtension(),
     new AccountExtension(),
@@ -58,7 +57,7 @@ const token = sdk.getAccessToken(): string
 Get login provider
 
 ```
-const loginProvider = sdk.getLoginProvider(): string ("oauth" | "metamask" | "walletconnect")
+const loginProvider = sdk.getLoginProvider(): string ("oauth" | "metamask")
 ```
 
 Get is user logged in

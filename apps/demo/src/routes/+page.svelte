@@ -1,16 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$env/static/public'
-  import { amoy, spicy } from '../evm-chain-config'
+  import { spicy } from '../evm-chain-config'
 
   import { CredenzaSDK } from '@credenza3/core-web/src/main'
   import { OAuthExtension } from '@credenza3/core-web-oauth-ext/src/main'
   import { AccountExtension } from '@credenza3/core-web-account-ext/src/main'
   import { MetamaskExtension } from '@credenza3/core-web-evm-metamask-ext/src/main'
-  import { WalletConnectExtension } from '@credenza3/core-web-evm-walletconnect-ext/src/main'
   import { EvmExtension } from '@credenza3/core-web-evm-ext/src/main'
   import { SuiExtension } from '@credenza3/core-web-sui-ext/src/main'
-  import { ZkLoginExtension } from '@packages/sui-zk-login/src/main'
+  // import { ZkLoginExtension } from '@packages/sui-zk-login/src/main'
 
   import Sui from '../components/Sui.svelte'
   import Evm from '../components/Evm.svelte'
@@ -29,21 +28,11 @@
     clientId: PUBLIC_CLIENT_ID,
     env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
     extensions: [
-      new SuiExtension({ suiNetwork: suiNetworkName, extensions: [new ZkLoginExtension()] }),
+      new SuiExtension({ suiNetwork: suiNetworkName, extensions: [] }),
       new EvmExtension({
         chainConfig: evmChainConfig,
         extensions: [
           new MetamaskExtension(),
-          new WalletConnectExtension({
-            projectId: 'e98bfa148f5b128914133e707b993b1d',
-            chains: [amoy, spicy],
-            metadata: {
-              name: 'Test',
-              description: 'Test description ',
-              url: 'http://localhost:5173',
-              icons: [],
-            },
-          }),
         ],
       }),
       new OAuthExtension(),
@@ -60,7 +49,7 @@
       scope:
         'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',
       redirectUrl: window.location.href,
-      nonce: sdk.sui.zkLogin.generateZkNonce(),
+      // nonce: sdk.sui.zkLogin.generateZkNonce(),
       //type: OAuthExtension.LOGIN_TYPE.PASSWORDLESS,
       //passwordlessType: OAuthExtension.PASSWORDLESS_LOGIN_TYPE.EMAIL,
       //forceEmail: 'test@test.com',
@@ -88,11 +77,6 @@
 
   const handleMetamaskLogin = async () => {
     await sdk.evm.metamask.login()
-    await handleLogin()
-  }
-
-  const handleWalletConnectLogin = async () => {
-    await sdk.evm.walletconnect.login()
     await handleLogin()
   }
 
@@ -124,7 +108,6 @@
 {#if !isLoggedIn}
   <button on:click={handleOAuthLogin}> Login With OAuth2 </button>
   <button on:click={handleMetamaskLogin}> Login With Metamask </button>
-  <button on:click={handleWalletConnectLogin}> Login With WalletConnect </button>
   <button on:click={handleOAuthLoginWithJwt}> Login With JWT </button>
 {:else}
   <div>
