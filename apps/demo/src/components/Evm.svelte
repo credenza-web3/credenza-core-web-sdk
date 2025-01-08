@@ -4,7 +4,7 @@
   import { spicy, amoy, fuji } from '../evm-chain-config'
 
   export let sdk: CredenzaSDK
-  export let chainConfig: typeof amoy | typeof spicy
+  export let chainConfig: typeof amoy | typeof spicy | typeof fuji
 
   const { isAddress } = ethers
 
@@ -56,7 +56,7 @@
   <div style="border: 2px solid #000; text-align: center">EVM</div>
   <div style="margin-top: 5px">
     <select bind:value={chainConfig} on:change={handleSwitchChain}>
-      {#each [amoy, spicy, fuji] as chain}
+      {#each [fuji, amoy, spicy] as chain}
         <option selected={chain.chainId === chainConfig.chainId} value={chain}>
           {chain.displayName} ({chain.chainId})
         </option>

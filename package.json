@@ -11,13 +11,13 @@
     "ncu:u": "ncu -u --deep"
   },
   "devDependencies": {
-    "@metamask/providers": "^16.0.0",
+    "@metamask/providers": "^18.3.1",
     "eslint": "^8.57.0",
     "eslint-config-custom": "workspace:*",
-    "ethers": "^6.12.0",
-    "husky": "^9.0.11",
-    "prettier": "^3.2.5",
-    "prettier-plugin-svelte": "^3.2.3",
+    "ethers": "^6.13.5",
+    "husky": "^9.1.7",
+    "prettier": "^3.4.2",
+    "prettier-plugin-svelte": "^3.3.2",
     "tsconfig": "workspace:*",
     "turbo": "latest"
   },
