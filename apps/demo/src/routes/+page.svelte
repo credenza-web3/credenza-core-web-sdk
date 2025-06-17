@@ -42,7 +42,7 @@
 
   const handleLogin = async () => (isLoggedIn = true)
 
-  const handleOAuthLogin = () => {
+  const handleOAuthLogin = async () => {
     sdk.oauth.loginWithRedirect({
       scope:
         'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',

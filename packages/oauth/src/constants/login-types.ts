@@ -5,8 +5,3 @@ export const OAUTH_LOGIN_TYPE = {
   TICKETMASTER: 'ticketmaster',
   JWT: 'jwt',
 } as const
-
-export const OAUTH_PASSWORDLESS_LOGIN_TYPE = {
-  EMAIL: 'email',
-  PHONE: 'phone',
-} as const

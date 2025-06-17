@@ -1,4 +1,4 @@
-import { OAUTH_LOGIN_TYPE, OAUTH_PASSWORDLESS_LOGIN_TYPE } from './constants/login-types'
+import { OAUTH_LOGIN_TYPE } from './constants/login-types'
 
 export type TOAuthLoginBaseOpts = {
   scope: string
@@ -26,7 +26,6 @@ export type TOAuthLoginTypeOpts = {
 }
 
 export type TOAuthPasswordlessLoginOpts = {
-  passwordlessType?: (typeof OAUTH_PASSWORDLESS_LOGIN_TYPE)[keyof typeof OAUTH_PASSWORDLESS_LOGIN_TYPE]
   forceEmail?: string
   forcePhone?: string
 }
