@@ -4,15 +4,12 @@ import { set, get } from '@packages/common/localstorage/localstorage'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import { jwtDecode } from 'jwt-decode'
 import { LS_OAUTH_NONCE_KEY, LS_OAUTH_STATE_KEY } from './constants/localstorage'
-import { OAUTH_LOGIN_TYPE } from './constants/login-types'
 import type { TOAuthLoginWithRedirectOpts, TOAuthLoginWithJwtOpts } from './main.types'
 import { revokeOAuth2Session, loginWithJwtRequest } from './lib/http-requests'
 import * as loginUrl from './lib/login-url'
 import { recursiveToCamel } from '@packages/common/obj/obj'
 
 export class OAuthExtension {
-  static LOGIN_TYPE = OAUTH_LOGIN_TYPE
-
   public name = 'oauth' as const
   private sdk: CredenzaSDK
 
