@@ -1,6 +1,6 @@
 export const amoy = {
   chainId: '0x13882',
-  rpcUrl: `https://rpc.ankr.com/polygon_amoy`,
+  rpcUrl: 'https://polygon-amoy-bor-rpc.publicnode.com',
   displayName: 'Amoy',
   blockExplorer: 'https://www.oklink.com/amoy/',
   nativeCurrency: {
@@ -12,7 +12,7 @@ export const amoy = {
 
 export const spicy = {
   chainId: '0x15b32',
-  rpcUrl: 'https://chiliz-spicy.publicnode.com',
+  rpcUrl: 'https://spicy-chain.rpc.thirdweb.com',
   displayName: 'Spicy',
   blockExplorer: 'https://spicy-explorer.chiliz.com/',
   nativeCurrency: {
@@ -24,7 +24,7 @@ export const spicy = {
 
 export const fuji = {
   chainId: '0xa869',
-  rpcUrl: 'https://rpc.ankr.com/avalanche_fuji',
+  rpcUrl: 'https://avalanche-fuji-c-chain-rpc.publicnode.com',
   displayName: 'Fuji',
   blockExplorer: 'https://subnets-test.avax.network/c-chain/',
   nativeCurrency: {

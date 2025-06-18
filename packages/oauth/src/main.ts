@@ -88,8 +88,10 @@ export class OAuthExtension {
 
   async checkAndHandleSearchRedirectResult() {
     const search = new URLSearchParams(window.location.search)
+    if (!search.has('state') || !search.has('access_token')) return
 
     const state = get(LS_OAUTH_STATE_KEY)
+
     if (search.get('state') !== state) throw new Error('Invalid state')
 
     if (!search.has('access_token')) throw new Error('Invalid access token')

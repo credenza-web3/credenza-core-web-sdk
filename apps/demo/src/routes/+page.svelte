@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$env/static/public'
-  import { fuji } from '../evm-chain-config'
+  import { amoy } from '../evm-chain-config'
 
   import { CredenzaSDK } from '@credenza3/core-web/src/main'
   import { OAuthExtension } from '@credenza3/core-web-oauth-ext/src/main'
@@ -15,7 +15,7 @@
   import Evm from '../components/Evm.svelte'
   import Account from '../components/Account.svelte'
 
-  let evmChainConfig = fuji
+  let evmChainConfig = amoy
   const suiNetworkFromLS =
     typeof window !== 'undefined'
       ? (window.localStorage?.getItem(
