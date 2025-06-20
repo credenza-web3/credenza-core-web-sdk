@@ -1,19 +1,15 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
-import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
+import { getOauthUIApiUrl } from '@packages/common/oauth/oauth'
 import { set, get } from '@packages/common/localstorage/localstorage'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import { jwtDecode } from 'jwt-decode'
 import { LS_OAUTH_NONCE_KEY, LS_OAUTH_STATE_KEY } from './constants/localstorage'
-import { OAUTH_LOGIN_TYPE, OAUTH_PASSWORDLESS_LOGIN_TYPE } from './constants/login-types'
 import type { TOAuthLoginWithRedirectOpts, TOAuthLoginWithJwtOpts } from './main.types'
 import { revokeOAuth2Session, loginWithJwtRequest } from './lib/http-requests'
 import * as loginUrl from './lib/login-url'
 import { recursiveToCamel } from '@packages/common/obj/obj'
 
 export class OAuthExtension {
-  static LOGIN_TYPE = OAUTH_LOGIN_TYPE
-  static PASSWORDLESS_LOGIN_TYPE = OAUTH_PASSWORDLESS_LOGIN_TYPE
-
   public name = 'oauth' as const
   private sdk: CredenzaSDK
 
@@ -28,7 +24,7 @@ export class OAuthExtension {
   }
 
   revokeBrowserSessionWithRedirect(redirectUri: string) {
-    const url = new URL(getOAuthApiUrl(this.sdk) + '/oauth2/logout')
+    const url = new URL(getOauthUIApiUrl(this.sdk) + '/oauth2/logout')
     url.searchParams.append('redirect_uri', redirectUri)
     return (window.location.href = url.toString())
   }
@@ -41,7 +37,6 @@ export class OAuthExtension {
   loginWithRedirect(opts: TOAuthLoginWithRedirectOpts) {
     const url = loginUrl.buildLoginUrl(this.sdk, opts)
     loginUrl.extendLoginUrlWithRedirectUri(url, opts)
-    loginUrl.extendLoginUrlWithLoginType(url, opts)
     loginUrl.extendLoginUrlWithPasswordlessConfig(url, opts)
 
     set(LS_OAUTH_NONCE_KEY, url.searchParams.get('nonce') as string)
@@ -56,9 +51,9 @@ export class OAuthExtension {
     return recursiveToCamel(result)
   }
 
-  async _handleRedirectResult() {
+  async checkAndHandleHashRedirectResult() {
     const hash = window.location.hash
-    if (!hash) return
+    if (!hash) return false
 
     const hashObj = hash
       .replace('#', '')
@@ -84,6 +79,39 @@ export class OAuthExtension {
     } else {
       window.location.hash = ''
     }
+
+    return true
+  }
+
+  async checkAndHandleSearchRedirectResult() {
+    const search = new URLSearchParams(window.location.search)
+    if (!search.has('state') || !search.has('access_token')) return
+
+    const state = get(LS_OAUTH_STATE_KEY)
+
+    if (search.get('state') !== state) throw new Error('Invalid state')
+
+    if (!search.has('access_token')) throw new Error('Invalid access token')
+    const decodedJwt = jwtDecode<{ nonce: string }>(search.get('access_token') as string)
+
+    const nonce = get(LS_OAUTH_NONCE_KEY)
+    if (nonce !== decodedJwt.nonce) throw new Error('Invalid nonce')
+    await this.setAccessToken(search.get('access_token') as string)
+
+    if (history && window.location.search) {
+      search.delete('access_token')
+      search.delete('state')
+      search.delete('nonce')
+      search.delete('id_token')
+      history.replaceState(null, document.title, window.location.pathname + search.toString())
+    }
+  }
+
+  async _handleRedirectResult() {
+    const wasHandled = await this.checkAndHandleHashRedirectResult()
+    if (wasHandled) return
+
+    await this.checkAndHandleSearchRedirectResult()
   }
 
   async buildS256CodeChallenge(codeVerifier: string): Promise<{ codeChallenge: string; codeChallengeMethod: 'S256' }> {
