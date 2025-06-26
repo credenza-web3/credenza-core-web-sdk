@@ -23,10 +23,10 @@ function extendLoginUrlWithResponseType(url: URL, opts: TOAuthLoginResponseTypeO
 export function buildLoginUrl(
   sdk: CredenzaSDK,
   opts: TOAuthLoginBaseOpts & TOAuthLoginResponseTypeOpts,
-  new_ui: boolean = true,
+  is_jwt: boolean = false,
 ): URL {
-  const urlF = new_ui ? getOauthUIApiUrl : getOAuthApiUrl
-  const url = new URL(urlF(sdk) + '/oauth2/authorize')
+  const urlF = is_jwt ? getOAuthApiUrl : getOauthUIApiUrl
+  const url = new URL(urlF(sdk) + `/oauth2/authorize` + (is_jwt ? '/jwt' : ''))
   url.searchParams.append('client_id', sdk.clientId)
   url.searchParams.append('scope', opts.scope)
   url.searchParams.append('nonce', opts.nonce || generateRandomString())

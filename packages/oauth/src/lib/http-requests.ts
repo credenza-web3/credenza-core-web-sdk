@@ -19,19 +19,19 @@ export async function revokeOAuth2Session(sdk: CredenzaSDK) {
 
 export async function loginWithJwtRequest(sdk: CredenzaSDK, opts: TOAuthLoginWithJwtOpts) {
   try {
-    const url = loginUrl.buildLoginUrl(sdk, opts, false)
+    const url = loginUrl.buildLoginUrl(sdk, opts, true)
     loginUrl.extendLoginUrlWithRedirectUri(url, { redirectUrl: 'none' })
 
     const response = await fetch(url.toString(), {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: new URLSearchParams({
+      body: JSON.stringify({
         validator_id: opts.validatorId,
         ...('idToken' in opts ? { id_token: opts.idToken } : {}),
         ...('accessToken' in opts ? { access_token: opts.accessToken } : {}),
-      }).toString(),
+      }),
     })
     if (!response.ok) throw new Error(response.statusText)
     return await response.json()
