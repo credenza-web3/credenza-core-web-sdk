@@ -45,11 +45,14 @@
   const handleOAuthLogin = async () => {
     sdk.oauth.loginWithRedirect({
       scope:
-        'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',
+        'offline.access profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',
       redirectUrl: window.location.href,
+      responseType: 'code',
+      clientServerUri: 'http://localhost:3000/api',
+      codeChallengeMethod: 'S256',
+      codeChallenge: 'test',
+
       // nonce: sdk.sui.zkLogin.generateZkNonce(),
-      //type: OAuthExtension.LOGIN_TYPE.PASSWORDLESS,
-      //passwordlessType: OAuthExtension.PASSWORDLESS_LOGIN_TYPE.EMAIL,
       //forceEmail: 'test@test.com',
     })
   }
@@ -65,8 +68,6 @@
       scope:
         'openid profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',
       validatorId,
-      //responseType: 'code',
-      //...(await sdk.oauth.buildCodeChallenge('challenge')),
       ...(isIdToken ? { idToken: token } : { accessToken: token }),
     })
     if (sdk.isLoggedIn()) await handleLogin()
