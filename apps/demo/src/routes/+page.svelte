@@ -49,9 +49,6 @@
       redirectUrl: window.location.href,
       responseType: 'code',
       clientServerUri: 'http://localhost:3000/api',
-      codeChallengeMethod: 'S256',
-      codeChallenge: 'test',
-
       // nonce: sdk.sui.zkLogin.generateZkNonce(),
       //forceEmail: 'test@test.com',
     })
