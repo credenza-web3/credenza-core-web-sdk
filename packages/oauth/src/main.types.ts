@@ -11,8 +11,6 @@ export type TOAuthLoginResponseTypeOpts =
     }
   | {
       responseType: 'code'
-      codeChallengeMethod: 'S256' | 'plain'
-      codeChallenge: string
     }
 
 export type TOAuthLoginRedirectUrlOpts = {
@@ -28,8 +26,13 @@ export type TOAuthLoginJwtOpts = {
   validatorId: string
 } & ({ idToken: string } | { accessToken: string })
 
+export type TOAuthCodeLoginOpts = {
+  clientServerUri?: string
+}
+
 export type TOAuthLoginWithRedirectOpts = TOAuthLoginBaseOpts &
   TOAuthLoginRedirectUrlOpts &
   TOAuthPasswordlessLoginOpts &
-  TOAuthLoginResponseTypeOpts
+  TOAuthLoginResponseTypeOpts &
+  TOAuthCodeLoginOpts
 export type TOAuthLoginWithJwtOpts = TOAuthLoginBaseOpts & TOAuthLoginJwtOpts & TOAuthLoginResponseTypeOpts

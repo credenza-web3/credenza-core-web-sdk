@@ -1,7 +1,12 @@
 import { jwtDecode } from 'jwt-decode'
 import { get, set, remove } from '@packages/common/localstorage/localstorage'
 import { SDK_ENV } from '@packages/common/constants/core'
-import { LS_ACCESS_TOKEN_KEY, LS_LOGIN_PROVIDER_KEY, LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
+import {
+  LS_ACCESS_TOKEN_KEY,
+  LS_LOGIN_PROVIDER_KEY,
+  LS_LOGIN_PROVIDER,
+  LS_REFRESH_TOKEN_KEY,
+} from '@packages/common/constants/localstorage'
 import { SDK_EVENT } from './lib/events/events.constants'
 import type { TSdkEvent } from './lib/events/events.types'
 import { emit, once, on } from '@packages/common/events/events'
@@ -30,6 +35,7 @@ export class CredenzaSDK {
   public zklogin: ZkLoginExtension
 
   private accessToken: string | null
+  private refreshToken: string | null
   private loginProvider: (typeof LS_LOGIN_PROVIDER)[keyof typeof LS_LOGIN_PROVIDER] | null
 
   constructor(opts: { clientId: string; env?: (typeof SDK_ENV)[keyof typeof SDK_ENV]; extensions?: TExtension[] }) {
@@ -43,6 +49,7 @@ export class CredenzaSDK {
 
   public async initialize() {
     this.accessToken = get(LS_ACCESS_TOKEN_KEY)
+    this.refreshToken = get(LS_REFRESH_TOKEN_KEY)
     this.loginProvider = get(LS_LOGIN_PROVIDER_KEY) as (typeof LS_LOGIN_PROVIDER)[keyof typeof LS_LOGIN_PROVIDER]
     if (this.accessToken) {
       const decodedJwt = jwtDecode(this.accessToken)
@@ -58,12 +65,23 @@ export class CredenzaSDK {
   public async _setAccessToken(
     token: string,
     loginProvider: (typeof LS_LOGIN_PROVIDER)[keyof typeof LS_LOGIN_PROVIDER],
+    shouldSaveLS: boolean = true,
   ) {
     set(LS_LOGIN_PROVIDER_KEY, loginProvider)
-    set(LS_ACCESS_TOKEN_KEY, token)
+
+    if (shouldSaveLS) set(LS_ACCESS_TOKEN_KEY, token)
     this.accessToken = token
     this.loginProvider = loginProvider
     emit(SDK_EVENT.LOGIN)
+  }
+
+  public _setRefreshToken(token: string) {
+    set(LS_REFRESH_TOKEN_KEY, token)
+    this.refreshToken = token
+  }
+
+  public getRefreshToken() {
+    return this.refreshToken
   }
 
   public getAccessToken() {
@@ -80,7 +98,9 @@ export class CredenzaSDK {
 
   public logout() {
     remove(LS_ACCESS_TOKEN_KEY)
+    remove(LS_REFRESH_TOKEN_KEY)
     this.accessToken = null
+    this.refreshToken = null
     this.loginProvider = null
     emit(SDK_EVENT.LOGOUT)
   }

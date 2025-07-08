@@ -38,10 +38,6 @@ await sdk.oauth.loginWithRedirect({
 
   responseType?: 'token' | 'code' // 'token
 
-  // Required if 'responseType' === 'code'
-  codeChallenge: string
-  codeChallengeMethod: 'S256' | 'plain'
-
   // explicitly define passwordless email. This will skip email enter page and send verification email and navigate user to verification page.
   // only available if `passwordless_type` set to OAuthExtension.PASSWORDLESS_LOGIN_TYPE.EMAIL`
   forceEmail?: string
@@ -91,4 +87,10 @@ Set access token. Allows to manually set the access token. Typically used for 'c
 
 ```
 await sdk.oauth.setAccessToken(token: string)
+```
+
+Set refresh token. Allows to manually set the refresh token. Typically used for 'code' grant flow
+
+```
+await sdk.oauth.setRefreshToken(token: string)
 ```
