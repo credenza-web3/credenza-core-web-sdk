@@ -47,8 +47,23 @@
       scope:
         'offline.access profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',
       redirectUrl: window.location.href,
+      responseType: 'token',
+      // nonce: sdk.sui.zkLogin.generateZkNonce(),
+      //forceEmail: 'test@test.com',
+    })
+  }
+
+  const handleOAuthLoginCode = async () => {
+    let clientServerUri = prompt('Enter the client server uri')
+
+    //clientServerUri = 'http://localhost:3000/api'
+    if (!clientServerUri) return
+    sdk.oauth.loginWithRedirect({
+      scope:
+        'offline.access profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',
+      redirectUrl: window.location.href,
       responseType: 'code',
-      clientServerUri: 'http://localhost:3000/api',
+      clientServerUri,
       // nonce: sdk.sui.zkLogin.generateZkNonce(),
       //forceEmail: 'test@test.com',
     })
@@ -103,6 +118,7 @@
 
 {#if !isLoggedIn}
   <button on:click={handleOAuthLogin}> Login With OAuth2 </button>
+  <button on:click={handleOAuthLoginCode}> Login With OAuth2 Code method</button>
   <button on:click={handleMetamaskLogin}> Login With Metamask </button>
   <button on:click={handleOAuthLoginWithJwt}> Login With JWT </button>
 {:else}
