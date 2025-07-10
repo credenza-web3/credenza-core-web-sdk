@@ -45,7 +45,7 @@
   const handleOAuthLogin = async () => {
     sdk.oauth.loginWithRedirect({
       scope:
-        'offline.access profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',
+        'profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',
       redirectUrl: window.location.href,
       responseType: 'token',
       // nonce: sdk.sui.zkLogin.generateZkNonce(),
