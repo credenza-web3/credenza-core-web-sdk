@@ -1,5 +1,5 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
-import { getOauthUIApiUrl } from '@packages/common/oauth/oauth'
+import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
 import * as loginUrl from './login-url'
 import type { TOAuthLoginWithJwtOpts } from '../main.types'
 import { sessionGet } from '@packages/common/sessionstorage/sessionstorage'
@@ -7,7 +7,7 @@ import { SS_CLIENT_CODE_VERIFIER_KEY } from '../constants/sessionstorage'
 
 export async function revokeOAuth2Session(sdk: CredenzaSDK) {
   try {
-    const response = await fetch(`${getOauthUIApiUrl(sdk)}/oauth2/revoke-session`, {
+    const response = await fetch(`${getOAuthApiUrl(sdk)}/oauth2/revoke-session`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${sdk.getAccessToken()}`,

@@ -1,5 +1,5 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
-import { getOauthUIApiUrl } from '@packages/common/oauth/oauth'
+import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
 import { set, get } from '@packages/common/localstorage/localstorage'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import { jwtDecode } from 'jwt-decode'
@@ -33,7 +33,7 @@ export class OAuthExtension {
   }
 
   revokeBrowserSessionWithRedirect(redirectUri: string) {
-    const url = new URL(getOauthUIApiUrl(this.sdk) + '/oauth2/logout')
+    const url = new URL(getOAuthApiUrl(this.sdk) + '/oauth2/logout')
     url.searchParams.append('redirect_uri', redirectUri)
     return (window.location.href = url.toString())
   }
