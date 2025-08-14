@@ -31,18 +31,24 @@ async function extendLoginUrlWithResponseType(
   }
 }
 
+function getExtraSlug(extraOptions: { is_evm?: boolean; is_jwt?: boolean }) {
+  return extraOptions?.is_evm ? '/evm' : extraOptions?.is_jwt ? '/jwt' : ''
+}
+
 export async function buildLoginUrl(
   sdk: CredenzaSDK,
   opts: TOAuthLoginBaseOpts & TOAuthLoginResponseTypeOpts,
-  is_jwt: boolean = false,
+  extraOptions: {
+    is_evm?: boolean
+    is_jwt?: boolean
+  } = {},
 ): Promise<URL> {
-  const urlF = is_jwt ? getOAuthApiUrl : getOauthUIApiUrl
-  const url = new URL(urlF(sdk) + `/oauth2/authorize` + (is_jwt ? '/jwt' : ''))
+  const urlF = extraOptions?.is_jwt || extraOptions?.is_evm ? getOAuthApiUrl : getOauthUIApiUrl
+  const url = new URL(urlF(sdk) + `/oauth2/authorize` + getExtraSlug(extraOptions))
   url.searchParams.append('client_id', sdk.clientId)
   url.searchParams.append('scope', opts.scope)
   url.searchParams.append('nonce', opts.nonce || generateCode(32))
   url.searchParams.append('state', opts.state || generateCode(32))
-  url.searchParams.append('credenza_session_length_seconds', String(opts.sessionLengthSeconds ?? 60 * 60))
 
   await extendLoginUrlWithResponseType(sdk, url, opts)
   return url

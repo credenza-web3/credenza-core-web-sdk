@@ -6,7 +6,6 @@
   import { CredenzaSDK } from '@credenza3/core-web/src/main'
   import { OAuthExtension } from '@credenza3/core-web-oauth-ext/src/main'
   import { AccountExtension } from '@credenza3/core-web-account-ext/src/main'
-  import { MetamaskExtension } from '@credenza3/core-web-evm-metamask-ext/src/main'
   import { EvmExtension } from '@credenza3/core-web-evm-ext/src/main'
   import { SuiExtension } from '@credenza3/core-web-sui-ext/src/main'
   // import { ZkLoginExtension } from '@packages/sui-zk-login/src/main'
@@ -14,29 +13,11 @@
   import Sui from '../components/Sui.svelte'
   import Evm from '../components/Evm.svelte'
   import Account from '../components/Account.svelte'
+  import type { TSuiNetwork } from '@packages/sui/src/main.types'
 
   let evmChainConfig = amoy
-  const suiNetworkFromLS =
-    typeof window !== 'undefined'
-      ? (window.localStorage?.getItem(
-          'CREDENZA_SUI_NETWORK',
-        ) as (typeof SuiExtension.SUI_NETWORK)[keyof typeof SuiExtension.SUI_NETWORK])
-      : null
-  let suiNetworkName = suiNetworkFromLS || SuiExtension.SUI_NETWORK.DEVNET
-
-  const sdk = new CredenzaSDK({
-    clientId: PUBLIC_CLIENT_ID,
-    env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
-    extensions: [
-      new SuiExtension({ suiNetwork: suiNetworkName, extensions: [] }),
-      new EvmExtension({
-        chainConfig: evmChainConfig,
-        extensions: [new MetamaskExtension()],
-      }),
-      new OAuthExtension(),
-      new AccountExtension(),
-    ],
-  })
+  let sdk: CredenzaSDK
+  let suiNetworkName: TSuiNetwork
 
   let isLoggedIn = false
 
@@ -87,8 +68,9 @@
   }
 
   const handleMetamaskLogin = async () => {
-    await sdk.evm.metamask.login()
-    await handleLogin()
+    await sdk.evm.loginWithSignature()
+
+    if (sdk.isLoggedIn()) await handleLogin()
   }
 
   const handleLogout = async () => {
@@ -109,6 +91,27 @@
   }
 
   onMount(async () => {
+    const suiNetworkFromLS =
+      typeof window !== 'undefined'
+        ? (window.localStorage?.getItem(
+            'CREDENZA_SUI_NETWORK',
+          ) as (typeof SuiExtension.SUI_NETWORK)[keyof typeof SuiExtension.SUI_NETWORK])
+        : null
+    suiNetworkName = suiNetworkFromLS || SuiExtension.SUI_NETWORK.DEVNET
+    console.log(window.ethereum)
+    sdk = new CredenzaSDK({
+      clientId: PUBLIC_CLIENT_ID,
+      env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
+      extensions: [
+        new SuiExtension({ suiNetwork: suiNetworkName, extensions: [] }),
+        new EvmExtension({
+          chainConfig: evmChainConfig,
+          provider: window.ethereum,
+        }),
+        new OAuthExtension(),
+        new AccountExtension(),
+      ],
+    })
     await sdk.initialize()
     Object.assign(window, { credenzaSDK: sdk })
     if (!sdk.isLoggedIn()) return
