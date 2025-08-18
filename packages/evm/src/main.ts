@@ -8,9 +8,9 @@ import { EVM_EVENT } from './lib/events/events.constants'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 import type { Eip1193Provider } from 'ethers'
 import * as ethers from 'ethers'
-import sha3 from 'js-sha3'
 import * as loginUrl from '@packages/oauth/src/lib/login-url'
 import { SiweMessage } from 'siwe'
+import { toChecksumAddress } from './lib/address/address.helper'
 
 export { ethers, CredenzaProvider }
 
@@ -80,7 +80,7 @@ export class EvmExtension {
       const provider = await this.getProvider()
       switch (this.sdk.getLoginProvider()) {
         case LS_LOGIN_PROVIDER.EVM_PROVIDER: {
-          // await (<InjectedProvider>provider).switchChain(chainConfig)
+          await this._switchEvmChain(chainConfig)
           break
         }
         case LS_LOGIN_PROVIDER.OAUTH: {
@@ -100,8 +100,12 @@ export class EvmExtension {
     return this.chainConfig
   }
 
+  public isEvmProvider() {
+    return !!this.optionsProvider
+  }
+
   public async loginWithSignature() {
-    if (!this.optionsProvider) throw new Error('EVM provider was not provided')
+    if (!this.isEvmProvider()) throw new Error('EVM provider was not provided')
 
     const [address] = await this.optionsProvider.request({
       method: 'eth_requestAccounts',
@@ -124,7 +128,7 @@ export class EvmExtension {
 
     const msg = new SiweMessage({
       domain: window.location.host,
-      address: this._toChecksumAddress(address),
+      address: toChecksumAddress(address),
       statement: 'Sign in with Credenza3',
       uri: window.location.origin,
       version: '1',
@@ -151,14 +155,22 @@ export class EvmExtension {
   public on = on<TSdkEvmEvent>
   public _emit = emit<TSdkEvmEvent>
 
-  private _toChecksumAddress(address: string) {
-    const addr = address.toLowerCase().replace(/^0x/, '')
-    const hash = sha3.keccak_256(addr)
-    let checksum = '0x'
-
-    for (let i = 0; i < addr.length; i++) {
-      checksum += parseInt(hash[i], 16) >= 8 ? addr[i].toUpperCase() : addr[i]
+  private async _switchEvmChain(config: TChainConfig) {
+    const provider = await this.getProvider()
+    try {
+      await provider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: config.chainId }],
+      })
+      this.chainConfig = config
+    } catch (err) {
+      if (err?.code === 4902 || err?.message?.includes('Unrecognized chain')) {
+        await provider.request({ method: 'wallet_addEthereumChain', params: [config] })
+        await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: config.chainId }] })
+        this.chainConfig = config
+      } else {
+        throw err
+      }
     }
-    return checksum
   }
 }
