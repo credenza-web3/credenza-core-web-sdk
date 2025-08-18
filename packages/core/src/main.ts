@@ -12,7 +12,6 @@ import type { TSdkEvent } from './lib/events/events.types'
 import { emit, once, on } from '@packages/common/events/events'
 import type { OAuthExtension } from '@packages/oauth/src/main'
 import type { AccountExtension } from '@packages/account/src/main'
-import type { MetamaskExtension } from '@packages/metamask/src/main'
 import type { ZkLoginExtension } from '@packages/sui-zk-login/src/main'
 import type { EvmExtension } from '@packages/evm/src/main'
 import type { SuiExtension } from '@packages/sui/src/main'
@@ -29,7 +28,6 @@ export class CredenzaSDK {
   private extensions: TExtensionName[] = []
   public oauth: OAuthExtension
   public account: AccountExtension
-  public metamask: MetamaskExtension
   public evm: EvmExtension
   public sui: SuiExtension
   public zklogin: ZkLoginExtension
