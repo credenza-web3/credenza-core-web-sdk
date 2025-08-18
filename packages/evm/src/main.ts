@@ -72,6 +72,9 @@ export class EvmExtension {
   public async getEthersProvider() {
     const provider = await this.getProvider()
     if (!provider) throw new Error('Cannot get provider')
+    if (this.isEvmProvider()) {
+      await this._switchChainEip(this.chainConfig)
+    }
     return new ethers.BrowserProvider(provider)
   }
 
@@ -80,7 +83,7 @@ export class EvmExtension {
       const provider = await this.getProvider()
       switch (this.sdk.getLoginProvider()) {
         case LS_LOGIN_PROVIDER.EVM_PROVIDER: {
-          await this._switchEvmChain(chainConfig)
+          await this._switchChainEip(chainConfig)
           break
         }
         case LS_LOGIN_PROVIDER.OAUTH: {
@@ -106,6 +109,8 @@ export class EvmExtension {
 
   public async loginWithSignature() {
     if (!this.isEvmProvider()) throw new Error('EVM provider was not provided')
+
+    await this._switchChainEip(this.sdk.evm.getChainConfig())
 
     const [address] = await this.optionsProvider.request({
       method: 'eth_requestAccounts',
@@ -155,22 +160,73 @@ export class EvmExtension {
   public on = on<TSdkEvmEvent>
   public _emit = emit<TSdkEvmEvent>
 
-  private async _switchEvmChain(config: TChainConfig) {
-    const provider = await this.getProvider()
-    try {
-      await provider.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: config.chainId }],
+  private switchChainPromise?: Promise<void>
+
+  private _ensureHexChainId(chainId: string | number) {
+    if (typeof chainId === 'string')
+      return chainId.startsWith('0x') ? chainId : `0x${parseInt(chainId, 10).toString(16)}`
+    return `0x${chainId.toString(16)}`
+  }
+
+  private async _addChainEip(config: TChainConfig) {
+    if (!this.optionsProvider) throw new Error('EVM provider was not provided')
+    const chainId = this._ensureHexChainId(config.chainId)
+    await this.optionsProvider.request({
+      method: 'wallet_addEthereumChain',
+      params: [
+        {
+          chainId,
+          chainName: config.displayName,
+          rpcUrls: [config.rpcUrl],
+          blockExplorerUrls: config.blockExplorer ? [config.blockExplorer] : undefined,
+          nativeCurrency: {
+            name: config.nativeCurrency.name,
+            symbol: config.nativeCurrency.symbol,
+            decimals: config.nativeCurrency.decimals ?? 18,
+          },
+        },
+      ],
+    })
+  }
+
+  private async _switchChainEip(config: TChainConfig) {
+    if (!this.optionsProvider) throw new Error('EVM provider was not provided')
+    if (this.switchChainPromise) return this.switchChainPromise
+
+    const target = this._ensureHexChainId(config.chainId)
+
+    this.switchChainPromise = this.optionsProvider
+      .request({ method: 'eth_chainId' })
+      .then(async (current: string) => {
+        if (current?.toLowerCase() === target.toLowerCase()) {
+          throw new Error('SWITCH_CHAIN_NOT_REQUIRED')
+        }
+        try {
+          await this.optionsProvider!.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: target }],
+          })
+        } catch (err: any) {
+          const code = err?.code ?? err?.data?.originalError?.code
+          if (code === 4902 || err?.message?.includes('Unrecognized chain')) {
+            await this._addChainEip(config)
+            await this.optionsProvider!.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: target }],
+            })
+          } else {
+            throw err
+          }
+        }
       })
-      this.chainConfig = config
-    } catch (err) {
-      if (err?.code === 4902 || err?.message?.includes('Unrecognized chain')) {
-        await provider.request({ method: 'wallet_addEthereumChain', params: [config] })
-        await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: config.chainId }] })
-        this.chainConfig = config
-      } else {
-        throw err
-      }
-    }
+      .catch((err) => {
+        if (err?.message === 'SWITCH_CHAIN_NOT_REQUIRED') return
+        return Promise.reject(err)
+      })
+      .finally(() => {
+        this.switchChainPromise = undefined
+      })
+
+    return this.switchChainPromise
   }
 }
