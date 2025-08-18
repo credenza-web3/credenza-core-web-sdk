@@ -72,7 +72,7 @@ export async function refreshTokenRequest(
 
 export async function loginWithJwtRequest(sdk: CredenzaSDK, opts: TOAuthLoginWithJwtOpts) {
   try {
-    const url = await loginUrl.buildLoginUrl(sdk, opts, true)
+    const url = await loginUrl.buildLoginUrl(sdk, opts, { is_jwt: true })
     loginUrl.extendLoginUrlWithRedirectUri(url, { redirectUrl: 'none' })
 
     const response = await fetch(url.toString(), {

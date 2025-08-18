@@ -1,49 +1,40 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { CredenzaProvider } from './provider/provider'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
-import type { MetaMaskInpageProvider } from '@metamask/providers'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 import type { TSdkEvmEvent } from './lib/events/events.types'
 import { emit, once, on } from '@packages/common/events/events'
 import { EVM_EVENT } from './lib/events/events.constants'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
 import type { Eip1193Provider } from 'ethers'
-import type { MetamaskExtension } from '@packages/metamask/src/main'
-
 import * as ethers from 'ethers'
-
-type TExtensionName = MetamaskExtension['name']
-type TExtension = MetamaskExtension
+import * as loginUrl from '@packages/oauth/src/lib/login-url'
+import { SiweMessage } from 'siwe'
+import { toChecksumAddress } from './lib/address/address.helper'
 
 export { ethers, CredenzaProvider }
+
 export class EvmExtension {
   public static EVM_EVENT = EVM_EVENT
 
   public name = 'evm' as const
   private sdk: CredenzaSDK
-  private provider: CredenzaProvider | MetaMaskInpageProvider | Eip1193Provider | undefined
+  private provider: CredenzaProvider | Eip1193Provider | undefined
   private chainConfig: TChainConfig
-  private extensions: TExtensionName[] = []
+  private optionsProvider: Eip1193Provider
 
-  public metamask: MetamaskExtension
-
-  constructor(params: { chainConfig: TChainConfig; extensions: TExtension[] }) {
+  constructor(params: { chainConfig: TChainConfig; provider?: Eip1193Provider; extensions?: unknown[] }) {
     if (!params.chainConfig.chainId || !params.chainConfig.rpcUrl)
       throw new Error('chainId and rpcUrl are required fields')
     if (!params.chainConfig.chainId.includes('0x')) throw new Error('Chain id must be a hex value 0x prefixed')
     this.chainConfig = params.chainConfig
-    for (const ext of params.extensions || []) {
-      Object.assign(this, { [ext.name]: ext })
-      this.extensions.push(ext.name)
-    }
+
+    if (params.provider) this.optionsProvider = params.provider
   }
 
   public async _initialize(sdk: CredenzaSDK) {
     this.sdk = sdk
     this.sdk.on(SDK_EVENT.LOGOUT, () => (this.provider = undefined))
-    for (const extensionName of this.extensions) {
-      await this[extensionName]?._initialize(this.sdk)
-    }
   }
 
   private async _checkIsUserLoggedIn() {
@@ -53,8 +44,9 @@ export class EvmExtension {
   private async _buildProvider() {
     try {
       switch (this.sdk.getLoginProvider()) {
-        case LS_LOGIN_PROVIDER.METAMASK: {
-          return await this.metamask._getProvider()
+        case LS_LOGIN_PROVIDER.EVM_PROVIDER: {
+          if (!this.optionsProvider) throw new Error('EVM provider was not provided')
+          return this.optionsProvider
         }
         case LS_LOGIN_PROVIDER.OAUTH: {
           const credenzaProvider = new CredenzaProvider({ chainConfig: this.chainConfig, sdk: this.sdk })
@@ -87,8 +79,8 @@ export class EvmExtension {
     try {
       const provider = await this.getProvider()
       switch (this.sdk.getLoginProvider()) {
-        case LS_LOGIN_PROVIDER.METAMASK: {
-          await this.metamask._switchChain(chainConfig)
+        case LS_LOGIN_PROVIDER.EVM_PROVIDER: {
+          await this._switchEvmChain(chainConfig)
           break
         }
         case LS_LOGIN_PROVIDER.OAUTH: {
@@ -108,7 +100,77 @@ export class EvmExtension {
     return this.chainConfig
   }
 
+  public isEvmProvider() {
+    return !!this.optionsProvider
+  }
+
+  public async loginWithSignature() {
+    if (!this.isEvmProvider()) throw new Error('EVM provider was not provided')
+
+    const [address] = await this.optionsProvider.request({
+      method: 'eth_requestAccounts',
+    })
+
+    // BEGIN: sign-in flow
+    const url = await loginUrl.buildLoginUrl(
+      this.sdk,
+      {
+        scope: 'openid profile email phone blockchain.evm blockchain.evm.write',
+        responseType: 'token',
+      },
+      { is_evm: true },
+    )
+    loginUrl.extendLoginUrlWithRedirectUri(url, { redirectUrl: 'none' })
+
+    const beginLoginResponse = await fetch(url.toString())
+    if (!beginLoginResponse.ok) throw new Error(beginLoginResponse.statusText)
+    const { sid, nonce } = await beginLoginResponse.json()
+
+    const msg = new SiweMessage({
+      domain: window.location.host,
+      address: toChecksumAddress(address),
+      statement: 'Sign in with Credenza3',
+      uri: window.location.origin,
+      version: '1',
+      chainId: +this.sdk.evm.getChainConfig().chainId,
+      nonce,
+    })
+    const preparedMsg = msg.prepareMessage()
+
+    const signature = await this.optionsProvider.request({
+      method: 'personal_sign',
+      params: [preparedMsg, address],
+    })
+
+    const endLoginResponse = await fetch(url.toString(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ signature, sid, message: msg }),
+    })
+    const { access_token } = await endLoginResponse.json()
+    await this.sdk._setAccessToken(access_token, LS_LOGIN_PROVIDER.EVM_PROVIDER)
+  }
+
   public once = once<TSdkEvmEvent>
   public on = on<TSdkEvmEvent>
   public _emit = emit<TSdkEvmEvent>
+
+  private async _switchEvmChain(config: TChainConfig) {
+    const provider = await this.getProvider()
+    try {
+      await provider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: config.chainId }],
+      })
+      this.chainConfig = config
+    } catch (err) {
+      if (err?.code === 4902 || err?.message?.includes('Unrecognized chain')) {
+        await provider.request({ method: 'wallet_addEthereumChain', params: [config] })
+        await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: config.chainId }] })
+        this.chainConfig = config
+      } else {
+        throw err
+      }
+    }
+  }
 }
