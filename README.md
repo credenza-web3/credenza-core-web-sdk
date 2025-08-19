@@ -21,5 +21,3 @@ Test page Staging env
   - [ZkExtension](https://www.npmjs.com/package/@credenza3/core-web-sui-zklogin-ext)
 
 - [EvmExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-ext)
-
-  - [MetamaskExtension](https://www.npmjs.com/package/@credenza3/core-web-evm-metamask-ext)

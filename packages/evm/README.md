@@ -33,9 +33,7 @@ const sdk = new CredenzaSDK({
   extensions: [
     new EvmExtension({
       chainConfig,
-      extensions: [
-        new MetamaskExtension(),
-      ],
+      provider
     })
   ],
 })
@@ -51,6 +49,18 @@ Get current chain config.
 
 ```
 const config = await sdk.evm.getChainConfig()
+```
+
+Check if custom provider was applied
+
+```
+const isCustomProvider = await sdk.evm.isEvmProvider()
+```
+
+Login with Signature (only working if await sdk.evm.isEvmProvider() is true. For that you should pass your provider to the EvmExtension config)
+
+```
+await sdk.evm.loginWithSignature()
 ```
 
 Get provider
