@@ -102,17 +102,19 @@ export class OAuthExtension {
     if (!search.has('state') || !search.has('code')) return
 
     const state = get(LS_OAUTH_STATE_KEY)
-    const clientServerUri = get(LS_CLIENT_SERVER_URI_KEY)
 
     if (search.get('state') !== state) throw new Error('Invalid state')
-    if (!clientServerUri) throw new Error('Invalid client server uri')
     if (!search.has('code')) throw new Error('Invalid code')
 
-    await this._exchangeCodeForToken(search.get('code') as string)
-    if (history && window.location.search) {
-      search.delete('code')
-      search.delete('state')
-      history.replaceState(null, document.title, window.location.pathname + search.toString())
+    try {
+      await this._exchangeCodeForToken(search.get('code') as string)
+      if (history && window.location.search) {
+        search.delete('code')
+        search.delete('state')
+        history.replaceState(null, document.title, window.location.pathname + search.toString())
+      }
+    } catch {
+      console.info('Returned code and state. Could not exchange automatically for token.')
     }
   }
 
