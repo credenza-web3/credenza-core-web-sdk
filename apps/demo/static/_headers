@@ -1,3 +1,3 @@
 /*
   X-Frame-Options: ALLOWALL
-  Content-Security-Policy: frame-ancestors 'self' https://*.farcaster.xyz https://*.base.org https://*.base.dev;
+  Content-Security-Policy: frame-ancestors *;
