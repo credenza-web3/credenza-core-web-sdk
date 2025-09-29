@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { sdk as farcasterSDK } from '@farcaster/miniapp-sdk'
   import { onMount } from 'svelte'
   import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$env/static/public'
   import { amoy } from '../evm-chain-config'
@@ -91,6 +92,14 @@
   }
 
   onMount(async () => {
+    try {
+      await farcasterSDK.actions.ready()
+      console.log('Farcaster SDK is ready')
+    } catch (e) {
+      console.log('Farcaster SDK error')
+      console.error(e)
+    }
+
     const suiNetworkFromLS =
       typeof window !== 'undefined'
         ? (window.localStorage?.getItem(

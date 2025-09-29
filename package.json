@@ -25,5 +25,10 @@
     "node": ">=20.10",
     "pnpm": ">=9.0.0"
   },
-  "packageManager": "pnpm@9.1.2"
+  "packageManager": "pnpm@9.1.2",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
 }
