@@ -1,5 +1,6 @@
 <script lang="ts">
   import { sdk as farcasterSDK } from '@farcaster/miniapp-sdk'
+
   import { onMount } from 'svelte'
   import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$env/static/public'
   import { amoy } from '../evm-chain-config'
