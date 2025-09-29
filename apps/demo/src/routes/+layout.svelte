@@ -2,12 +2,12 @@
   import { sdk } from '@farcaster/miniapp-sdk'
   import { onMount } from 'svelte'
 
-  let isReady = false
+  //let isReady = false
 
   onMount(async () => {
     try {
       await sdk.actions.ready()
-      isReady = true
+      //isReady = true
       console.log('Farcaster SDK is ready')
     } catch (e) {
       console.log('Farcaster SDK error')
@@ -16,6 +16,4 @@
   })
 </script>
 
-{#if isReady}
-  <slot />
-{/if}
+<slot />
