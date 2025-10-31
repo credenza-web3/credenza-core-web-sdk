@@ -17,10 +17,15 @@ import { recursiveToCamel } from '@packages/common/obj/obj'
 export class OAuthExtension {
   public name = 'oauth' as const
   private sdk: CredenzaSDK
+  private shouldSkipRedirectResultCheck: boolean
+
+  constructor(params: { shouldSkipRedirectResultCheck?: boolean }) {
+    this.shouldSkipRedirectResultCheck = params.shouldSkipRedirectResultCheck || false
+  }
 
   async _initialize(sdk: CredenzaSDK) {
     this.sdk = sdk
-    await this._handleRedirectResult()
+    if (!this.shouldSkipRedirectResultCheck) await this._handleRedirectResult()
 
     if (!this.sdk.getAccessToken() && this.sdk.getRefreshToken()) {
       await this.refreshAccessToken()
