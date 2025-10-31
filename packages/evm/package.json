@@ -1,6 +1,6 @@
 {
   "name": "@credenza3/core-web-evm-ext",
-  "version": "0.0.10",
+  "version": "0.0.11-alpha.0",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"
@@ -22,5 +22,8 @@
     "ethers": "^6.13.4",
     "js-sha3": "^0.9.3",
     "siwe": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

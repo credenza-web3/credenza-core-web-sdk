@@ -1,6 +1,6 @@
 {
   "name": "@credenza3/core-web-oauth-ext",
-  "version": "0.0.17",
+  "version": "0.0.18-alpha.0",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"
@@ -20,5 +20,8 @@
   ],
   "dependencies": {
     "jwt-decode": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

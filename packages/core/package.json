@@ -1,6 +1,6 @@
 {
   "name": "@credenza3/core-web",
-  "version": "0.0.11",
+  "version": "0.0.12-alpha.0",
   "type": "module",
   "scripts": {
     "lint": "eslint .",
@@ -21,5 +21,8 @@
   ],
   "dependencies": {
     "jwt-decode": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
