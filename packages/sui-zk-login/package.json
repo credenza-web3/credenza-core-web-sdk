@@ -22,5 +22,8 @@
     "@mysten/sui": "^1.2.1",
     "@mysten/zklogin": "^0.7.10",
     "jwt-decode": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
