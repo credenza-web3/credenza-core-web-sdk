@@ -1,6 +1,6 @@
 {
   "name": "@credenza3/core-web-sui-ext",
-  "version": "0.0.13",
+  "version": "0.0.14-alpha.0",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"
