@@ -1,6 +1,7 @@
 <script lang="ts">
-  import type { CredenzaSDK } from '@credenza3/core-web/src/main'
-  import { ethers } from '@credenza3/core-web-evm-ext/src/main'
+  import type { CredenzaSDK } from '@credenza3/core-web'
+  import { ethers } from '@credenza3/core-web-evm-ext'
+  import CredenzaProvider from '@credenza3/core-web-evm-provider-ext'
   import { spicy, amoy, fuji } from '../evm-chain-config'
 
   export let sdk: CredenzaSDK
@@ -10,6 +11,7 @@
 
   let transferTo = '0xc4F69E4fB203F832616f8CCb134ba25417455039'
   let messageToSign = ''
+  let anotherMessageToSign = ''
 
   const handleGetEvmAddress = async () => {
     const provider = await sdk.evm.getEthersProvider()
@@ -49,11 +51,26 @@
     console.log(await signer.getAddress(), ethers.verifyMessage(messageToSign, sig))
     messageToSign = ''
   }
+
+  const handleSignStandaloneProviderMessage = async () => {
+    const provider = new CredenzaProvider({
+      chainConfig: chainConfig,
+      accessToken: sdk.getAccessToken() as string,
+      env: sdk.env,
+    })
+    await provider.connect()
+    const ethersProvider = new ethers.BrowserProvider(provider)
+    const signer = await ethersProvider.getSigner()
+    const sig = await signer.signMessage(anotherMessageToSign.trim())
+    console.log('Signature: ', sig)
+    console.log(await signer.getAddress(), ethers.verifyMessage(anotherMessageToSign, sig))
+    anotherMessageToSign = ''
+  }
 </script>
 
 <br />
 <div>
-  <div style="border: 2px solid #000; text-align: center">EVM</div>
+  <div style="border: 2px solid #000; text-align: center">EVM (provider as a part of EVM package)</div>
   <div style="margin-top: 5px">
     <select bind:value={chainConfig} on:change={handleSwitchChain}>
       {#each [fuji, amoy, spicy] as chain}
@@ -71,5 +88,14 @@
   <div style="margin-top: 5px">
     <input type="text" bind:value={messageToSign} style="min-width: 350px" placeholder="" />
     <button on:click={handleSignMessage}> Sign Message </button>
+  </div>
+</div>
+
+<br />
+<div>
+  <div style="border: 2px solid #000; text-align: center">Provider as a standalone package</div>
+  <div style="margin-top: 5px">
+    <input type="text" bind:value={anotherMessageToSign} style="min-width: 350px" placeholder="" />
+    <button on:click={handleSignStandaloneProviderMessage}> Sign Message </button>
   </div>
 </div>

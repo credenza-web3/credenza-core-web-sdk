@@ -1,29 +1,28 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
-import { CredenzaProvider } from './provider/provider'
+import CredenzaProvider from '@packages/evm-provider/src/main'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import type { TChainConfig } from '@packages/common/types/chain-config'
 import type { TSdkEvmEvent } from './lib/events/events.types'
 import { emit, once, on } from '@packages/common/events/events'
 import { EVM_EVENT } from './lib/events/events.constants'
 import { SDK_EVENT } from '@packages/core/src/lib/events/events.constants'
-import type { Eip1193Provider } from 'ethers'
 import * as ethers from 'ethers'
 import * as loginUrl from '@packages/oauth/src/lib/login-url'
 import { SiweMessage } from 'siwe'
 import { toChecksumAddress } from './lib/address/address.helper'
 
-export { ethers, CredenzaProvider }
+export { ethers }
 
 export class EvmExtension {
   public static EVM_EVENT = EVM_EVENT
 
   public name = 'evm' as const
   private sdk: CredenzaSDK
-  private provider: CredenzaProvider | Eip1193Provider | undefined
+  private provider: CredenzaProvider | ethers.Eip1193Provider | undefined
   private chainConfig: TChainConfig
-  private optionsProvider: Eip1193Provider
+  private optionsProvider: ethers.Eip1193Provider
 
-  constructor(params: { chainConfig: TChainConfig; provider?: Eip1193Provider; extensions?: unknown[] }) {
+  constructor(params: { chainConfig: TChainConfig; provider?: ethers.Eip1193Provider; extensions?: unknown[] }) {
     if (!params.chainConfig.chainId || !params.chainConfig.rpcUrl)
       throw new Error('chainId and rpcUrl are required fields')
     if (!params.chainConfig.chainId.includes('0x')) throw new Error('Chain id must be a hex value 0x prefixed')
@@ -49,7 +48,11 @@ export class EvmExtension {
           return this.optionsProvider
         }
         case LS_LOGIN_PROVIDER.OAUTH: {
-          const credenzaProvider = new CredenzaProvider({ chainConfig: this.chainConfig, sdk: this.sdk })
+          const credenzaProvider = new CredenzaProvider({
+            chainConfig: this.chainConfig,
+            accessToken: this.sdk.getAccessToken() as string,
+            env: this.sdk.env,
+          })
           await credenzaProvider.connect()
           return credenzaProvider
         }
@@ -65,7 +68,12 @@ export class EvmExtension {
 
   public async getProvider() {
     await this._checkIsUserLoggedIn()
-    if (!this.provider) this.provider = await this._buildProvider()
+    if (!this.provider) {
+      this.provider = await this._buildProvider()
+    } else if (this.provider instanceof CredenzaProvider) {
+      // Update access token if it changed
+      this.provider.setAccessToken(this.sdk.getAccessToken() as string)
+    }
     return this.provider
   }
 
@@ -219,7 +227,7 @@ export class EvmExtension {
           }
         }
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         if (err?.message === 'SWITCH_CHAIN_NOT_REQUIRED') return
         return Promise.reject(err)
       })

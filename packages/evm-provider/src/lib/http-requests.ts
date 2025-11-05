@@ -4,6 +4,7 @@ export type TCredenzaRequestFields = {
   accessToken: string
   apiUrl: string
 }
+
 export type TRequestBody = { method: string; params?: unknown[] }
 
 export async function listAccounts({ apiUrl, accessToken }: TCredenzaRequestFields) {
@@ -24,7 +25,6 @@ export async function listAccounts({ apiUrl, accessToken }: TCredenzaRequestFiel
 export async function sign({ apiUrl, accessToken }: TCredenzaRequestFields, data: TRequestBody) {
   if (!data.method) throw new Error('Invalid method')
   if (!data.params) throw new Error('Invalid signature parameter')
-
   const body = JSON.stringify(data, (_, v) => (typeof v === 'bigint' ? toBeHex(v) : v))
   const response = await fetch(`${apiUrl}/accounts/sign`, {
     method: 'POST',
@@ -35,7 +35,6 @@ export async function sign({ apiUrl, accessToken }: TCredenzaRequestFields, data
     body,
   })
   if (!response.ok) throw new Error(response.statusText)
-
   const { signature } = await response.json()
   return signature
 }

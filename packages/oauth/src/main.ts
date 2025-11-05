@@ -20,7 +20,7 @@ export class OAuthExtension {
   private shouldSkipRedirectResultCheck: boolean
 
   constructor(params: { shouldSkipRedirectResultCheck?: boolean }) {
-    this.shouldSkipRedirectResultCheck = params.shouldSkipRedirectResultCheck || false
+    this.shouldSkipRedirectResultCheck = params?.shouldSkipRedirectResultCheck || false
   }
 
   async _initialize(sdk: CredenzaSDK) {
