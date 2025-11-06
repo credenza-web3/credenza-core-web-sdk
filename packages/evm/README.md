@@ -76,14 +76,6 @@ Get ethers provider
 const provider = await sdk.evm.getEthersProvider()
 ```
 
-## Credenza EVM provider
-
-In case you need the only credenza evm provider
-
-```
-import { CredenzaProvider } from '@credenza3/core-web-evm-ext'
-```
-
 ## Ethers js
 
 [https://www.npmjs.com/package/ethers](https://www.npmjs.com/package/ethers)

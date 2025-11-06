@@ -1,6 +1,6 @@
 {
-  "name": "@credenza3/core-web-evm-ext",
-  "version": "0.0.12",
+  "name": "@credenza3/core-web-evm-provider-ext",
+  "version": "0.0.0-alpha.1",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"
@@ -19,9 +19,7 @@
     "dist"
   ],
   "dependencies": {
-    "ethers": "^6.13.4",
-    "js-sha3": "^0.9.3",
-    "siwe": "^3.0.0"
+    "ethers": "^6.13.4"
   },
   "publishConfig": {
     "access": "public"

@@ -1,34 +1,29 @@
-import { type Eip1193Provider, JsonRpcProvider, VoidSigner, type TransactionLike, toNumber } from 'ethers'
-import type { CredenzaSDK } from '@packages/core/src/main'
+import { type Eip1193Provider, JsonRpcProvider, VoidSigner, type TransactionLike } from 'ethers'
 import { listAccounts, sign } from './lib/http-requests'
-import { OAUTH_API_URL } from '@packages/common/constants/oauth'
+import { EVM_PROVIDER_EVENT, EVM_PROVIDER_STATE } from './constants'
 import { getEvmApiUrl } from '@packages/common/evm/evm'
-import type { TChainConfig } from '@packages/common/types/chain-config'
-import { EVM_PROVIDER_STATE } from '../main.constants'
 
-export class CredenzaProvider implements Eip1193Provider {
+class CredenzaProvider implements Eip1193Provider {
+  static EVM_PROVIDER_EVENT = EVM_PROVIDER_EVENT
+
   private addresses: string[] = []
   private provider: JsonRpcProvider
   private state = EVM_PROVIDER_STATE.DISCONNECTED
-  private chainConfig: TChainConfig
   private apiUrl: string
-  private accessToken?: string
-  private sdk?: CredenzaSDK
+  private accessToken: string
+  private rpcUrl: string
+  private listeners: Record<string, ((...args: any[]) => void)[]> = {}
 
-  constructor(params: { chainConfig: TChainConfig; accessToken?: string; apiUrl?: string; sdk?: CredenzaSDK }) {
-    if (!params.sdk && !params.accessToken) throw new Error('Invalid constructor parameters.')
-    this.apiUrl = params.apiUrl || OAUTH_API_URL.PROD
-    this.accessToken = params.accessToken
-    this.sdk = params.sdk || undefined
-    this._setChain(params.chainConfig)
+  constructor(params: { rpcUrl: string; accessToken?: string; env: string }) {
+    if (!params.env) throw new Error('Env is required')
+
+    this.apiUrl = getEvmApiUrl(params.env)
+    this.setRpcUrl(params.rpcUrl)
+
+    if (params.accessToken) this.accessToken = params.accessToken
   }
 
   private _getRequestFields() {
-    if (this.sdk)
-      return {
-        accessToken: `Bearer ${this.sdk.getAccessToken()}`,
-        apiUrl: getEvmApiUrl(this.sdk),
-      }
     return {
       accessToken: `Bearer ${this.accessToken}`,
       apiUrl: this.apiUrl,
@@ -40,28 +35,43 @@ export class CredenzaProvider implements Eip1193Provider {
       throw new Error('Credenza provider is not connected')
   }
 
-  private _setChain(chainConfig: TChainConfig) {
-    this.provider = new JsonRpcProvider(chainConfig.rpcUrl)
-    this.chainConfig = chainConfig
+  private _checkAccessToken() {
+    if (!this.accessToken) throw new Error('Access token is required')
   }
 
-  public async switchChain(chainConfig: TChainConfig) {
-    const prevProvider = this.provider
-    const prevChainConfig = this.chainConfig
-    const prevState = this.state
-    try {
-      this._setChain(chainConfig)
-      await this.connect()
-    } catch (err) {
-      this.provider = prevProvider
-      this.chainConfig = prevChainConfig
-      this.state === prevState
-      throw err
+  private _emit(event: string, ...args: any[]) {
+    for (const listener of this.listeners[event] ?? []) {
+      listener(...args)
     }
   }
 
+  public setRpcUrl(rpcUrl: string) {
+    this.rpcUrl = rpcUrl
+    this.provider = new JsonRpcProvider(rpcUrl)
+  }
+
+  public getRpcUrl() {
+    return this.rpcUrl
+  }
+
+  public on(event: string, listener: (...args: any[]) => void) {
+    this.listeners[event] ??= []
+    this.listeners[event].push(listener)
+    return this
+  }
+
+  public removeListener(event: string, listener: (...args: any[]) => void) {
+    this.listeners[event] = (this.listeners[event] ?? []).filter((l) => l !== listener)
+    return this
+  }
+
+  public setAccessToken(accessToken: string) {
+    this.accessToken = accessToken
+    // Invalidate cached addresses when token changes
+    this.addresses = []
+  }
+
   public async _populateTransaction(tx: unknown | TransactionLike) {
-    this._checkConnected()
     const [address] = await this.listAccounts()
     const voidSigner = new VoidSigner(address, this.provider)
     const transactionJson = await voidSigner.populateTransaction(tx as TransactionLike)
@@ -72,8 +82,8 @@ export class CredenzaProvider implements Eip1193Provider {
     try {
       this.state = EVM_PROVIDER_STATE.CONNECTING
       const network = await this.provider.getNetwork()
-      if (toNumber(network.chainId) !== toNumber(this.chainConfig.chainId)) throw new Error('Invalid chain Id')
       this.state = EVM_PROVIDER_STATE.CONNECTED
+      this._emit(EVM_PROVIDER_EVENT.CONNECT, { network })
     } catch (err) {
       this.state = EVM_PROVIDER_STATE.DISCONNECTED
       throw err
@@ -82,6 +92,7 @@ export class CredenzaProvider implements Eip1193Provider {
 
   public async disconnect() {
     this.state = EVM_PROVIDER_STATE.DISCONNECTED
+    this._emit(EVM_PROVIDER_EVENT.DISCONNECT)
   }
 
   public async getRpcProvider() {
@@ -91,8 +102,10 @@ export class CredenzaProvider implements Eip1193Provider {
 
   public async listAccounts() {
     this._checkConnected()
+    this._checkAccessToken()
     if (!this.addresses?.length) {
       this.addresses = await listAccounts(this._getRequestFields())
+      this._emit(EVM_PROVIDER_EVENT.ACCOUNTS_CHANGED, this.addresses)
     }
     return this.addresses
   }
@@ -100,6 +113,7 @@ export class CredenzaProvider implements Eip1193Provider {
   // eslint-disable-next-line complexity
   async request({ method, params }: { method: string; params?: unknown[] }) {
     this._checkConnected()
+    this._checkAccessToken()
     switch (method) {
       case 'eth_requestAccounts':
       case 'eth_accounts': {
@@ -151,9 +165,21 @@ export class CredenzaProvider implements Eip1193Provider {
           throw new Error(`Sign typed data failed: ${err.message}`)
         }
       }
+      case 'wallet_switchEthereumChain': {
+        const chainId = Number((params?.[0] as any)?.chainId)
+        const network = await this.provider.getNetwork()
+        if (chainId !== Number(network.chainId)) {
+          throw new Error(
+            'wallet_switchEthereumChain not supported manually. Use .setRpcUrl() or re-init provider with new RPC url',
+          )
+        }
+        return null
+      }
       default: {
         return await this.provider.send(method, params ?? [])
       }
     }
   }
 }
+
+export default CredenzaProvider
