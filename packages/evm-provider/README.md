@@ -25,8 +25,6 @@ const provider = new CredenzaProvider({
   accessToken: 'your-credenza-access-token',
   env: 'staging', // 'prod' | 'staging'
 })
-
-await provider.connect()
 ```
 
 ### Using with ethers.js
@@ -71,22 +69,6 @@ Updates the access token.
 
 ```
 provider.setAccessToken('new-access-token')
-```
-
-#### `connect(): Promise<void>`
-
-Connects to the blockchain network.
-
-```
-await provider.connect()
-```
-
-#### `disconnect(): Promise<void>`
-
-Disconnects the provider.
-
-```
-await provider.disconnect()
 ```
 
 #### `setRpcUrl(rpcUrl: string): Promise<void>`
@@ -166,8 +148,6 @@ const provider = new CredenzaProvider({
   accessToken: 'your-token',
   env: 'prod',
 })
-
-await provider.connect()
 
 const accounts = await provider.listAccounts()
 

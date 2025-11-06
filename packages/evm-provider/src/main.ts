@@ -1,6 +1,6 @@
 import { type Eip1193Provider, JsonRpcProvider, VoidSigner, type TransactionLike } from 'ethers'
 import { listAccounts, sign } from './lib/http-requests'
-import { EVM_PROVIDER_EVENT, EVM_PROVIDER_STATE } from './constants'
+import { EVM_PROVIDER_EVENT } from './constants'
 import { getEvmApiUrl } from '@packages/common/evm/evm'
 
 class CredenzaProvider implements Eip1193Provider {
@@ -8,7 +8,6 @@ class CredenzaProvider implements Eip1193Provider {
 
   private addresses: string[] = []
   private provider: JsonRpcProvider
-  private state = EVM_PROVIDER_STATE.DISCONNECTED
   private apiUrl: string
   private accessToken: string
   private rpcUrl: string
@@ -28,15 +27,6 @@ class CredenzaProvider implements Eip1193Provider {
       accessToken: `Bearer ${this.accessToken}`,
       apiUrl: this.apiUrl,
     }
-  }
-
-  private _checkConnected() {
-    if (this.state !== EVM_PROVIDER_STATE.CONNECTED || !this.provider)
-      throw new Error('Credenza provider is not connected')
-  }
-
-  private _checkAccessToken() {
-    if (!this.accessToken) throw new Error('Access token is required')
   }
 
   private _emit(event: string, ...args: any[]) {
@@ -78,31 +68,11 @@ class CredenzaProvider implements Eip1193Provider {
     return transactionJson
   }
 
-  public async connect() {
-    try {
-      this.state = EVM_PROVIDER_STATE.CONNECTING
-      const network = await this.provider.getNetwork()
-      this.state = EVM_PROVIDER_STATE.CONNECTED
-      this._emit(EVM_PROVIDER_EVENT.CONNECT, { network })
-    } catch (err) {
-      this.state = EVM_PROVIDER_STATE.DISCONNECTED
-      throw err
-    }
-  }
-
-  public async disconnect() {
-    this.state = EVM_PROVIDER_STATE.DISCONNECTED
-    this._emit(EVM_PROVIDER_EVENT.DISCONNECT)
-  }
-
   public async getRpcProvider() {
-    this._checkConnected()
     return this.provider
   }
 
   public async listAccounts() {
-    this._checkConnected()
-    this._checkAccessToken()
     if (!this.addresses?.length) {
       this.addresses = await listAccounts(this._getRequestFields())
       this._emit(EVM_PROVIDER_EVENT.ACCOUNTS_CHANGED, this.addresses)
@@ -112,8 +82,6 @@ class CredenzaProvider implements Eip1193Provider {
 
   // eslint-disable-next-line complexity
   async request({ method, params }: { method: string; params?: unknown[] }) {
-    this._checkConnected()
-    this._checkAccessToken()
     switch (method) {
       case 'eth_requestAccounts':
       case 'eth_accounts': {
@@ -126,7 +94,9 @@ class CredenzaProvider implements Eip1193Provider {
       case 'eth_sign':
       case 'personal_sign': {
         try {
-          return await sign(this._getRequestFields(), { method: 'personal_sign', params })
+          const res = await sign(this._getRequestFields(), { method: 'personal_sign', params })
+          this._emit(EVM_PROVIDER_EVENT.PERSONAL_SIGN, params)
+          return res
         } catch (err) {
           throw new Error(`Sign message error: ${err.message}`)
         }
@@ -136,7 +106,9 @@ class CredenzaProvider implements Eip1193Provider {
       case 'eth_signTransaction': {
         try {
           const tx = await this._populateTransaction(params?.[0])
-          return await sign(this._getRequestFields(), { method: 'eth_signTransaction', params: [tx] })
+          const res = await sign(this._getRequestFields(), { method: 'eth_signTransaction', params: [tx] })
+          this._emit(EVM_PROVIDER_EVENT.SIGN_TRANSACTION, tx)
+          return res
         } catch (err) {
           throw new Error(`Sign tx error: ${err.message}`)
         }
@@ -151,6 +123,7 @@ class CredenzaProvider implements Eip1193Provider {
             params: [tx],
           })
           const result = await this.provider.broadcastTransaction(serializedSignedTx)
+          this._emit(EVM_PROVIDER_EVENT.SEND_TRANSACTION, tx)
           return result.hash
         } catch (err) {
           throw new Error(`Send tx error: ${err.message}`)
@@ -160,7 +133,9 @@ class CredenzaProvider implements Eip1193Provider {
       case 'eth_signTypedData_v4':
       case 'eth_signTypedData': {
         try {
-          return await sign(this._getRequestFields(), { method: 'eth_signTypedData', params })
+          const res = await sign(this._getRequestFields(), { method: 'eth_signTypedData', params })
+          this._emit(EVM_PROVIDER_EVENT.SIGN_TYPED_DATA, params)
+          return res
         } catch (err) {
           throw new Error(`Sign typed data failed: ${err.message}`)
         }

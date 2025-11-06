@@ -98,7 +98,6 @@
           ) as (typeof SuiExtension.SUI_NETWORK)[keyof typeof SuiExtension.SUI_NETWORK])
         : null
     suiNetworkName = suiNetworkFromLS || SuiExtension.SUI_NETWORK.DEVNET
-    console.log(window.ethereum)
     sdk = new CredenzaSDK({
       clientId: PUBLIC_CLIENT_ID,
       env: PUBLIC_ENV as (typeof CredenzaSDK.SDK_ENV)[keyof typeof CredenzaSDK.SDK_ENV],
@@ -106,7 +105,6 @@
         new SuiExtension({ suiNetwork: suiNetworkName, extensions: [] }),
         new EvmExtension({
           chainConfig: evmChainConfig,
-          provider: window.ethereum,
         }),
         new OAuthExtension(),
         new AccountExtension(),
