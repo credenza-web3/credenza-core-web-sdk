@@ -3,6 +3,7 @@
   import { ethers } from '@credenza3/core-web-evm-ext/src/main'
   import CredenzaProvider from '@credenza3/core-web-evm-provider-ext/src/main'
   import { spicy, amoy, fuji } from '../evm-chain-config'
+  import { onMount } from 'svelte'
 
   export let sdk: CredenzaSDK
   export let chainConfig: typeof amoy | typeof spicy | typeof fuji
@@ -12,6 +13,8 @@
   let transferTo = '0xc4F69E4fB203F832616f8CCb134ba25417455039'
   let messageToSign = ''
   let anotherMessageToSign = ''
+
+  let credenzaProvider: CredenzaProvider
 
   const handleGetEvmAddress = async () => {
     const provider = await sdk.evm.getEthersProvider()
@@ -53,19 +56,22 @@
   }
 
   const handleSignStandaloneProviderMessage = async () => {
-    const provider = new CredenzaProvider({
-      rpcUrl: chainConfig.rpcUrl,
-      accessToken: sdk.getAccessToken() as string,
-      env: sdk.env,
-    })
-    Object.assign(window, { credenzaProvider: provider })
-    const ethersProvider = new ethers.BrowserProvider(provider)
+    const ethersProvider = new ethers.BrowserProvider(credenzaProvider)
     const signer = await ethersProvider.getSigner()
     const sig = await signer.signMessage(anotherMessageToSign.trim())
     console.log('Signature: ', sig)
     console.log(await signer.getAddress(), ethers.verifyMessage(anotherMessageToSign, sig))
     anotherMessageToSign = ''
   }
+
+  onMount(() => {
+    credenzaProvider = new CredenzaProvider({
+      rpcUrl: chainConfig.rpcUrl,
+      accessToken: sdk.getAccessToken() as string,
+      env: sdk.env,
+    })
+    Object.assign(window, { credenzaProvider })
+  })
 </script>
 
 <br />
