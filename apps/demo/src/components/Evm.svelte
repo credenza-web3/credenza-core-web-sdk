@@ -54,7 +54,7 @@
 
   const handleSignStandaloneProviderMessage = async () => {
     const provider = new CredenzaProvider({
-      chainConfig: chainConfig,
+      rpcUrl: chainConfig.rpcUrl,
       accessToken: sdk.getAccessToken() as string,
       env: sdk.env,
     })
