@@ -49,7 +49,7 @@ export class EvmExtension {
         }
         case LS_LOGIN_PROVIDER.OAUTH: {
           const credenzaProvider = new CredenzaProvider({
-            chainConfig: this.chainConfig,
+            rpcUrl: this.chainConfig.rpcUrl,
             accessToken: this.sdk.getAccessToken() as string,
             env: this.sdk.env,
           })
@@ -95,7 +95,7 @@ export class EvmExtension {
           break
         }
         case LS_LOGIN_PROVIDER.OAUTH: {
-          await (<CredenzaProvider>provider).switchChain(chainConfig)
+          ;(<CredenzaProvider>provider).setRpcUrl(chainConfig.rpcUrl)
           break
         }
       }

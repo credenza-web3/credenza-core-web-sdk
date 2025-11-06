@@ -1,6 +1,5 @@
-import { type Eip1193Provider, JsonRpcProvider, VoidSigner, type TransactionLike, toNumber } from 'ethers'
+import { type Eip1193Provider, JsonRpcProvider, VoidSigner, type TransactionLike } from 'ethers'
 import { listAccounts, sign } from './lib/http-requests'
-import type { TChainConfig } from '@packages/common/types/chain-config'
 import { EVM_PROVIDER_EVENT, EVM_PROVIDER_STATE } from './constants'
 import { getEvmApiUrl } from '@packages/common/evm/evm'
 
@@ -10,18 +9,18 @@ class CredenzaProvider implements Eip1193Provider {
   private addresses: string[] = []
   private provider: JsonRpcProvider
   private state = EVM_PROVIDER_STATE.DISCONNECTED
-  private chainConfig: TChainConfig
   private apiUrl: string
   private accessToken: string
+  private rpcUrl: string
   private listeners: Record<string, ((...args: any[]) => void)[]> = {}
 
-  constructor(params: { chainConfig: TChainConfig; accessToken: string; env: string }) {
-    if (!params.accessToken) throw new Error('Access token is required')
+  constructor(params: { rpcUrl: string; accessToken?: string; env: string }) {
     if (!params.env) throw new Error('Env is required')
 
     this.apiUrl = getEvmApiUrl(params.env)
-    this.accessToken = params.accessToken
-    this._setChain(params.chainConfig)
+    this.setRpcUrl(params.rpcUrl)
+
+    if (params.accessToken) this.accessToken = params.accessToken
   }
 
   private _getRequestFields() {
@@ -36,15 +35,23 @@ class CredenzaProvider implements Eip1193Provider {
       throw new Error('Credenza provider is not connected')
   }
 
-  private _setChain(chainConfig: TChainConfig) {
-    this.provider = new JsonRpcProvider(chainConfig.rpcUrl)
-    this.chainConfig = chainConfig
+  private _checkAccessToken() {
+    if (!this.accessToken) throw new Error('Access token is required')
   }
 
   private _emit(event: string, ...args: any[]) {
     for (const listener of this.listeners[event] ?? []) {
       listener(...args)
     }
+  }
+
+  public setRpcUrl(rpcUrl: string) {
+    this.rpcUrl = rpcUrl
+    this.provider = new JsonRpcProvider(rpcUrl)
+  }
+
+  public getRpcUrl() {
+    return this.rpcUrl
   }
 
   public on(event: string, listener: (...args: any[]) => void) {
@@ -64,24 +71,7 @@ class CredenzaProvider implements Eip1193Provider {
     this.addresses = []
   }
 
-  public async switchChain(chainConfig: TChainConfig) {
-    const prevProvider = this.provider
-    const prevChainConfig = this.chainConfig
-    const prevState = this.state
-    try {
-      this._setChain(chainConfig)
-      await this.connect()
-      this._emit(EVM_PROVIDER_EVENT.CHAIN_CHANGED, chainConfig.chainId)
-    } catch (err) {
-      this.provider = prevProvider
-      this.chainConfig = prevChainConfig
-      this.state = prevState
-      throw err
-    }
-  }
-
   public async _populateTransaction(tx: unknown | TransactionLike) {
-    this._checkConnected()
     const [address] = await this.listAccounts()
     const voidSigner = new VoidSigner(address, this.provider)
     const transactionJson = await voidSigner.populateTransaction(tx as TransactionLike)
@@ -92,9 +82,8 @@ class CredenzaProvider implements Eip1193Provider {
     try {
       this.state = EVM_PROVIDER_STATE.CONNECTING
       const network = await this.provider.getNetwork()
-      if (toNumber(network.chainId) !== toNumber(this.chainConfig.chainId)) throw new Error('Invalid chain Id')
       this.state = EVM_PROVIDER_STATE.CONNECTED
-      this._emit(EVM_PROVIDER_EVENT.CONNECT, { chainId: this.chainConfig.chainId })
+      this._emit(EVM_PROVIDER_EVENT.CONNECT, { network })
     } catch (err) {
       this.state = EVM_PROVIDER_STATE.DISCONNECTED
       throw err
@@ -113,6 +102,7 @@ class CredenzaProvider implements Eip1193Provider {
 
   public async listAccounts() {
     this._checkConnected()
+    this._checkAccessToken()
     if (!this.addresses?.length) {
       this.addresses = await listAccounts(this._getRequestFields())
       this._emit(EVM_PROVIDER_EVENT.ACCOUNTS_CHANGED, this.addresses)
@@ -123,6 +113,7 @@ class CredenzaProvider implements Eip1193Provider {
   // eslint-disable-next-line complexity
   async request({ method, params }: { method: string; params?: unknown[] }) {
     this._checkConnected()
+    this._checkAccessToken()
     switch (method) {
       case 'eth_requestAccounts':
       case 'eth_accounts': {
@@ -174,14 +165,13 @@ class CredenzaProvider implements Eip1193Provider {
           throw new Error(`Sign typed data failed: ${err.message}`)
         }
       }
-      case 'eth_chainId':
-        return `0x${Number(this.chainConfig.chainId).toString(16)}`
-      case 'net_version':
-        return String(Number(this.chainConfig.chainId))
       case 'wallet_switchEthereumChain': {
         const chainId = Number((params?.[0] as any)?.chainId)
-        if (chainId !== Number(this.chainConfig.chainId)) {
-          throw new Error('wallet_switchEthereumChain not supported manually. Use .switchChain()')
+        const network = await this.provider.getNetwork()
+        if (chainId !== Number(network.chainId)) {
+          throw new Error(
+            'wallet_switchEthereumChain not supported manually. Use .setRpcUrl() or re-init provider with new RPC url',
+          )
         }
         return null
       }

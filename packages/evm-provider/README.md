@@ -19,20 +19,9 @@ A standalone EVM provider implementation for Credenza3 authentication that imple
 ```
 import CredenzaProvider from '@credenza3/core-web-evm-provider-ext'
 
-const chainConfig = {
-  chainId: '0x13881',
-  rpcUrl: 'https://polygon-mumbai-bor.publicnode.com',
-  displayName: 'Mumbai',
-  blockExplorer: 'https://mumbai.polygonscan.com/',
-  nativeCurrency: {
-    name: 'MATIC',
-    symbol: 'MATIC',
-    decimals: 18,
-  },
-}
 
 const provider = new CredenzaProvider({
-  chainConfig,
+  rpcUrl: '',
   accessToken: 'your-credenza-access-token',
   env: 'staging', // 'prod' | 'staging'
 })
@@ -62,15 +51,15 @@ const tx = await signer.sendTransaction({
 
 ```
   new CredenzaProvider(params: {
-    chainConfig: TChainConfig
-    accessToken: string
+    rpcUrl: string
+    accessToken?: string
     env: string
   })
 ```
 
 **Parameters:**
 
-- `chainConfig` - Chain configuration object
+- `rpcUrl` - RPC URL of the blockchain network
 - `accessToken` - Credenza3 authentication token
 - `env` - Environment ('prod' | 'staging')
 
@@ -100,21 +89,20 @@ Disconnects the provider.
 await provider.disconnect()
 ```
 
-#### `switchChain(chainConfig: TChainConfig): Promise<void>`
+#### `setRpcUrl(rpcUrl: string): Promise<void>`
 
 Switches to a different blockchain network.
 
 ```
-await provider.switchChain({
-  chainId: '0x1',
-  rpcUrl: 'https://eth.llamarpc.com',
-  displayName: 'Ethereum Mainnet',
-  nativeCurrency: {
-    name: 'Ether',
-    symbol: 'ETH',
-    decimals: 18,
-  },
-})
+await provider.setRpcUrl('https://eth.llamarpc.com')
+```
+
+#### `getRpcUrl(): string`
+
+Returns the current RPC URL.
+
+```
+const rpcUrl = provider.getRpcUrl()
 ```
 
 #### `listAccounts(): Promise<string[]>`
@@ -167,22 +155,6 @@ const txHash = await provider.request({
 **Standard Methods:**
 All other standard Ethereum JSON-RPC methods are forwarded to the RPC provider.
 
-## Chain Configuration
-
-```
-type TChainConfig = {
-  chainId: string          // Hex string (e.g., '0x1')
-  rpcUrl: string          // RPC endpoint URL
-  displayName: string     // Human-readable chain name
-  blockExplorer?: string  // Block explorer URL (optional)
-  nativeCurrency: {
-    name: string
-    symbol: string
-    decimals: number
-  }
-}
-```
-
 ## Example
 
 ```
@@ -190,16 +162,7 @@ import { CredenzaProvider } from '@packages/evm-provider'
 import { BrowserProvider, parseEther } from 'ethers'
 
 const provider = new CredenzaProvider({
-  chainConfig: {
-    chainId: '0x89',
-    rpcUrl: 'https://polygon-rpc.com',
-    displayName: 'Polygon',
-    nativeCurrency: {
-      name: 'MATIC',
-      symbol: 'MATIC',
-      decimals: 18,
-    },
-  },
+  rpcUrl: 'https://eth.llamarpc.com',
   accessToken: 'your-token',
   env: 'prod',
 })

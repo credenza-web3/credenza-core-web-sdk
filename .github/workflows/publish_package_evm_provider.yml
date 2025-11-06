@@ -1,0 +1,41 @@
+name: Publish @credenza3/core-web-evm-provider-ext
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/evm-provider/package.json'
+  workflow_dispatch:
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: read # Required for actions/checkout
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [24]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@credenza3'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build package
+        working-directory: ./packages/evm-provider
+        run: pnpm run build
+      - name: Set tag variable
+        id: vars
+        run: echo "NPM_DEPLOYMENT_TAG=$(node npm-tag.js packages/evm-provider)" >> $GITHUB_OUTPUT
+      - name: Publish package
+        working-directory: ./packages/evm-provider
+        run: pnpm publish --access public --tag ${{ steps.vars.outputs.NPM_DEPLOYMENT_TAG}}
