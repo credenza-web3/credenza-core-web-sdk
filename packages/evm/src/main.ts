@@ -53,7 +53,6 @@ export class EvmExtension {
             accessToken: this.sdk.getAccessToken() as string,
             env: this.sdk.env,
           })
-          await credenzaProvider.connect()
           return credenzaProvider
         }
         default: {

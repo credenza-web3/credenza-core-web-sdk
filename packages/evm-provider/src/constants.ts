@@ -1,12 +1,7 @@
-export enum EVM_PROVIDER_STATE {
-  DISCONNECTED = 'DISCONNECTED',
-  CONNECTING = 'CONNECTING',
-  CONNECTED = 'CONNECTED',
-}
-
 export enum EVM_PROVIDER_EVENT {
-  CONNECT = 'connect',
-  DISCONNECT = 'disconnect',
-  ACCOUNTS_CHANGED = 'accountsChanged',
-  CHAIN_CHANGED = 'chainChanged',
+  ACCOUNTS_CHANGED = 'accounts_changed',
+  PERSONAL_SIGN = 'personal_sign',
+  SIGN_TRANSACTION = 'sign_transaction',
+  SEND_TRANSACTION = 'send_transaction',
+  SIGN_TYPED_DATA = 'sign_typed_data',
 }

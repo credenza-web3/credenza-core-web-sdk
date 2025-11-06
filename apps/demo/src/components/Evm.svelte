@@ -58,7 +58,7 @@
       accessToken: sdk.getAccessToken() as string,
       env: sdk.env,
     })
-    await provider.connect()
+
     const ethersProvider = new ethers.BrowserProvider(provider)
     const signer = await ethersProvider.getSigner()
     const sig = await signer.signMessage(anotherMessageToSign.trim())

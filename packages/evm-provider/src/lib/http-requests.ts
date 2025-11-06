@@ -8,6 +8,7 @@ export type TCredenzaRequestFields = {
 export type TRequestBody = { method: string; params?: unknown[] }
 
 export async function listAccounts({ apiUrl, accessToken }: TCredenzaRequestFields) {
+  if (!accessToken) throw new Error('Access token is required')
   try {
     const response = await fetch(`${apiUrl}/accounts/address`, {
       headers: {
@@ -23,6 +24,7 @@ export async function listAccounts({ apiUrl, accessToken }: TCredenzaRequestFiel
 }
 
 export async function sign({ apiUrl, accessToken }: TCredenzaRequestFields, data: TRequestBody) {
+  if (!accessToken) throw new Error('Access token is required')
   if (!data.method) throw new Error('Invalid method')
   if (!data.params) throw new Error('Invalid signature parameter')
   const body = JSON.stringify(data, (_, v) => (typeof v === 'bigint' ? toBeHex(v) : v))
