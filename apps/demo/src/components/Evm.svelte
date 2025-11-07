@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { CredenzaSDK } from '@credenza3/core-web/src/main'
   import { ethers } from '@credenza3/core-web-evm-ext/src/main'
-  import CredenzaProvider from '@credenza3/core-web-evm-provider-ext/src/main'
+  import { CredenzaProvider } from '@credenza3/evm-provider/src/main'
   import { spicy, amoy, fuji } from '../evm-chain-config'
   import { onMount } from 'svelte'
 
