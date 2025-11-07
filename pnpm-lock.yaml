@@ -47,9 +47,6 @@ importers:
       '@credenza3/core-web-evm-ext':
         specifier: workspace:*
         version: link:../../packages/evm
-      '@credenza3/core-web-evm-provider-ext':
-        specifier: workspace:*
-        version: link:../../packages/evm-provider
       '@credenza3/core-web-oauth-ext':
         specifier: workspace:*
         version: link:../../packages/oauth
@@ -59,6 +56,9 @@ importers:
       '@credenza3/core-web-sui-zklogin-ext':
         specifier: workspace:*
         version: link:../../packages/sui-zk-login
+      '@credenza3/evm-provider':
+        specifier: workspace:*
+        version: link:../../packages/evm-provider
       '@farcaster/miniapp-sdk':
         specifier: ^0.1.10
         version: 0.1.10(bufferutil@4.0.9)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.25.76)
