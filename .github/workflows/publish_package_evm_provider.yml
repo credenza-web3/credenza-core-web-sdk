@@ -1,4 +1,4 @@
-name: Publish @credenza3/core-web-evm-provider-ext
+name: Publish @credenza3/evm-provider
 
 # Controls when the workflow will run
 on:
