@@ -1,13 +1,13 @@
-import { type Eip1193Provider, JsonRpcProvider, VoidSigner, type TransactionLike } from 'ethers'
+import * as ethers from 'ethers'
 import { listAccounts, sign } from './lib/http-requests'
 import { EVM_PROVIDER_EVENT } from './constants'
 import { getEvmApiUrl } from '@packages/common/evm/evm'
 
-class CredenzaProvider implements Eip1193Provider {
+class CredenzaProvider implements ethers.Eip1193Provider {
   static EVM_PROVIDER_EVENT = EVM_PROVIDER_EVENT
 
   private addresses: string[] = []
-  private provider: JsonRpcProvider
+  private provider: ethers.JsonRpcProvider
   private apiUrl: string
   private accessToken: string
   private rpcUrl: string
@@ -37,7 +37,7 @@ class CredenzaProvider implements Eip1193Provider {
 
   public setRpcUrl(rpcUrl: string) {
     this.rpcUrl = rpcUrl
-    this.provider = new JsonRpcProvider(rpcUrl)
+    this.provider = new ethers.JsonRpcProvider(rpcUrl)
   }
 
   public getRpcUrl() {
@@ -61,10 +61,10 @@ class CredenzaProvider implements Eip1193Provider {
     this.addresses = []
   }
 
-  public async _populateTransaction(tx: unknown | TransactionLike) {
+  public async _populateTransaction(tx: unknown | ethers.TransactionLike) {
     const [address] = await this.listAccounts()
-    const voidSigner = new VoidSigner(address, this.provider)
-    const transactionJson = await voidSigner.populateTransaction(tx as TransactionLike)
+    const voidSigner = new ethers.VoidSigner(address, this.provider)
+    const transactionJson = await voidSigner.populateTransaction(tx as ethers.TransactionLike)
     return transactionJson
   }
 
@@ -117,7 +117,7 @@ class CredenzaProvider implements Eip1193Provider {
       case 'eth_sendRawTransaction':
       case 'eth_sendTransaction': {
         try {
-          const tx = await this._populateTransaction(params?.[0])
+          const tx = await this._populateTransaction(params?.[0] as ethers.TransactionLike)
           const serializedSignedTx = await sign(this._getRequestFields(), {
             method: 'eth_signTransaction',
             params: [tx],
@@ -157,4 +157,4 @@ class CredenzaProvider implements Eip1193Provider {
   }
 }
 
-export default CredenzaProvider
+export { CredenzaProvider, ethers }
