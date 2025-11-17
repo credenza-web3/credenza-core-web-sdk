@@ -5,7 +5,7 @@ A standalone EVM provider implementation for Credenza3 authentication that imple
 ## Installation
 
 ```
-  npm i @credenza3/core-web-evm-provider-ext
+  npm i @credenza3/evm-provider
 ```
 
 ## Overview
@@ -17,7 +17,7 @@ A standalone EVM provider implementation for Credenza3 authentication that imple
 ### Basic Setup
 
 ```
-import CredenzaProvider from '@credenza3/core-web-evm-provider-ext'
+import { CredenzaProvider } from '@credenza3/evm-provider'
 
 
 const provider = new CredenzaProvider({
@@ -30,9 +30,9 @@ const provider = new CredenzaProvider({
 ### Using with ethers.js
 
 ```
-import { BrowserProvider } from 'ethers'
+import { ethers } from '@credenza3/evm-provider'
 
-const ethersProvider = new BrowserProvider(provider)
+const ethersProvider = new ethers.BrowserProvider(provider)
 const signer = await ethersProvider.getSigner()
 
 const address = await signer.getAddress()
@@ -140,8 +140,7 @@ All other standard Ethereum JSON-RPC methods are forwarded to the RPC provider.
 ## Example
 
 ```
-import { CredenzaProvider } from '@packages/evm-provider'
-import { BrowserProvider, parseEther } from 'ethers'
+import { CredenzaProvider, ethers } from '@credenza3/evm-provider'
 
 const provider = new CredenzaProvider({
   rpcUrl: 'https://eth.llamarpc.com',
@@ -149,14 +148,12 @@ const provider = new CredenzaProvider({
   env: 'prod',
 })
 
-const accounts = await provider.listAccounts()
-
-const ethersProvider = new BrowserProvider(provider)
+const ethersProvider = new ethers.BrowserProvider(provider)
 const signer = await ethersProvider.getSigner()
 
 const tx = await signer.sendTransaction({
   to: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
-  value: parseEther('0.01'),
+  value: ethers.parseEther('0.01'),
 })
 
 await tx.wait()
