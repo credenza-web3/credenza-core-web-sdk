@@ -51,8 +51,7 @@ export class CredenzaSDK {
     this.loginProvider = get(LS_LOGIN_PROVIDER_KEY) as (typeof LS_LOGIN_PROVIDER)[keyof typeof LS_LOGIN_PROVIDER]
     if (this.accessToken) {
       const decodedJwt = jwtDecode(this.accessToken)
-      if (!decodedJwt.exp || decodedJwt.aud !== this.clientId || decodedJwt.exp * 1000 < new Date().getTime())
-        this.logout()
+      if (!decodedJwt.exp || decodedJwt.exp * 1000 < new Date().getTime()) this.logout()
     }
     for (const extensionName of this.extensions) {
       await this[extensionName]?._initialize(this)
