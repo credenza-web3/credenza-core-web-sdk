@@ -35,4 +35,3 @@ export type TOAuthLoginWithRedirectOpts = TOAuthLoginBaseOpts &
   TOAuthPasswordlessLoginOpts &
   TOAuthLoginResponseTypeOpts &
   TOAuthCodeLoginOpts
-export type TOAuthLoginWithJwtOpts = TOAuthLoginBaseOpts & TOAuthLoginJwtOpts & TOAuthLoginResponseTypeOpts

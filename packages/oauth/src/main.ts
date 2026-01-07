@@ -4,13 +4,8 @@ import { set, get } from '@packages/common/localstorage/localstorage'
 import { LS_LOGIN_PROVIDER } from '@packages/common/constants/localstorage'
 import { jwtDecode } from 'jwt-decode'
 import { LS_CLIENT_SERVER_URI_KEY, LS_OAUTH_NONCE_KEY, LS_OAUTH_STATE_KEY } from './constants/localstorage'
-import type { TOAuthLoginWithRedirectOpts, TOAuthLoginWithJwtOpts } from './main.types'
-import {
-  revokeOAuth2Session,
-  loginWithJwtRequest,
-  exchangeCodeForTokenRequest,
-  refreshTokenRequest,
-} from './lib/http-requests'
+import type { TOAuthLoginWithRedirectOpts } from './main.types'
+import { revokeOAuth2Session, exchangeCodeForTokenRequest, refreshTokenRequest } from './lib/http-requests'
 import * as loginUrl from './lib/login-url'
 import { recursiveToCamel } from '@packages/common/obj/obj'
 
@@ -62,12 +57,6 @@ export class OAuthExtension {
     }
 
     window.location.href = url.toString()
-  }
-
-  async loginWithJwt(opts: TOAuthLoginWithJwtOpts) {
-    const result = await loginWithJwtRequest(this.sdk, opts)
-    if (result.access_token) await this.setAccessToken(result.access_token)
-    return recursiveToCamel(result)
   }
 
   async checkAndHandleHashRedirectResult() {

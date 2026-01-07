@@ -1,7 +1,5 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
 import { getOAuthApiUrl } from '@packages/common/oauth/oauth'
-import * as loginUrl from './login-url'
-import type { TOAuthLoginWithJwtOpts } from '../main.types'
 import { sessionGet } from '@packages/common/sessionstorage/sessionstorage'
 import { SS_CLIENT_CODE_VERIFIER_KEY } from '../constants/sessionstorage'
 
@@ -67,28 +65,5 @@ export async function refreshTokenRequest(
     return await response.json()
   } catch (error) {
     throw new Error(`Code refresh failed: ${error.message}`)
-  }
-}
-
-export async function loginWithJwtRequest(sdk: CredenzaSDK, opts: TOAuthLoginWithJwtOpts) {
-  try {
-    const url = await loginUrl.buildLoginUrl(sdk, opts, { is_jwt: true })
-    loginUrl.extendLoginUrlWithRedirectUri(url, { redirectUrl: 'none' })
-
-    const response = await fetch(url.toString(), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        validator_id: opts.validatorId,
-        ...('idToken' in opts ? { id_token: opts.idToken } : {}),
-        ...('accessToken' in opts ? { access_token: opts.accessToken } : {}),
-      }),
-    })
-    if (!response.ok) throw new Error(response.statusText)
-    return await response.json()
-  } catch (error) {
-    throw new Error(`Jwt login failed: ${error.message}`)
   }
 }

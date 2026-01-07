@@ -50,23 +50,6 @@
     })
   }
 
-  const handleOAuthLoginWithJwt = async () => {
-    const validatorId = prompt(`Enter the validator id`)
-    if (!validatorId) return
-    const isIdToken = confirm('Are you using the ID token?')
-    const token = prompt(`Enter the ${isIdToken ? 'ID' : 'access'} token`)
-    if (!token) return
-
-    const result = await sdk.oauth.loginWithJwt({
-      scope:
-        'openid profile profile.write email phone blockchain.evm.write blockchain.evm blockchain.sui blockchain.sui.write blockchain.sui.zk',
-      validatorId,
-      ...(isIdToken ? { idToken: token } : { accessToken: token }),
-    })
-    if (sdk.isLoggedIn()) await handleLogin()
-    console.log('Jwt Login success:', result)
-  }
-
   const handleMetamaskLogin = async () => {
     await sdk.evm.loginWithSignature()
 
@@ -121,7 +104,6 @@
   <button on:click={handleOAuthLogin}> Login With OAuth2 </button>
   <button on:click={handleOAuthLoginCode}> Login With OAuth2 Code method</button>
   <button on:click={handleMetamaskLogin}> Login With Metamask </button>
-  <button on:click={handleOAuthLoginWithJwt}> Login With JWT </button>
 {:else}
   <div>
     <button on:click={handleLogout}> Logout </button>
