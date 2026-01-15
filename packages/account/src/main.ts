@@ -110,7 +110,8 @@ export class AccountExtension {
   async getFriendsPaginated(params?: {
     status?: 'pending' | 'accepted' | 'blocked'
     client_id?: string
-    include_sub_data?: boolean
+    include_requester_data?: boolean
+    include_friend_data?: boolean
     include_sui_data?: boolean
     include_evm_data?: boolean
     limit?: number
@@ -119,12 +120,11 @@ export class AccountExtension {
     const queryParams = new URLSearchParams()
     if (params?.status) queryParams.append('status', params.status)
     if (params?.client_id) queryParams.append('client_id', params.client_id)
-    if (params?.include_sub_data !== undefined)
-      queryParams.append('include_sub_data', params.include_sub_data.toString())
-    if (params?.include_sui_data !== undefined)
-      queryParams.append('include_sui_data', params.include_sui_data.toString())
-    if (params?.include_evm_data !== undefined)
-      queryParams.append('include_evm_data', params.include_evm_data.toString())
+    if (params?.include_requester_data)
+      queryParams.append('include_requester_data', params.include_requester_data.toString())
+    if (params?.include_friend_data) queryParams.append('include_friend_data', params.include_friend_data.toString())
+    if (params?.include_sui_data) queryParams.append('include_sui_data', params.include_sui_data.toString())
+    if (params?.include_evm_data) queryParams.append('include_evm_data', params.include_evm_data.toString())
     if (params?.limit) queryParams.append('limit', params.limit.toString())
     if (params?.offset) queryParams.append('offset', params.offset)
 

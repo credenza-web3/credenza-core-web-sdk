@@ -80,7 +80,8 @@ Get paginated friends list
 const friends = await sdk.account.getFriendsPaginated({
   status?: 'pending' | 'accepted' | 'blocked' // default: 'accepted'
   client_id?: string
-  include_sub_data?: boolean
+  include_requester_data?: boolean // Only aplicable when "status=pending"
+  include_friend_data?: boolean // Only aplicable when "status=accepted"
   include_sui_data?: boolean
   include_evm_data?: boolean
   limit?: number
