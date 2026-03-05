@@ -55,7 +55,7 @@ export class OAuthExtension {
     window.location.href = url.toString()
   }
 
-  private async buildLoginRedirectUrl(opts: TOAuthLoginWithRedirectOpts): Promise<URL> {
+  async buildLoginRedirectUrl(opts: TOAuthLoginWithRedirectOpts): Promise<URL> {
     const url = await loginUrl.buildLoginUrl(this.sdk, opts)
     loginUrl.extendLoginUrlWithRedirectUri(url, opts)
     loginUrl.extendLoginUrlWithPasswordlessConfig(url, opts)
