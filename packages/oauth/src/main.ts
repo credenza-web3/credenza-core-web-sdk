@@ -44,19 +44,24 @@ export class OAuthExtension {
     return this.loginWithRedirect(opts)
   }
   async loginWithRedirect(opts: TOAuthLoginWithRedirectOpts) {
-    const url = await loginUrl.buildLoginUrl(this.sdk, opts)
-    loginUrl.extendLoginUrlWithRedirectUri(url, opts)
-    loginUrl.extendLoginUrlWithPasswordlessConfig(url, opts)
-    loginUrl.extendLoginUrlWithClientServerUri(url, opts)
+    const url = await this.buildLoginRedirectUrl(opts)
 
     set(LS_OAUTH_NONCE_KEY, url.searchParams.get('nonce') as string)
     set(LS_OAUTH_STATE_KEY, url.searchParams.get('state') as string)
-
     if (url.searchParams.has('client_server_uri')) {
       set(LS_CLIENT_SERVER_URI_KEY, url.searchParams.get('client_server_uri') as string)
     }
 
     window.location.href = url.toString()
+  }
+
+  private async buildLoginRedirectUrl(opts: TOAuthLoginWithRedirectOpts): Promise<URL> {
+    const url = await loginUrl.buildLoginUrl(this.sdk, opts)
+    loginUrl.extendLoginUrlWithRedirectUri(url, opts)
+    loginUrl.extendLoginUrlWithPasswordlessConfig(url, opts)
+    loginUrl.extendLoginUrlWithClientServerUri(url, opts)
+
+    return url
   }
 
   async checkAndHandleHashRedirectResult() {
