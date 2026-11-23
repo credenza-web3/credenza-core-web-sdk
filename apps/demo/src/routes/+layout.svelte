@@ -1,6 +1,11 @@
 <script lang="ts">
   import { sdk } from '@farcaster/miniapp-sdk'
   import { onMount } from 'svelte'
+  interface IProps {
+    children?: import('svelte').Snippet
+  }
+
+  let { children }: IProps = $props()
 
   //let isReady = false
 
@@ -16,4 +21,4 @@
   })
 </script>
 
-<slot />
+{@render children?.()}

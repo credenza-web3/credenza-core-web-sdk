@@ -8,10 +8,10 @@
   "author": "Credenza",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.14.9",
-    "typescript": "^5.5.3",
-    "vite": "^5.3.3",
-    "vite-plugin-dts": "^3.9.1"
+    "@types/node": "^26.6.6",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.8",
+    "vite-plugin-dts": "^5.1.2"
   },
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -19,8 +19,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mysten/sui": "^1.2.1",
-    "@mysten/zklogin": "^0.7.10",
+    "@mysten/sui": "^3.0.1",
     "jwt-decode": "^4.0.0"
   },
   "publishConfig": {

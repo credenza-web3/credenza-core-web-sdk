@@ -3,16 +3,15 @@
   "version": "0.0.13",
   "type": "module",
   "scripts": {
-    "lint": "eslint .",
     "build": "tsc && vite build"
   },
   "author": "Credenza",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.14.9",
-    "typescript": "^5.5.3",
-    "vite": "^5.3.3",
-    "vite-plugin-dts": "^3.9.1"
+    "@types/node": "^26.6.6",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.8",
+    "vite-plugin-dts": "^5.1.2"
   },
   "main": "dist/main.js",
   "types": "dist/main.d.ts",

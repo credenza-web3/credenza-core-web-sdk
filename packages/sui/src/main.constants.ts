@@ -13,10 +13,10 @@ export const SUI_RPC_URLS = {
 } as const
 
 export const SUI_GQL_URLS = {
-  [SUI_NETWORK.LOCALNET]: 'https://sui-devnet.mystenlabs.com/graphql',
-  [SUI_NETWORK.DEVNET]: 'https://sui-devnet.mystenlabs.com/graphql',
-  [SUI_NETWORK.TESTNET]: 'https://sui-testnet.mystenlabs.com/graphql',
-  [SUI_NETWORK.MAINNET]: 'https://sui-mainnet.mystenlabs.com/graphql',
+  [SUI_NETWORK.LOCALNET]: 'https://graphql.devnet.sui.io/graphql',
+  [SUI_NETWORK.DEVNET]: 'https://graphql.devnet.sui.io/graphql',
+  [SUI_NETWORK.TESTNET]: 'https://graphql.testnet.sui.io/graphql',
+  [SUI_NETWORK.MAINNET]: 'https://graphql.mainnet.sui.io/graphql',
 } as const
 
 export const SUI_SIGN_METHODS = {

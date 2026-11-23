@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "import"],
+  "jsPlugins": ["./tools/oxlint/credenza-plugin.mjs"],
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2022": true
+  },
+  "ignorePatterns": ["**/dist/**", "**/.svelte-kit/**", "**/node_modules/**"],
+  "rules": {
+    "no-console": "error",
+    "eqeqeq": ["error", "always"],
+    "complexity": ["error", 8],
+    "max-lines-per-function": ["error", { "max": 70, "skipBlankLines": true, "skipComments": true }],
+    "no-unused-vars": ["error", { "ignoreRestSiblings": true, "varsIgnorePattern": "^_", "caughtErrors": "none" }],
+    "typescript/no-explicit-any": "error",
+    "typescript/no-floating-promises": "error",
+    "credenza/interface-prefix": "error"
+  },
+  "overrides": [
+    {
+      "files": ["apps/demo/**", "npm-tag.js"],
+      "rules": { "no-console": "off" }
+    }
+  ]
+}

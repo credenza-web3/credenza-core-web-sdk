@@ -1,5 +1,5 @@
 import type { CredenzaSDK } from '@packages/core/src/main'
-import { SuiClient } from '@mysten/sui/client'
+import { SuiGrpcClient } from '@mysten/sui/grpc'
 import { Transaction } from '@mysten/sui/transactions'
 import { SUI_GQL_URLS, SUI_NETWORK, SUI_RPC_URLS } from './main.constants'
 import type { TSuiNetwork } from './main.types'
@@ -18,18 +18,24 @@ export class SuiExtension {
   public zkLogin: ZkLoginExtension
 
   private sdk: CredenzaSDK
-  private client: SuiClient
+  private client: SuiGrpcClient
   private gqlClient: SuiGraphQLClient
   private suiAddress: string | undefined
   private currentSuiNetwork: TSuiNetwork
   private extensions: TExtensionName[] = []
   private _isZkActive = false
 
-  private _signSuiBlockData: (txb: Transaction) => ReturnType<typeof defaultSignSuiBlockData>
+  private _signSuiBlockData: (txb: Transaction) => Promise<{ signature: string; transactionBlock: Uint8Array }>
   private _signSuiPersonalMessage: (message: string) => ReturnType<typeof defaultSignSuiPersonalMessage>
   private _getSuiAddress: () => ReturnType<typeof getSuiAddressHttp>
 
-  constructor({ suiNetwork = SUI_NETWORK.MAINNET, extensions }: { suiNetwork: TSuiNetwork; extensions: TExtension[] }) {
+  constructor({
+    suiNetwork = SUI_NETWORK.MAINNET,
+    extensions,
+  }: {
+    suiNetwork?: TSuiNetwork
+    extensions: TExtension[]
+  }) {
     this.switchNetwork(suiNetwork)
     for (const ext of extensions || []) {
       Object.assign(this, { [ext.name]: ext })
@@ -78,13 +84,14 @@ export class SuiExtension {
     return accessToken
   }
 
-  public switchNetwork(suiNetwork: TSuiNetwork): { client: SuiClient; network: TSuiNetwork } {
+  public switchNetwork(suiNetwork: TSuiNetwork): { client: SuiGrpcClient; network: TSuiNetwork } {
     if (this._isZkActive) throw new Error(`SUI ZK Login is active, cannot switch network`)
     if (this.client && this.currentSuiNetwork === suiNetwork) throw new Error(`Already on sui ${suiNetwork}`)
 
-    this.client = new SuiClient({ url: SUI_RPC_URLS[suiNetwork] })
+    this.client = new SuiGrpcClient({ baseUrl: SUI_RPC_URLS[suiNetwork], network: suiNetwork })
     this.gqlClient = new SuiGraphQLClient({
       url: SUI_GQL_URLS[suiNetwork],
+      network: suiNetwork,
     })
     this.currentSuiNetwork = suiNetwork
     this.suiAddress = undefined
@@ -96,7 +103,7 @@ export class SuiExtension {
     return this.gqlClient
   }
 
-  public getSuiClient(): SuiClient {
+  public getSuiClient(): SuiGrpcClient {
     return this.client
   }
 
@@ -126,10 +133,12 @@ export class SuiExtension {
     return { signature, transactionBlock }
   }
 
-  public async signAndExecuteTransactionBlock(
-    txb: Transaction,
-  ): ReturnType<typeof this.client.executeTransactionBlock> {
-    const txbParams = await this.signTransactionBlock(txb)
-    return await this.client.executeTransactionBlock(txbParams)
+  public async signAndExecuteTransactionBlock(txb: Transaction) {
+    const { signature, transactionBlock } = await this.signTransactionBlock(txb)
+    return await this.client.executeTransaction({
+      transaction: transactionBlock,
+      signatures: [signature],
+      include: { effects: true },
+    })
   }
 }

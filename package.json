@@ -4,33 +4,29 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write .",
-    "prepare": "husky",
+    "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "prepare": "lefthook install",
     "ncu": "ncu --deep",
     "ncu:u": "ncu -u --deep"
   },
   "devDependencies": {
-    "@metamask/providers": "^16.1.0",
-    "eslint": "^8.57.0",
-    "eslint-config-custom": "workspace:*",
-    "ethers": "^6.13.5",
-    "husky": "^9.1.7",
-    "prettier": "^3.4.2",
-    "prettier-plugin-svelte": "^3.3.2",
+    "@metamask/providers": "^22.1.1",
+    "ethers": "^6.17.0",
+    "lefthook": "^2.2.2",
+    "oxfmt": "^0.79.0",
+    "oxlint": "^1.94.0",
+    "oxlint-tsgolint": "^7.0.2008",
     "tsconfig": "workspace:*",
     "turbo": "latest"
   },
   "engines": {
-    "node": ">=22",
-    "pnpm": ">=10"
+    "node": ">=26",
+    "pnpm": ">=12"
   },
-  "packageManager": "pnpm@10.3.0",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  },
+  "packageManager": "pnpm@12.21.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/credenza-web3/credenza-core-web-sdk"

@@ -1,4 +1,4 @@
-import { TSuiNetwork } from '@packages/sui/src/main.types'
+import type { TSuiNetwork } from '@packages/sui/src/main.types'
 
 export const getZkProofUrl = (network: TSuiNetwork) => {
   switch (network) {

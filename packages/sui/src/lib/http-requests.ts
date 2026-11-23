@@ -28,7 +28,7 @@ export async function signSuiDataHttp(sdk: CredenzaSDK, data: { method: string; 
     })
     if (!response.ok) throw new Error(response.statusText)
 
-    const json = await await response.json()
+    const json = await response.json()
     return json
   } catch (error) {
     throw new Error(`Error Signing SUI data: ${error.message}`)

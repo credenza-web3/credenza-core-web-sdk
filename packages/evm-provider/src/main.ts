@@ -11,6 +11,7 @@ class CredenzaProvider implements ethers.Eip1193Provider {
   private apiUrl: string
   private accessToken: string
   private rpcUrl: string
+  // oxlint-disable-next-line typescript/no-explicit-any -- EIP-1193 event listeners receive event-specific args
   private listeners: Record<string, ((...args: any[]) => void)[]> = {}
 
   constructor(params: { rpcUrl: string; accessToken?: string; env: string }) {
@@ -29,6 +30,7 @@ class CredenzaProvider implements ethers.Eip1193Provider {
     }
   }
 
+  // oxlint-disable-next-line typescript/no-explicit-any -- EIP-1193 event listeners receive event-specific args
   private _emit(event: string, ...args: any[]) {
     for (const listener of this.listeners[event] ?? []) {
       listener(...args)
@@ -44,12 +46,14 @@ class CredenzaProvider implements ethers.Eip1193Provider {
     return this.rpcUrl
   }
 
+  // oxlint-disable-next-line typescript/no-explicit-any -- EIP-1193 event listeners receive event-specific args
   public on(event: string, listener: (...args: any[]) => void) {
     this.listeners[event] ??= []
     this.listeners[event].push(listener)
     return this
   }
 
+  // oxlint-disable-next-line typescript/no-explicit-any -- EIP-1193 event listeners receive event-specific args
   public removeListener(event: string, listener: (...args: any[]) => void) {
     this.listeners[event] = (this.listeners[event] ?? []).filter((l) => l !== listener)
     return this
@@ -61,7 +65,7 @@ class CredenzaProvider implements ethers.Eip1193Provider {
     this.addresses = []
   }
 
-  public async _populateTransaction(tx: unknown | ethers.TransactionLike) {
+  public async _populateTransaction(tx: unknown) {
     const [address] = await this.listAccounts()
     const voidSigner = new ethers.VoidSigner(address, this.provider)
     const transactionJson = await voidSigner.populateTransaction(tx as ethers.TransactionLike)
@@ -80,7 +84,7 @@ class CredenzaProvider implements ethers.Eip1193Provider {
     return this.addresses
   }
 
-  // eslint-disable-next-line complexity
+  // oxlint-disable-next-line max-lines-per-function, complexity -- pre-existing: single EIP-1193 method dispatcher
   async request({ method, params }: { method: string; params?: unknown[] }) {
     switch (method) {
       case 'eth_requestAccounts':
@@ -141,7 +145,7 @@ class CredenzaProvider implements ethers.Eip1193Provider {
         }
       }
       case 'wallet_switchEthereumChain': {
-        const chainId = Number((params?.[0] as any)?.chainId)
+        const chainId = Number((params?.[0] as { chainId?: string | number } | undefined)?.chainId)
         const network = await this.provider.getNetwork()
         if (chainId !== Number(network.chainId)) {
           throw new Error(
