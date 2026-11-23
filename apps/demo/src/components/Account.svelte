@@ -1,16 +1,20 @@
 <script lang="ts">
   import type { CredenzaSDK } from '@credenza3/core-web/src/main'
 
-  export let sdk: CredenzaSDK
+  interface IProps {
+    sdk: CredenzaSDK
+  }
 
-  let emailToChange = ''
-  let phoneToChange = '+'
-  let verificationCode = ''
-  let oldPassword = ''
-  let newPassword = ''
-  let confirmPassword = ''
-  let name = ''
-  let picture = ''
+  let { sdk }: IProps = $props()
+
+  let emailToChange = $state('')
+  let phoneToChange = $state('+')
+  let verificationCode = $state('')
+  let oldPassword = $state('')
+  let newPassword = $state('')
+  let confirmPassword = $state('')
+  let name = $state('')
+  let picture = $state('')
 
   const handleGetUserInfo = async () => {
     const result = await sdk.account.info()
@@ -53,30 +57,30 @@
 <div>
   <div style="border: 2px solid #000; text-align: center">ACCOUNT</div>
   <div style="margin-top: 5px">
-    <button on:click={handleGetUserInfo}> Log Account Info </button>
+    <button onclick={handleGetUserInfo}> Log Account Info </button>
   </div>
 
   <div style="margin-top: 5px">
     <input type="email" bind:value={emailToChange} style="min-width: 350px" placeholder="Email address" />
-    <button on:click={handleChangeEmail}> Request Change Email </button>
+    <button onclick={handleChangeEmail}> Request Change Email </button>
   </div>
   <div style="margin-top: 5px">
     <input type="text" bind:value={phoneToChange} style="min-width: 350px" placeholder="Phone number" />
-    <button on:click={handleChangePhone}> Request Change Phone </button>
+    <button onclick={handleChangePhone}> Request Change Phone </button>
   </div>
   <div style="margin-top: 5px">
     <input type="text" bind:value={verificationCode} style="min-width: 350px" placeholder="Code" />
-    <button on:click={handleVerifyCode}> Verify code </button>
+    <button onclick={handleVerifyCode}> Verify code </button>
   </div>
   <div style="margin-top: 5px">
     <input type="password" bind:value={oldPassword} placeholder="old password" />
     <input type="password" bind:value={newPassword} placeholder="new password" />
     <input type="password" bind:value={confirmPassword} placeholder="confirm password" />
-    <button on:click={handleChangePassword}> Change password </button>
+    <button onclick={handleChangePassword}> Change password </button>
   </div>
   <div style="margin-top: 5px">
     <input type="text" bind:value={name} placeholder="name" />
     <input type="text" bind:value={picture} placeholder="image url" />
-    <button on:click={handleUpdateProfile}> Update profile </button>
+    <button onclick={handleUpdateProfile}> Update profile </button>
   </div>
 </div>

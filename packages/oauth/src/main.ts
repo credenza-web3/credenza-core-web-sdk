@@ -39,7 +39,7 @@ export class OAuthExtension {
   }
 
   login(opts: TOAuthLoginWithRedirectOpts) {
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     console.warn(`login is deprecated and will be removed soon. Use "loginWithRedirect" instead.`)
     return this.loginWithRedirect(opts)
   }
@@ -113,6 +113,7 @@ export class OAuthExtension {
         history.replaceState(null, document.title, window.location.pathname + search.toString())
       }
     } catch {
+      // oxlint-disable-next-line no-console -- intentional notice for integrators using the code flow
       console.info('Returned code and state. Could not exchange automatically for token.')
     }
   }

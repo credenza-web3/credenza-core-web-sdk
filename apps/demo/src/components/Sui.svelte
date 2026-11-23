@@ -1,15 +1,19 @@
 <script lang="ts">
   import type { CredenzaSDK } from '@credenza3/core-web/src/main'
   import { SuiExtension } from '@credenza3/core-web-sui-ext/src/main'
-  import { getFaucetHost, requestSuiFromFaucetV0 } from '@mysten/sui/faucet'
+  import { getFaucetHost, requestSuiFromFaucetV3 } from '@mysten/sui/faucet'
   import { MIST_PER_SUI } from '@mysten/sui/utils'
   import { Transaction } from '@mysten/sui/transactions'
 
-  export let sdk: CredenzaSDK
-  export let suiNetworkName: (typeof SuiExtension.SUI_NETWORK)[keyof typeof SuiExtension.SUI_NETWORK]
+  interface IProps {
+    sdk: CredenzaSDK
+    suiNetworkName: (typeof SuiExtension.SUI_NETWORK)[keyof typeof SuiExtension.SUI_NETWORK]
+  }
 
-  let messageToSign = 'test message'
-  let transferToAddress = '0x656e8778c895f266be103088653e5437000cdb84399e40b43fa9a690c9a7da8f'
+  let { sdk, suiNetworkName = $bindable() }: IProps = $props()
+
+  let messageToSign = $state('test message')
+  let transferToAddress = $state('0x656e8778c895f266be103088653e5437000cdb84399e40b43fa9a690c9a7da8f')
 
   const handleGetSuiAddress = async () => {
     const address = await sdk.sui.getAddress()
@@ -18,10 +22,10 @@
 
   const handleSuiBalance = async () => {
     const client = sdk.sui.getSuiClient()
-    const balance = await client.getBalance({
+    const { balance } = await client.getBalance({
       owner: await sdk.sui.getAddress(),
     })
-    const result = Number.parseInt(balance.totalBalance) / Number(MIST_PER_SUI)
+    const result = Number.parseInt(balance.balance) / Number(MIST_PER_SUI)
     console.log('Sui balance:', result)
   }
 
@@ -29,7 +33,7 @@
     const currentNetwork = sdk.sui.getNetworkName()
     if (currentNetwork === SuiExtension.SUI_NETWORK.MAINNET) throw new Error('faucet is not available for mainnet')
 
-    const result = await requestSuiFromFaucetV0({
+    const result = await requestSuiFromFaucetV3({
       host: getFaucetHost(currentNetwork),
       recipient: await sdk.sui.getAddress(),
     })
@@ -68,25 +72,25 @@
 <div>
   <div style="border: 2px solid #000; text-align: center;">SUI</div>
   <div style="margin-top: 5px">
-    <select bind:value={suiNetworkName} on:change={handleSuiSwitchNetwork}>
+    <select bind:value={suiNetworkName} onchange={handleSuiSwitchNetwork}>
       {#each Object.values(SuiExtension.SUI_NETWORK) as network}
         <option selected={suiNetworkName === network} value={network}>
           {network}
         </option>
       {/each}
     </select>
-    <button on:click={handleGetSuiAddress}>Sui Address</button>
-    <button on:click={handleSuiBalance}> Sui balance </button>
+    <button onclick={handleGetSuiAddress}>Sui Address</button>
+    <button onclick={handleSuiBalance}> Sui balance </button>
     {#if suiNetworkName === SuiExtension.SUI_NETWORK.DEVNET}
-      <button on:click={handleSuiFaucet}> Sui Faucet </button>
+      <button onclick={handleSuiFaucet}> Sui Faucet </button>
     {/if}
   </div>
   <div style="margin-top: 5px">
     <input type="text" bind:value={messageToSign} style="min-width: 500px" placeholder="" />
-    <button on:click={handleSuiSignMessage}> Sui Sign Message </button>
+    <button onclick={handleSuiSignMessage}> Sui Sign Message </button>
   </div>
   <div style="margin-top: 5px">
     <input type="text" bind:value={transferToAddress} style="min-width: 500px" placeholder="" />
-    <button on:click={handleSuiTransfer}> Sui Transfer </button>
+    <button onclick={handleSuiTransfer}> Sui Transfer </button>
   </div>
 </div>

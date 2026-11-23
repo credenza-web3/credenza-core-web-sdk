@@ -5,14 +5,18 @@
   import { spicy, amoy, fuji } from '../evm-chain-config'
   import { onMount } from 'svelte'
 
-  export let sdk: CredenzaSDK
-  export let chainConfig: typeof amoy | typeof spicy | typeof fuji
+  interface IProps {
+    sdk: CredenzaSDK
+    chainConfig: typeof amoy | typeof spicy | typeof fuji
+  }
+
+  let { sdk, chainConfig = $bindable() }: IProps = $props()
 
   const { isAddress } = ethers
 
-  let transferTo = '0xc4F69E4fB203F832616f8CCb134ba25417455039'
-  let messageToSign = ''
-  let anotherMessageToSign = ''
+  let transferTo = $state('0xc4F69E4fB203F832616f8CCb134ba25417455039')
+  let messageToSign = $state('')
+  let anotherMessageToSign = $state('')
 
   let credenzaProvider: CredenzaProvider
 
@@ -78,22 +82,22 @@
 <div>
   <div style="border: 2px solid #000; text-align: center">EVM (provider as a part of EVM package)</div>
   <div style="margin-top: 5px">
-    <select bind:value={chainConfig} on:change={handleSwitchChain}>
+    <select bind:value={chainConfig} onchange={handleSwitchChain}>
       {#each [fuji, amoy, spicy] as chain}
         <option selected={chain.chainId === chainConfig.chainId} value={chain}>
           {chain.displayName} ({chain.chainId})
         </option>
       {/each}
     </select>
-    <button on:click={handleGetEvmAddress}> Log Blockchain Info </button>
+    <button onclick={handleGetEvmAddress}> Log Blockchain Info </button>
   </div>
   <div style="margin-top: 5px">
     <input type="text" bind:value={transferTo} style="min-width: 350px" placeholder="0x..." />
-    <button on:click={handleTransferNativeCurrencyEvm}> Transfer native currency EVM </button>
+    <button onclick={handleTransferNativeCurrencyEvm}> Transfer native currency EVM </button>
   </div>
   <div style="margin-top: 5px">
     <input type="text" bind:value={messageToSign} style="min-width: 350px" placeholder="" />
-    <button on:click={handleSignMessage}> Sign Message </button>
+    <button onclick={handleSignMessage}> Sign Message </button>
   </div>
 </div>
 
@@ -102,6 +106,6 @@
   <div style="border: 2px solid #000; text-align: center">Provider as a standalone package</div>
   <div style="margin-top: 5px">
     <input type="text" bind:value={anotherMessageToSign} style="min-width: 350px" placeholder="" />
-    <button on:click={handleSignStandaloneProviderMessage}> Sign Message </button>
+    <button onclick={handleSignStandaloneProviderMessage}> Sign Message </button>
   </div>
 </div>

@@ -6,9 +6,9 @@ import {
   genAddressSeed,
   getZkLoginSignature,
   generateNonce,
-} from '@mysten/zklogin'
+} from '@mysten/sui/zklogin'
 import { jwtDecode } from 'jwt-decode'
-import { SuiClient } from '@mysten/sui/client'
+import type { SuiGrpcClient } from '@mysten/sui/grpc'
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
 
 import { Transaction } from '@mysten/sui/transactions'
@@ -16,12 +16,12 @@ import { getZkKeysFromCache, getZkRandomnessFromCache, setZkCache } from './lib/
 import { getSuiZkSalt } from './lib/http-requests'
 import { getZkProofUrl } from './lib/helper'
 import { verifyPersonalMessageSignature } from '@mysten/sui/verify'
-import { graphql } from '@mysten/sui/graphql/schemas/2024.4'
+import { graphql } from '@mysten/sui/graphql/schema'
 
 export class ZkLoginExtension {
   public name = 'zkLogin' as const
   private sdk: CredenzaSDK
-  private suiClient: SuiClient
+  private suiClient: SuiGrpcClient
   private _userAddress: string
   private _salt: string
   private _decodedJwt: { sub: string; aud: string; iss: string }
@@ -53,12 +53,12 @@ export class ZkLoginExtension {
     })
 
     if (data?.epoch?.epochId) {
-      this._maxEpoch = data?.epoch?.epochId + 2
+      this._maxEpoch = Number(data.epoch.epochId) + 2
       return
     }
 
-    const { epoch } = await this.suiClient.getLatestSuiSystemState()
-    this._maxEpoch = Number(epoch) + 2
+    const { systemState } = await this.suiClient.getCurrentSystemState()
+    this._maxEpoch = Number(systemState.epoch) + 2
   }
 
   private _setKeyPairs = async () => {
@@ -177,7 +177,7 @@ export class ZkLoginExtension {
 
   public async getAddress() {
     if (!this._userAddress) {
-      this._userAddress = jwtToAddress(this.sdk.getAccessToken() as string, await this._getZkSalt())
+      this._userAddress = jwtToAddress(this.sdk.getAccessToken() as string, await this._getZkSalt(), false)
     }
     return { address: this._userAddress }
   }

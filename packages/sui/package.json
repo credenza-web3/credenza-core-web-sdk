@@ -1,6 +1,6 @@
 {
   "name": "@credenza3/core-web-sui-ext",
-  "version": "0.0.14-alpha.1",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"
@@ -8,10 +8,10 @@
   "author": "Credenza",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.14.9",
-    "typescript": "^5.5.3",
-    "vite": "^5.3.3",
-    "vite-plugin-dts": "^3.9.1"
+    "@types/node": "^26.6.6",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.8",
+    "vite-plugin-dts": "^5.1.2"
   },
   "types": "dist/main.d.ts",
   "main": "dist/main.js",
@@ -19,7 +19,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mysten/sui": "^1.2.1",
+    "@mysten/sui": "^3.0.1",
     "buffer": "^6.0.3"
   },
   "publishConfig": {

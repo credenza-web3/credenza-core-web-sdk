@@ -107,6 +107,7 @@ export class AccountExtension {
     return json
   }
 
+  // oxlint-disable-next-line complexity -- pre-existing: optional query-param building
   async getFriendsPaginated(params?: {
     status?: 'pending' | 'accepted' | 'blocked'
     client_id?: string
@@ -214,6 +215,7 @@ export class AccountExtension {
     return json
   }
 
+  // oxlint-disable-next-line complexity -- pre-existing: optional-param handling
   async getFriendInfo(
     targetSub: string,
     params?: {

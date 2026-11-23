@@ -203,6 +203,7 @@ export class EvmExtension {
 
     this.switchChainPromise = this.optionsProvider
       .request({ method: 'eth_chainId' })
+      // oxlint-disable-next-line complexity -- pre-existing: chain switch / add-chain fallback flow
       .then(async (current: string) => {
         if (current?.toLowerCase() === target.toLowerCase()) {
           throw new Error('SWITCH_CHAIN_NOT_REQUIRED')
@@ -212,7 +213,7 @@ export class EvmExtension {
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: target }],
           })
-        } catch (err: any) {
+        } catch (err) {
           const code = err?.code ?? err?.data?.originalError?.code
           if (code === 4902 || err?.message?.includes('Unrecognized chain')) {
             await this._addChainEip(config)

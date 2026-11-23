@@ -2,7 +2,7 @@ import type { CredenzaSDK } from '@packages/core/src/main'
 import { Buffer } from 'buffer'
 import { signSuiDataHttp } from './http-requests'
 import { Transaction } from '@mysten/sui/transactions'
-import { SuiClient } from '@mysten/sui/client'
+import type { SuiGrpcClient } from '@mysten/sui/grpc'
 import { verifyTransactionSignature, verifyPersonalMessageSignature } from '@mysten/sui/verify'
 import { SUI_SIGN_METHODS } from '../main.constants'
 
@@ -12,7 +12,7 @@ export async function defaultSignSuiBlockData({
   sdk,
 }: {
   txb: Transaction
-  client: SuiClient
+  client: SuiGrpcClient
   sdk: CredenzaSDK
 }) {
   const transactionBlock = await txb.build({ client })
@@ -20,7 +20,7 @@ export async function defaultSignSuiBlockData({
     method: SUI_SIGN_METHODS.SIGN_TRANSACTION,
     param: Buffer.from(transactionBlock).toString('base64'),
   })
-  await verifyTransactionSignature(transactionBlock, signature)
+  await verifyTransactionSignature(transactionBlock, signature, { offline: true })
   return { signature, transactionBlock }
 }
 
@@ -29,6 +29,6 @@ export async function defaultSignSuiPersonalMessage({ message, sdk }: { message:
     method: SUI_SIGN_METHODS.SIGN_PERSONAL_MESSAGE,
     param: Buffer.from(message).toString('base64'),
   })
-  await verifyPersonalMessageSignature(new TextEncoder().encode(message), result.signature)
+  await verifyPersonalMessageSignature(new TextEncoder().encode(message), result.signature, { offline: true })
   return result
 }

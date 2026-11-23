@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$env/static/public'
+  import { PUBLIC_ENV, PUBLIC_CLIENT_ID } from '$app/env/public'
   import { amoy } from '../evm-chain-config'
 
   import { CredenzaSDK } from '@credenza3/core-web/src/main'
@@ -15,11 +15,12 @@
   import Account from '../components/Account.svelte'
   import type { TSuiNetwork } from '@packages/sui/src/main.types'
 
-  let evmChainConfig = amoy
-  let sdk: CredenzaSDK
-  let suiNetworkName: TSuiNetwork
+  // `$state.raw`: these objects are handed to the SDK and must not be wrapped in reactive proxies.
+  let evmChainConfig = $state.raw(amoy)
+  let sdk = $state.raw<CredenzaSDK>() as CredenzaSDK
+  let suiNetworkName = $state<TSuiNetwork>(SuiExtension.SUI_NETWORK.DEVNET)
 
-  let isLoggedIn = false
+  let isLoggedIn = $state(false)
 
   const handleLogin = async () => (isLoggedIn = true)
 
@@ -101,14 +102,14 @@
 </script>
 
 {#if !isLoggedIn}
-  <button on:click={handleOAuthLogin}> Login With OAuth2 </button>
-  <button on:click={handleOAuthLoginCode}> Login With OAuth2 Code method</button>
-  <button on:click={handleMetamaskLogin}> Login With Metamask </button>
+  <button onclick={handleOAuthLogin}> Login With OAuth2 </button>
+  <button onclick={handleOAuthLoginCode}> Login With OAuth2 Code method</button>
+  <button onclick={handleMetamaskLogin}> Login With Metamask </button>
 {:else}
   <div>
-    <button on:click={handleLogout}> Logout </button>
-    <button on:click={() => handleRevokeSession({ revokeAllSessions: true })}> Revoke session </button>
-    <button on:click={() => handleRevokeSession({ revokeBrowserSession: true })}>
+    <button onclick={handleLogout}> Logout </button>
+    <button onclick={() => handleRevokeSession({ revokeAllSessions: true })}> Revoke session </button>
+    <button onclick={() => handleRevokeSession({ revokeBrowserSession: true })}>
       Revoke browser session with redirect
     </button>
   </div>
