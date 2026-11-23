@@ -1,6 +1,6 @@
 {
   "name": "@credenza3/core-web-account-ext",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build"
